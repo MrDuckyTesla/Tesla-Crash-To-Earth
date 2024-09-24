@@ -1,0 +1,16 @@
+TOP PRIORITIES
+
+#01:  add battle collisions that stop all movement, but let the character go in opposite directions
+#02:  add jumping
+#03:  add big background that moves, then when within canvas size, character moves
+#04:  add npc following overworld
+#05:  add enemy overworld
+#06:  add overworld interacting
+#07:  add overworld dialogue
+#08:  add battle platforms
+#09:  add overworld sword
+#10:  optimize code using switch statements, and canvas imaging thing
+#11:  add menu
+#12:  add enemy battle
+#13:  add enemy battle ai
+#14:  add save files
