@@ -20,7 +20,7 @@ function setup() {
   // Create Player Object 
   Tesla = new Player(width / 2 - 14 * 3, height / 2 - 14 * 3, width / 2 - 4 * 4, height - 13 * 4, teslaOverSS, teslaBattSS);
 //   Tesla.overWorld = round(random()) == 1;  // Fun :D
-  Tesla.overWorld = true;
+  Tesla.overWorld = false;
 }
 
 function draw() {

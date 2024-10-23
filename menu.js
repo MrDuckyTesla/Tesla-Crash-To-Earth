@@ -11,11 +11,11 @@ class Menu {
     // color change?  (use slider)
   }
   
-  button(x, y, txt) {
+  button(x, y, wdth, hgt, txt) {
     
   }
   
-  slider(x, y, mininum, maxinum) {
+  slider(x, y, mininum, maxinum, wdth, hgt, horizontal=true) {
     return true;
   }
 }

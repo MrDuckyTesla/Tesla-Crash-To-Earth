@@ -1,6 +1,6 @@
 Start Date:  7/11/2024
-Last Updated:  9/23/2024
-Current Version 0.1.3
+Last Updated:  10/18/2024
+Current Version 0.1.5
 
 "Tesla: Crash to Earth" was made by:
 
@@ -11,10 +11,10 @@ BaggyBelt:  Artist
 
 Software used:  
 
-p5.js (Programming):  https://p5js.org/
-MS Paint (Sprites)
+p5.js (Programming): https://p5js.org/
+MS Paint (Sprites):  https://www.microsoft.com/en-us/windows/paint
 Piskel (Animating):  https://www.piskelapp.com/
-FL Studio (Music)
+FL Studio (Music):   https://www.image-line.com/
 
 License:
 

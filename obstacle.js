@@ -1,5 +1,7 @@
 class Obstacle {
   constructor() {
+    this.isMovable = true;
+    this.walkThrough = false;
     // Make array of all ojects and their dimensions to check if collide
   }
   overWorldCollision(x, y, wid, hgt, scl) {
@@ -14,7 +16,7 @@ class Obstacle {
     // return false;
   }
   
-  getBackHereOverworld() {
+  // getBackHereOverworld() {
     // if (this.oX >= width + 28 * this.sclO) {
     //   this.oX = (28 * this.sclO * -1);
     // }
@@ -27,9 +29,10 @@ class Obstacle {
     // else if (this.oY <=  28 * this.sclO * -1) {
     //   this.oY = (28 * this.sclO + height);
     // }
-  }
+  // }
   
-  hitbox() {
-    
-  }
+//   hitbox() {
+//     
+//   }
+  
 }

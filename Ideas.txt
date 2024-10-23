@@ -1,0 +1,14 @@
+Random ideas that could implement for fun?
+
+Procedural music/attacks?
+Making music sync with attacks by training neural network to reconize beats and sync
+Render Pixelization on side or before game is drawn?
+Use hashs? for what?
+In overworld, keep atatck animation going in single direction without a way to stop
+Open world? make an enemy ai that will secretly fight in background
+Have secret room/way to fight editor or kwack as joke
+Dynamic frame rate
+Air dash that can be aimed and rotated
+Make "one respawn" powerup where you place it somewhere during battle and only respawn once
+Make quick fall if has double jump available
+walls in battle should bounce player in opposite direction with the same speed (maybe, we also have the wall sliding ability)
