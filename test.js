@@ -6,15 +6,13 @@ function setup() {
 }
 
 function draw() {
-  background(0);
+  background(50);
+  // ellipse(x, y, 10, 10);
+  // ellipse(x2, y2, 10, 10);
   // if (frameCount == 1) {
   // noStroke();
   // console.log("before: " + x + ", " + y);
   // Make particle system??
-  
-  stroke(111, 111, 255);
-  strokeWeight(5);
-  fill(111, 111, 255);
   
   // let theta = cos(110**2 + 60**2 - 50**2);
   // let a = dist(width/2, height/2, mouseX, mouseY);
@@ -31,19 +29,52 @@ function draw() {
   // console.log(mouseX*theta, mouseY*theta)
   // ellipse( mouseX*theta, mouseY*theta, 10, 10)
   // let coords1 = lineRadius(width/2, height/2, mouseX, mouseY, 60, true);
-  let coords = getLimbCoords(width/2, height/2, 100, 100, mouseX, mouseY);
-  let coords2 = getLimbCoords(width/2, height/2, 100, 100, mouseX, mouseY, true);
   // let coords2 = lineRadius(coords1[0], coords1[1], mouseX, mouseY, 50, true);
   // coords2 = lineRadius(coords[0], coords[1], x2, height, 75);
   // coords3 = lineRadius(coords2[0], coords2[1], x3, height, 50);
-  line(width/2, height/2, coords[0], coords[1]);
-  line(coords[0], coords[1], coords[2], coords[3]);
   // stroke(61, 61, 200);
   // line(width/2, height/2, mouseX, mouseY);
   
-  stroke(11, 11, 150);
-  line(width/2, height/2, coords2[0], coords2[1]);
-  line(coords2[0], coords2[1], coords2[2], coords2[3]);
+  // let x = 120*cos(frameCount/10) + width/2;
+  // let y = 50*sin(frameCount/10) + height/1.35;
+  // let x2 = 120*cos(frameCount/10+PI) + width/2;
+  // let y2 = 50*sin(frameCount/10+PI) + height/1.35;
+  // let coords = getLimbCoords(width/2, height/2, 100, 100, x, y, true);
+  // let coords2 = getLimbCoords(width/2, height/2, 100, 100, x2, y2, true);
+  
+  // let x = -120*cos(frameCount/10+PI) + width/2;
+  // let x = (width/2)*cos(frameCount/50) + width/2;
+  // let x = width/2
+  // let bool = true, num = 1;
+  // if (x > width/2) {
+  //   bool = false;
+  //   num *= -1;
+  // }
+  // let y = 5*sin(frameCount/2.5+PI/2);
+  // let bodyCoords = lineRadius(x, height/2+y, x+50*num, height/2-100, 30);
+  // animateLegsRun(x, height/2 + y, 100*0.1, 70*0.1, 10, [48, 43, 164], [28, 89, 198], 5, 5, 1.35, bool);  // Legs
+  // animateLegsRun(bodyCoords[0], bodyCoords[1], 100*0.1, 25*0.1, 10, [48, 43, 164], [28, 89, 198], 5, 5, 1.35, !bool);  // Arms
+  // line(bodyCoords[0], bodyCoords[1], x, height/2 + y);
+  // line(bodyCoords[0]+10*num, bodyCoords[1] + y - 10, bodyCoords[0], bodyCoords[1]);
+  // // nostroke();
+  // fill(28, 89, 198);
+  // ellipse(bodyCoords[0]+10*num, bodyCoords[1] + y - 10, 15, 15);
+  // fill(255, 111, 111);
+  // noStroke();
+  // if (num == 1)  rect(bodyCoords[0]+8, bodyCoords[1] + y - 15, 15, 5);
+  // else rect(bodyCoords[0]-23, bodyCoords[1] + y - 15, 15, 5);
+  
+  // strokeWeight(5);
+  // fill(111, 111, 255);
+  // stroke(11, 11, 150);
+  // line(width/2, height/2, coords2[0], coords2[1]);
+  // line(coords2[0], coords2[1], coords2[2], coords2[3]);
+  // stroke(111, 111, 255);
+  // line(width/2, height/2, coords[0], coords[1]);
+  strokeWeight(5);
+  coords = getLimbCoords(width/2, height/2, 50, 100, mouseX, mouseY);
+  line(width/2, height/2, coords[0], coords[1]);
+  line(coords[0], coords[1], coords[2], coords[3]);
   
   // line(coords2[0], coords2[1], coords3[0], coords3[1]);
   // line(coords1[0], coords1[1], width/2, height/2);
@@ -72,7 +103,11 @@ function draw() {
     }
   }
   // pix.updatePixels();
-  image(pix, 0, 0, width, height);
+  // image(pix, 0, 0, width, height);
+  
+  // stroke("red");
+  // strokeWeight(10);
+  // line(0, height/2+45.7, width, height/2+47.5);
   
   
     // for (let i = 0; i < circles.length; i += 4) {
@@ -155,7 +190,7 @@ function draw() {
   // }
 }
 
-function lineRadius(centerX, centerY, endX, endY, radius, forceRadius=false) {  // Returns coords to keep a line within a radius
+function lineRadius(centerX, centerY, endX, endY, radius, forceRadius=true) {  // Returns coords to keep a line within a radius
   if (forceRadius || dist(centerX, centerY, endX, endY) > radius) {  // If the line is outside the radius
     endX -= centerX; endY -= centerY;  // Make sure the x and y can never be 0
     let temp = endX, num = 1;  // Make a copy of x
@@ -169,7 +204,12 @@ function lineRadius(centerX, centerY, endX, endY, radius, forceRadius=false) {  
 function getLimbCoords(centerX, centerY, length1, length2, endX, endY, bendRight=false) {
   let d = dist(centerX, centerY, endX, endY), crd = lineRadius(centerX, centerY, endX, endY, length1 + length2, true);
   if (d > length1 + length2)
-    return [crd[0], crd[1], crd[0], crd[1]];
+    return [crd[0], crd[1], crd[0], crd[1]];  
+  // Work on later, make line show for all scenarios 
+  // else if (d < length1 - length2)
+  //   return [crd[0], crd[1], crd[0], crd[1]];
+  // else if (d < length2 - length1) 
+  //   return [crd[0], crd[1], crd[0], crd[1]];
   else {
     endX -= centerX; endY -= centerY;  // Make sure the x and y can never be 0
     let theta = acos((d**2 + length1**2 - length2**2)/(2*d*length1)), num = 1;
@@ -180,6 +220,35 @@ function getLimbCoords(centerX, centerY, length1, length2, endX, endY, bendRight
     return [x, y, crd[0], crd[1]];
   }
 }
+
+function animateLegsRun(centerX, centerY, radiusX, radiusY, length, color1=[0, 0, 0], color2=[255, 255, 255], thickness=5, speed=10, lengthQuotent=1.35, faceRight=false, showShadow=false, showHitbox=false) {
+  let num = 1, y1 = radiusY*sin(frameCount/speed+PI) + centerY + lengthQuotent*length, y2 = radiusY*sin(frameCount/speed) + centerY + lengthQuotent*length;
+  if (!faceRight) num = -1;
+  let x1 = num*radiusX*cos(frameCount/speed+PI) + centerX, x2 = num*radiusX*cos(frameCount/speed) + centerX;
+  let coords1 = getLimbCoords(centerX, centerY, length, length, x1, y1, faceRight);
+  let coords2 = getLimbCoords(centerX, centerY, length, length, x2, y2, faceRight);
+  
+  if (showShadow || showHitbox) {
+    noStroke();
+    fill(255, 0, 0);
+  }
+  if (showShadow)  ellipse(centerX, centerY+length*lengthQuotent, 2*radiusX, 2*radiusY);
+  if (showHitbox)  rect(centerX - radiusX - thickness/2, centerY - thickness/2, 2*radiusX + thickness/2, 2*length + thickness);
+  
+  strokeWeight(thickness);
+  stroke(color1[0], color1[1], color1[2]);
+  line(centerX, centerY, coords2[0], coords2[1]);
+  line(coords2[0], coords2[1], coords2[2], coords2[3]);
+  stroke(color2[0], color2[1], color2[2]);
+  line(centerX, centerY, coords1[0], coords1[1]);
+  line(coords1[0], coords1[1], coords1[2], coords1[3]);
+}
+
+function pixelate(res, x=0, y=0, w=width, h=height) {
+    let img = get();  // Get canvas
+    img.resize(width/res, height/res);  // Resize canvas to wanted size
+    image(img, x, y, w, h, x/res, y/res, w/res, h/res);
+  }
 
 // function leg(centerX, centerY, endX, endY, radius, forceRadius=false) {  // Returns coords to keep a line within a radius
 //   if (forceRadius || dist(centerX, centerY, endX, endY) > radius) {  // If the line is outside the radius

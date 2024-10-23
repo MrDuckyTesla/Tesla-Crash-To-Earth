@@ -3,7 +3,12 @@ class NonPlayerCharacter extends Character {
     
   }
   
-  Follow() {
+  follow(character) {
     
   }
+  
+  dialogue() {
+    
+  }
+  
 }
