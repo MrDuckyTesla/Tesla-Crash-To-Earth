@@ -15,7 +15,7 @@ class Enemy extends NonPlayerCharacter {
     
   }
   
-  attack() {  // battle mode
+  attack() {  // Fight the player?
     
   }
   

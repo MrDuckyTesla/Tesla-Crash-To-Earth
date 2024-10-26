@@ -5,11 +5,11 @@ class Character {
     this.bX = bX;  this.bY = bY;  // Battle Characters XY Coords
     this.impulse = 15;  this.overWorld = true; // Controls if Character is battling
     this.velocitX = 0;  this.velocitY = 0;  // Characters XY Velocity
-    this.accelerX = 1;  this.accelerY = 1;  // Characters XY Acceleration
-    this.friction = 0.5;  // Friction
+    this.accelerX = 0;  this.accelerY = 1;  // Characters XY Acceleration
+    this.friction = 0.8;  // Friction
     this.overSpeed = 3;  this.SpeedCap = 6;  // How fast the overworld is
     this.overAnimSpeed = 12;  this.AnimSpeedCap = 6;  // Animation speed limit in the overworld
-    this.battSpeed = 5;  this.battAnimSpeed = 5;  // Battle Characters Speed
+    this.battSpeed = 2.5;  this.battAnimSpeed = 5;  // Battle Characters Speed
     this.sprint = false;  // Controls if the character goes x2 speed
     this.ovrImg = ovrImg;  this.batImg = batImg;  // Characters Spritesheets
     this.MediaPlayer = new Media();  // Animates and colors Spritesheets 
@@ -27,7 +27,6 @@ class Character {
     if (frameCount == 1) {
       this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [111, 111, 255, 255, 111, 111, 239, 211, 39], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
       this.MediaPlayer.changeColor(this.batImg, this.batList, [111, 111, 255, 255, 111, 111], [[105, 85, 34], [104]]);  // Battle
-      // this.MediaPlayer.download(this.ovrImg, 50);
     }
     // this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255))], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
     // this.MediaPlayer.changeColor(this.batImg, this.batList, [round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255))], [[105, 85, 34], [104]]);  // Battle (fun)
@@ -135,91 +134,50 @@ class Character {
     // Battle states below here
     }
     else {
+      if (abs(this.accelerX) > this.battSpeed && this.accelerX != 0) this.accelerX = this.battSpeed * (this.accelerX / abs(this.accelerX));  // Cap the friction/speed
+      if (abs(this.velocitX) <= 0.00001) this.velocitX = 0;  // We cant see the difference of speed
+      this.velocitX += this.accelerX;  // Apply acceleration
+      this.velocitX *= this.friction;  // Apply friction
       this.battAnimSpeed = 5;  // Reset battle animation speed
-      // if (this.jump) this.inAir = true;
-      if (this.inAir) this.charState = 3;
       if (this.dir > 2) this.dir = 0;
-
-      if (this.charState == 1) {  // Battle Idle
-        if (this.dir == 0)  // Right
-        this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 0, 1, this.battAnimSpeed * 2, this.changeAnimation);
+      // Battle Idle
+      if (this.charState == 1) {
+        this.accelerX = 0;
+        this.jumpFun();
+        if (!this.inAir) {
+          if (this.dir == 0)  // Right
+          this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 0, 1, this.battAnimSpeed * 2, this.changeAnimation);
         else if (this.dir == 1)  // Left
           this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 2, 3, this.battAnimSpeed * 2, this.changeAnimation);
-        this.accelerX = 0;
-      }
-      else if (this.charState == 2) {  // Battle Run + Jump
-        if (this.dir != this.lastDir  || this.charState != this.lastCharState) {  // Reset friction and animation speed if changed directions or states
-          this.friction = 0.5;
         }
-        else
-          this.friction += 0.005;  // Else get faster over time
+      }
+      // Battle Run
+      else if (this.charState == 2) {
+        this.accelerX += this.dir == 0 ? this.battSpeed : -this.battSpeed;
+        this.jumpFun();
         this.battAnimSpeed = round(3 / this.friction);  // Animation speed gets faster as well
-        // console.log(this.battAnimSpeed);
-        if (this.dir == 0) {  // Right
-          this.accelerX += this.battSpeed;
-          this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 4, 11, this.battAnimSpeed, this.changeAnimation);
-        }
-        else if (this.dir == 1) {  // Left
-          this.accelerX -= this.battSpeed;
-          this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 12, 19, this.battAnimSpeed, this.changeAnimation);
+        if (!this.inAir) {
+          if (this.dir == 0)  // Right
+            this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 4, 11, this.battAnimSpeed, this.changeAnimation);
+          else if (this.dir == 1)  // Left
+            this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 12, 19, this.battAnimSpeed, this.changeAnimation);
         }
       }
-      else if (this.charState == 3) {  // Battle Air
-        this.jumpFun();  // Want to move jumping to idle and walk, so use function mayhaps?
-//         if (this.jump && this.jumpCount > 0) {  // If has enough jumps, jump
-//           if (this.velocitY > 0) this.velocitY = 0;
-//           this.velocitY -= this.impulse;
-//           this.jumpCount -= 1;
-//           this.jump = false;
-//         }
-//         if (this.bY + this.velocitY > height - 26*2) {  // Use a function to detect what we consider "ground"
-//           this.velocitY = 0;
-//           this.bY = height - 26*2;
-//           this.jumpCount = 2;
-//           this.inAir = false;
-//         }
-//         if (!this.inAir) {
-//           this.jumpCount = 2;
-//           this.charState = 1;
-//         }
-        
-//         if (this.dir == 0) {  // Right
-//           // this.accelerX += this.battSpeed;
-//           this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY += this.velocitY, 9, 13, this.sclB, 20, 24, this.battAnimSpeed, this.changeAnimation);
-//         }
-//         else if (this.dir == 1) {  // Left
-//           // this.accelerX -= this.battSpeed;
-//           this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY += this.velocitY, 9, 13, this.sclB, 25, 29, this.battAnimSpeed, this.changeAnimation);
-//         }
-//         this.velocitY += this.accelerY;
-      }
-      
-      if (this.friction > 0.8)
-        this.friction = 0.8;  // Cap the friction/speed
-      // Momentum
-      this.accelerX = min(this.battSpeed * 10, max(-this.battSpeed * 10, this.accelerX));
-      this.velocitX += min(this.battSpeed, max(-this.battSpeed, this.accelerX));
-      this.velocitX *= this.friction;
     }
+      // Update variables
       this.lastDir = this.dir;  // Get the last diection
       this.lastCharState = this.charState;  // Get last state
       this.prevOX = this.oX;  this.prevOY = this.oY;  // Get last Overworld XY Coords
       this.prevBX = this.bX;  this.prevBY = this.bY;  // Get last  Battle XY Coords
   }
   
-  collideWallPredict(wallX1=0, wallY1=0, wallX2=width, wallY2=height) {
-    if (this.x + 28 + this.overSpeed > wallX2 && this.y +28 > wallY2) {
-      return 2;
-    }
-    if (this.x - this.overSpeed < wallX1 && this.y - this.overSpeed < wallY1) {
-      return 7;
-    }
+  collideWallPredict(wallX1=0, wallY1=0, wallX2=width, wallY2=height) { // Check if overworld will hit wall
     return -1;
   }
   
-  jumpFun() {
+  jumpFun(speed) {
     if (this.jump && this.jumpCount > 0) {  // If has enough jumps, jump
-      if (this.velocitY > 0) this.velocitY = 0;
+      this.velocitY = 0;
       this.velocitY -= this.impulse;
       this.jumpCount -= 1;
       this.jump = false;
@@ -227,20 +185,14 @@ class Character {
     if (this.bY + this.velocitY > height - 26*2) {  // Use a function to detect what we consider "ground"
       this.velocitY = 0;
       this.bY = height - 26*2;
-      this.jumpCount = 2;
+      this.jumpCount = 2;  
       this.inAir = false;
     }
-    if (!this.inAir) {
-      this.jumpCount = 2;
-      this.charState = 1;
-    }  
-    if (this.dir == 0) {  // Right
-      // this.accelerX += this.battSpeed;
-      this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY += this.velocitY, 9, 13, this.sclB, 20, 24, this.battAnimSpeed, this.changeAnimation);
-    }
-    else if (this.dir == 1) {  // Left
-      // this.accelerX -= this.battSpeed;
-      this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY += this.velocitY, 9, 13, this.sclB, 25, 29, this.battAnimSpeed, this.changeAnimation);
+    if (this.inAir) {
+      if (this.dir == 0)  // Right
+        this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY += this.velocitY, 9, 13, this.sclB, 20, 24, this.battAnimSpeed, this.changeAnimation);
+      else if (this.dir == 1)  // Left
+        this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY += this.velocitY, 9, 13, this.sclB, 25, 29, this.battAnimSpeed, this.changeAnimation);
     }
     this.velocitY += this.accelerY;
   }

@@ -1,7 +1,9 @@
-// Look into this later:  https://p5js.org/reference/p5/p5.Framebuffer/
+// Look into this later:  
+//   https://p5js.org/reference/p5/WEBGL/
+//   https://p5js.org/reference/p5/p5.Framebuffer/
+//   https://p5js.org/reference/p5/p5.Shader/
 
 class Media {
-  // Get basic information about the image
   constructor() {
     this.index = 0;  // Current Image Index
     this.currFrame = 0;  // Current Image Frame
@@ -103,7 +105,7 @@ class Media {
     let d = dist(centerX, centerY, endX, endY), crd = lineRadius(centerX, centerY, endX, endY, length1 + length2, true);
     if (d > length1 + length2)
       return [crd[0], crd[1], crd[0], crd[1]];
-    // Work on later, make line show for all scenarios (not necessary, just for clean code)
+    // Work on later, make line show for all scenarios (not necessary, just for more "stable" code)
     // else if (d < length1 - length2)
     //   return [crd[0], crd[1], crd[0], crd[1]];
     // else if (d < length2 - length1) 
@@ -131,8 +133,4 @@ class Media {
     img.updatePixels();
   }
   
-  // download(img, name="Image", extention=".png", num=1) {  // Probably can remove
-  //   for (let i = 0; i < num; i ++)
-  //     img.save(name, extention);
-  // }
 }

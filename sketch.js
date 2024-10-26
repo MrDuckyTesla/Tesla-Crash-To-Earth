@@ -5,7 +5,7 @@ let img;
 function preload() {
   // // Load Sounds
   // loadSound();
-  // Load Spritesheets, 19,801 pixels :0
+  // Load Spritesheets, (count the new amount of pixels) pixels :0
   teslaOverSS = loadImage("Assets/Sprites/Tesla/Tesla_Overworld.png");
   teslaBattSS = loadImage("Assets/Sprites/Tesla/Tesla_Battle.png");
   // Load Fonts
