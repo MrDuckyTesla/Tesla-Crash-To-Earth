@@ -2,20 +2,20 @@ Start Date:  7/11/2024
 Last Updated:  10/26/2024
 Current Version 0.1.7
 
-"Tesla: Crash to Earth" was made by (or will be):
+"Tesla: Crash to Earth" was (or will be) made by:
 
 MrDuckyTesla:  Programmer, Artist, Composer, Writer
-XedicZyzor:  Artist, Composer, Writer
-LordOrb:  Writer, Composer
-BaggyBelt:  Artist
+XedicZyzor:    Artist, Composer, Writer
+LordOrb:       Writer, Composer
+BaggyBelt:     Artist
 
-Software used (or will be):  
+Software used (or will be used):  
 
-p5.js (Programming): https://p5js.org/
-MS Paint (Sprites):  https://www.microsoft.com/en-us/windows/paint
-Piskel (Animating):  https://www.piskelapp.com/
-FL Studio (Music):   https://www.image-line.com/
-Electron:            https://www.electronjs.org/
+p5.js (Programming):  https://p5js.org/
+MS Paint (Sprites):   https://www.microsoft.com/en-us/windows/paint
+Piskel (Animating):   https://www.piskelapp.com/
+FL Studio (Music):    https://www.image-line.com/
+Electron (Run Game):  https://www.electronjs.org/
 
 License:
 
