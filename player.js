@@ -1,7 +1,7 @@
 class Player extends Character {
   constructor(oX, oY, bX, bY, overSpeed, battSpeed, ovrImg, batImg) {
     super(oX, oY, bX, bY, overSpeed, battSpeed, ovrImg, batImg);
-    this.waitTill = 0;
+    this.clickAgain = true;
   }
   
   move() {
@@ -34,29 +34,22 @@ class Player extends Character {
         super.dir = 6;
     }
     else {  // Battle
-      if (!this.inAir) this.waitTIll = 0;  // Up arrow not working when left+right key pressed?
-        if((keyIsDown(32) || keyIsDown(87) || keyIsDown(38)) && millis() > this.waitTill) {  // Jump
-          super.jump = true;
-          super.inAir = true;
-          this.waitTill = millis() + 250;
-        }
-        else if (keyIsDown(68) || keyIsDown(39)) {
-          super.dir = 0;
-          super.charState = 2;  // Walking right
-        }
-        else if (keyIsDown(65) || keyIsDown(37)) {
-          super.dir = 1;
-          super.charState = 2;  // Walking left
-        }
-        else
-          super.charState = 1;
+      if (!this.inAir) this.waitTIll = 0;
+      if((keyIsDown(32) || keyIsDown(87) || keyIsDown(38)) && this.clickAgain) {  // Jump
+        super.jump = true;  super.inAir = true;
+        this.clickAgain = false;
+      }
+      else if (keyIsDown(68) || keyIsDown(39)) {
+        super.dir = 0;
+        super.charState = 2;  // Walking right
+      }
+      else if (keyIsDown(65) || keyIsDown(37)) {
+        super.dir = 1;
+        super.charState = 2;  // Walking left
+      }
+      else
+        super.charState = 1;
     }
   }
   
 }
-
-// function keyReleased() {
-//   if (key === " ") {
-//     console.log("SPACE")
-//   }
-// }

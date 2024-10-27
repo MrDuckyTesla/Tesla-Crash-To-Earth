@@ -3,7 +3,7 @@ class Character {
   constructor(oX, oY, bX, bY, ovrImg, batImg) {
     this.oX = oX;  this.oY = oY;  // Overworld Characters XY Coords
     this.bX = bX;  this.bY = bY;  // Battle Characters XY Coords
-    this.impulse = 15;  this.overWorld = true; // Controls if Character is battling
+    this.impulse = 17;  this.overWorld = true; // Controls if Character is battling
     this.velocitX = 0;  this.velocitY = 0;  // Characters XY Velocity
     this.accelerX = 0;  this.accelerY = 1;  // Characters XY Acceleration
     this.friction = 0.8;  // Friction
@@ -23,11 +23,12 @@ class Character {
   }
   show() {
     this.move();
-    // Color :D
+    // Color :D (this took WAY too long)
     if (frameCount == 1) {
       this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [111, 111, 255, 255, 111, 111, 239, 211, 39], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
       this.MediaPlayer.changeColor(this.batImg, this.batList, [111, 111, 255, 255, 111, 111], [[105, 85, 34], [104]]);  // Battle
     }
+    // Seizure warning if you uncomment the next 2 lines
     // this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255))], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
     // this.MediaPlayer.changeColor(this.batImg, this.batList, [round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255))], [[105, 85, 34], [104]]);  // Battle (fun)
   }  
@@ -134,34 +135,31 @@ class Character {
     // Battle states below here
     }
     else {
+      // console.log(this.accelerX);
       if (abs(this.accelerX) > this.battSpeed && this.accelerX != 0) this.accelerX = this.battSpeed * (this.accelerX / abs(this.accelerX));  // Cap the friction/speed
       if (abs(this.velocitX) <= 0.00001) this.velocitX = 0;  // We cant see the difference of speed
       this.velocitX += this.accelerX;  // Apply acceleration
       this.velocitX *= this.friction;  // Apply friction
       this.battAnimSpeed = 5;  // Reset battle animation speed
-      if (this.dir > 2) this.dir = 0;
+      if (this.dir > 2) this.dir = 0;  // Make sure to only have battle directions
       // Battle Idle
       if (this.charState == 1) {
         this.accelerX = 0;
         this.jumpFun();
-        if (!this.inAir) {
-          if (this.dir == 0)  // Right
+        if (this.dir == 0 && !this.inAir)  // Right
           this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 0, 1, this.battAnimSpeed * 2, this.changeAnimation);
-        else if (this.dir == 1)  // Left
+        else if (this.dir == 1 && !this.inAir)  // Left
           this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 2, 3, this.battAnimSpeed * 2, this.changeAnimation);
-        }
       }
       // Battle Run
       else if (this.charState == 2) {
         this.accelerX += this.dir == 0 ? this.battSpeed : -this.battSpeed;
         this.jumpFun();
-        this.battAnimSpeed = round(3 / this.friction);  // Animation speed gets faster as well
-        if (!this.inAir) {
-          if (this.dir == 0)  // Right
-            this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 4, 11, this.battAnimSpeed, this.changeAnimation);
-          else if (this.dir == 1)  // Left
-            this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 12, 19, this.battAnimSpeed, this.changeAnimation);
-        }
+        this.battAnimSpeed = round(3 / (this.accelerX/7));  // Animation speed gets faster as well
+        if (this.dir == 0 && !this.inAir)  // Right
+          this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 4, 11, this.battAnimSpeed, this.changeAnimation);
+        else if (this.dir == 1 && !this.inAir)  // Left
+          this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 12, 19, this.battAnimSpeed, this.changeAnimation);
       }
     }
       // Update variables
@@ -188,13 +186,15 @@ class Character {
       this.jumpCount = 2;  
       this.inAir = false;
     }
-    if (this.inAir) {
-      if (this.dir == 0)  // Right
+      if (this.dir == 0 && this.inAir)  // Right
         this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY += this.velocitY, 9, 13, this.sclB, 20, 24, this.battAnimSpeed, this.changeAnimation);
-      else if (this.dir == 1)  // Left
+      else if (this.dir == 1 && this.inAir)  // Left
         this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY += this.velocitY, 9, 13, this.sclB, 25, 29, this.battAnimSpeed, this.changeAnimation);
-    }
     this.velocitY += this.accelerY;
+  }
+  
+  leaveTrails(num) {  // Draw last num amount of players at once, maybe with transparency
+    
   }
   
 }
