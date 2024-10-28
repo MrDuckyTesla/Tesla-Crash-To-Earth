@@ -39,6 +39,10 @@ class Player extends Character {
         super.jump = true;  super.inAir = true;
         this.clickAgain = false;
       }
+      else if ((keyIsDown(40) || keyIsDown(83)) && this.clickAgain) {  // Fast fall
+        super.fastFall = true;
+        this.clickAgain = false;
+      }
       else if (keyIsDown(68) || keyIsDown(39)) {
         super.dir = 0;
         super.charState = 2;  // Walking right

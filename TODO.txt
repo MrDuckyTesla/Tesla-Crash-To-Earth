@@ -1,7 +1,7 @@
 TOP PRIORITIES
 
 #01:  add battle collisions that stop all movement, but let the character go in opposite directions, or bounce the player (maybe a little both)
-#02:  add fast falling mechanic, platforms
+#02:  platforms
 #03:  add big background that moves, then when within canvas size, character moves (switch between the 2 modes)
 #04:  add npc following overworld
 #05:  add enemy overworld

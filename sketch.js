@@ -25,13 +25,13 @@ function setup() {
 
 function draw() {
   // frameRate(30);  // Keep it commented out, only use for testing
-  background(150);
+  background(150);  // Maybe use variable or never show? (use an image)
   Tesla.show();
-  text(round(frameRate()) + "fps", width - 40, 20);
+  text(round(frameRate()) + "fps", width - 40, 20);  // Show FPS counter
 }
 
 function keyReleased() {  // Cant even put this in player.js, big sad
-  if (key === " " || key === "ArrowUp" || key === "w") {
-    Tesla.clickAgain = true;  // Jump
+  if (key === " " || key === "ArrowUp" || key === "w" || key === "ArrowDown" || key === "s") {
+    Tesla.clickAgain = true;  // Jump/Fastfall
   }
 }
