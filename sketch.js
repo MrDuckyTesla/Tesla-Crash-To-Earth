@@ -19,13 +19,13 @@ function setup() {
   noCursor();  noSmooth();
   // Create Player Object 
   Tesla = new Player(width / 2 - 14 * 3, height / 2 - 14 * 3, width / 2 - 4 * 4, height - 13 * 4, teslaOverSS, teslaBattSS);
-//   Tesla.overWorld = round(random()) == 1;  // Fun :D
+  // Tesla.overWorld = round(random()) == 1;  // Fun :D
   Tesla.overWorld = false;  //  Dictates if in battle or not
 }
 
 function draw() {
   // frameRate(30);  // Keep it commented out, only use for testing
-  background(150);  // Maybe use variable or never show? (use an image)
+  background(150);  // Use an image in future, or cool effects
   Tesla.show();
   text(round(frameRate()) + "fps", width - 40, 20);  // Show FPS counter
 }

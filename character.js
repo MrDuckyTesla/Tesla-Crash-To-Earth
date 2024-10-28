@@ -32,8 +32,12 @@ class Character {
     this.move();
     // Color :D (this took WAY too long)
     if (frameCount == 1) {
-      this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [111, 111, 255, 255, 111, 111, 239, 211, 39], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
+      // Normal Colors:
+      this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [111, 111, 255, 255, 111, 111, 255, 211, 39], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
       this.MediaPlayer.changeColor(this.batImg, this.batList, [111, 111, 255, 255, 111, 111], [[105, 85, 34], [104]]);  // Battle
+      // Random Colors:
+      // this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255))], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
+      // this.MediaPlayer.changeColor(this.batImg, this.batList, [round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255))], [[105, 85, 34], [104]]);  // Battle (fun)
     }
     // Seizure warning if you uncomment the next 2 lines
     // this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255)), round(random(255))], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
@@ -154,7 +158,7 @@ class Character {
       // Battle Idle
       if (this.charState == 1) {
         this.accelerX = 0;  // Dont let velocity grow
-        this.jumpFun();  // Run the jump function
+        this.jumpFall();  // Run the jump function
         if (this.dir == 0 && !this.inAir)  // Right
           this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 0, 1, this.battAnimSpeed * 2, this.changeAnimation);
         else if (this.dir == 1 && !this.inAir)  // Left
@@ -164,7 +168,7 @@ class Character {
       else if (this.charState == 2) {
         // If the direction is right, then the acceleration is positive, negative otherwise
         this.accelerX += this.dir == 0 ? this.battSpeed : -this.battSpeed;
-        this.jumpFun();  // Run the jump function
+        this.jumpFall();  // Run the jump function
         this.battAnimSpeed = round(3 / (this.accelerX/7));  // Animation speed gets faster as well
         if (this.dir == 0 && !this.inAir)  // Right
           this.MediaPlayer.animate(this.batImg, this.bX += this.velocitX, this.bY, 9, 13, this.sclB, 4, 11, this.battAnimSpeed, this.changeAnimation);
@@ -180,26 +184,24 @@ class Character {
       this.prevBX = this.bX;  this.prevBY = this.bY;  // Get last  Battle XY Coords
   }
   
-  collideWallPredict(wallX1=0, wallY1=0, wallX2=width, wallY2=height) { // Check if overworld will hit wall
+  collideWallsPredict(wallX1=0, wallY1=0, wallX2=width, wallY2=height) { // Check if overworld will hit wall
     return -1;  // Gotta make it first
   }
   
-  jumpFun(speed) {
+  jumpFall(speed) {
     if (this.jump && this.jumpCount > 0) {  // If has enough jumps, jump
-      this.velocitY = 0;  // Reset Y velocity so jumps mid air stop going down
+      this.velocitY = 0;  // Reset Y velocity so the character jumps mid air and stops going down
       this.velocitY -= this.impulse;  // Add an impulse to make character go up
       this.jumpCount -= 1;  // Subtract from jump count for double jumps
       this.jump = false;  // No longer "jumping", now "falling with style"
     }
     if (this.fastFall && this.fallCount > 0) {
-      this.velocitY = 0;  // Reset Y velocity so jumps mid air stop going down
       this.velocitY += this.impulse;  // Add an impulse to make character go up
       this.fallCount -= 1;  // Subtract from jump count for double jumps
-      this.fastFall = false;  // Just "falling with style" now
+      this.fastFall = false;  // No longer "Fast Falling" just "falling with extra steps" now
     }
-    if (this.bY + this.velocitY > height - 26*2) {  // Use a function to detect what we consider "ground" (not done yet)
-      this.velocitY = 0;  // If on ground, dont change Y velocity
-      this.bY = height - 26*2;  // Set Y coords to ground level (will change after function is made)
+    if (this.bY + this.velocitY > height - 26*2) {  // Use a function to detect what we consider "ground" (create function first)
+      this.bY = height - 26*2;  // Set Y coords to ground level (make function)
       this.jumpCount = 2;  // Reset jump count
       this.fallCount = 1;  // Reset fall count
       this.inAir = false;  // Is on the ground, so no longer in air

@@ -34,6 +34,8 @@ Other things to implement on a later date
   Make quick fall if has double jump available
   walls in battle should bounce player in opposite direction with the same speed (maybe, we also have the wall sliding ability)
   In Media.js, maybe change currFrame to something with frameRate()
+  Player and enemy should attack the same way, player can choose different attacks and aim at enemy
+  Make sword get more red the more you kill
 
 Maybe add libraries? 
 (depends on if its just quality of life (add), or if it will do work for me (want satisfaction of doing it myself))
