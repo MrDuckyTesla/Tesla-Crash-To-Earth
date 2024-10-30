@@ -10,7 +10,8 @@ class Character {
     this.impulse = 17;  this.jump = false;  // Jump Varaibles for battle
     this.jumpCount = 2;  this.inAir = false;// Jump Variables for battle
     this.fallCount = 1;  this.fastFall = false; // Fast fall Variables for battle
-    this.dashCount = 1;  this.dash = false;  // Dash variable for battle
+    this.dashCount = 1;  this.dash = false;  // Dash variables for battle
+    this.dashCoolDown = 0;  // Dash variables for battle
     this.sprint = false; // Controls if overworld character goes x2 speed
     this.overSpeed = 3;  this.SpeedCap = this.overSpeed*2;  // How fast the overworld character can go
     this.battSpeed = 2.5;  // Battle Characters Speed
@@ -48,13 +49,16 @@ class Character {
   
   move() {
     // Add switch statements
-    this.frameMultiplier = 60 / frameRate();  // If lower framerate, keep gameplay consistant
+    this.frameMultiplier = round(60 / frameRate());  // If lower framerate, keep gameplay consistant
     this.changeAnimation = this.lastDir == this.dir;  // Check if new direction
     if (this.overWorld) {
-        if (this.sprint) {  // If sprinting, double all speeds
+      if (this.sprint) {  // If sprinting, double all speeds
         this.overSpeed *= 2;
         this.overAnimSpeed /= 2;
       }
+      // Keep code consistant at lower frameRates
+      this.overSpeed *= this.frameMultiplier;
+      this.overAnimSpeed /= this.frameMultiplier; 
       if (this.charState == 3) {  // Overworld Walk
         if (this.collisionOver(this.charState) != this.dir) {
           switch (this.dir) {
@@ -145,6 +149,8 @@ class Character {
       }
       // Add new overworld states here
       
+      this.overSpeed /= this.frameMultiplier;
+      this.overAnimSpeed *= this.frameMultiplier;
       // Reset speeds if not spriting
       if (this.sprint || (this.overSpeed >= this.SpeedCap && this.overAnimSpeed <= this.AnimSpeedCap)) {
         this.overSpeed /= 2;
@@ -196,21 +202,21 @@ class Character {
     if (this.jump && this.jumpCount > 0) {  // If has enough jumps, jump
       this.velocitY = -this.impulse;  // Add an impulse to make character go up
       this.jumpCount --;  // Subtract from jump count for double jumps
-      this.jump = false;  // No longer "jumping", now "falling with style"
-    } 
+      this.jump = false;  // Without this, both jumps would activate almost instanly
+    }
     else this.jump = false;  // Not jumping
     if (this.fastFall && this.fallCount > 0) {
       this.velocitY = this.impulse*2;  // Add an impulse to make character go up
       this.fallCount --;  // Subtract from jump count for double jumps
       this.fastFall = false;  // No longer "Fast Falling" just "falling with extra steps" now
-    } 
-    else this.fastFall = false;  // Not fast falling
-    if (this.dash && this.dashCount > 0) {
+    }
+    if (this.dash && this.dashCount > 0 && this.dashCoolDown < millis()) {
       this.velocitX += this.dir == 0 ? this.impulse*2 : -this.impulse*2;  // Add impulse in X direction to dash
       this.dashCount --;  // Subtract from dash count so only one dash mid air
       this.dash = false;  // No longer "dashing"
-    } 
-    else this.dash = false;  // Not dashing
+      this.dashCoolDown = millis() + 500;
+    }
+    else this.dash = false;  // Without this, dash would activate inconsistently
     if (this.bY + this.velocitY > height - 26*2) {  // Use a function to detect what we consider "ground" (create function first)
       this.bY = height - 26*2;  // Set Y coords to ground level (make function)
       this.jumpCount = 2;  // Reset jump count
@@ -225,11 +231,7 @@ class Character {
     this.velocitY += this.accelerY;
   }
   
-  collideWallsPredict(wallX1=0, wallY1=0, wallX2=width, wallY2=height) { // Check if overworld will hit wall
-    return -1;  // Gotta make it first
-  }
-  
-  collisionOver(state, x1=0, y1=0, x2=width, y2=height) {  // FINISH
+  collisionOver(state, x1=0, y1=0, x2=width, y2=height) {
     this.charState = 1;   
     if ((this.dir == 0 || this.dir == 1 || this.dir == 7) && this.oX + this.overSpeed > x2 - 28*this.sclO) {
       this.oX = x2 - 28*this.sclO;
@@ -248,10 +250,6 @@ class Character {
       return this.dir;  // Up
     }
     this.charState = state;
-  }
-  
-  leaveTrails(num) {  // Draw last num amount of players at once, maybe with transparency
-    
   }
   
 }

@@ -32,22 +32,17 @@ function draw() {  // Main Game Loop
 }
 
 function keyReleased() {  // Cant even put this in player.js, big sad
-  if (key === " " || key === "ArrowUp" || key === "w" || key === "ArrowDown" || key === "s" || key === "Shift") {
-    Tesla.clickAgain = true;  // Special Moves
-  }
-  if (key === "Enter")  // Swap from battle to overworld and vise versa
-    Tesla.overWorld = !Tesla.overWorld;
+  if (key === " " || key === "ArrowUp" || key === "w") Tesla.clickJump = true;  // Jump
+  else if (key === "ArrowDown" || key === "s") Tesla.clickFall = true;  // Fast Fall
+  else if (key === "Shift") Tesla.clickDash = true;  // Dash
+  if (key === "Enter") Tesla.overWorld = !Tesla.overWorld;  // Swap from battle to overworld and vise versa
   else if (key === "c") {  // Change Colors randomly
-    if (Tesla.overWorld)
-      Tesla.MediaPlayer.changeColor(Tesla.ovrImg, Tesla.ovrList, [random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255)], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
-    else
-      Tesla.MediaPlayer.changeColor(Tesla.batImg, Tesla.batList, [random(255), random(255), random(255), random(255), random(255), random(255)], [[105, 85, 34], [104]]);  // Battle (fun)
+    if (Tesla.overWorld) Tesla.MediaPlayer.changeColor(Tesla.ovrImg, Tesla.ovrList, [random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255)], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
+    else Tesla.MediaPlayer.changeColor(Tesla.batImg, Tesla.batList, [random(255), random(255), random(255), random(255), random(255), random(255)], [[105, 85, 34], [104]]);  // Battle (fun)
   }
   else if (key == "r") { // Reset Colors
-    if (Tesla.overWorld)
-      Tesla.MediaPlayer.changeColor(Tesla.ovrImg, Tesla.ovrList, [111, 111, 255, 255, 111, 111, 255, 211, 39], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
-    else
-      Tesla.MediaPlayer.changeColor(Tesla.batImg, Tesla.batList, [111, 111, 255, 255, 111, 111], [[105, 85, 34], [104]]);  // Battle
+    if (Tesla.overWorld) Tesla.MediaPlayer.changeColor(Tesla.ovrImg, Tesla.ovrList, [111, 111, 255, 255, 111, 111, 255, 211, 39], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
+    else Tesla.MediaPlayer.changeColor(Tesla.batImg, Tesla.batList, [111, 111, 255, 255, 111, 111], [[105, 85, 34], [104]]);  // Battle
   }
   
 }

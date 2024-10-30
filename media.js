@@ -10,15 +10,11 @@ class Media {
   }
   
   animate(img, x, y, wid, hgt, scl, frmSrt, frmEnd, frm, anmChg) {
-    if (!anmChg)  // Check if its a different animation
-      this.currFrame = frameCount % frm;  // If so, reset the animation frame count
-    else  // Else, reset variable
-      this.currFrame = 0;
-    // Check if enough frames passed
-    if ((frameCount - this.currFrame) % frm == 0) {
+    if (!anmChg)  this.currFrame = frameCount % frm;  // Check if its a different animation, if so reset the animation frame count
+    else this.currFrame = 0;  // Else, reset variable
+    if ((frameCount - this.currFrame) % frm == 0) {  // Check if enough frames passed
       this.index ++;  // Change the index
-      if (this.index > frmEnd || this.index < frmSrt)  // Check if we passed the desired frame
-        this.index = frmSrt;  // Reset to starting frame
+      if (this.index > frmEnd || this.index < frmSrt) this.index = frmSrt;  // Check if we passed the desired frame, if so reset to starting frame
     }
     // Then draw the image
     image(img, x, y, wid * scl, hgt * scl, this.index * wid, 0, wid, hgt);
@@ -131,6 +127,10 @@ class Media {
       }
     }
     img.updatePixels();
+  }
+  
+  leaveTrails(num) {  // Draw last num amount of players at once, maybe with transparency
+    // Make me first
   }
   
 }
