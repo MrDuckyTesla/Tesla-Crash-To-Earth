@@ -46,6 +46,7 @@ Other things to implement on a later date
   Find way to calculate exact moment when colliding with something, only when going at extreme speeds
   Only change color of current frame?
   make everything not frame based, make up lost frames
+  Maybe look at this? https://www.jeffreythompson.org/collision-detection/
 
 Maybe add libraries? 
 (depends on if its just quality of life (add), or if it will do work for me (want satisfaction of doing it myself))
