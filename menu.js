@@ -12,6 +12,7 @@ class Menu {
     // ^ (experimental, because fps fluctuates often, and the number has to be a integer)
     // color change?  (use slider)
     // Fullscreen
+    // Add icons when battling to show when an ability is ready, and add option to hide them
   }
   
   button(x, y, wdth, hgt, txt) {

@@ -1,7 +1,7 @@
 class Player extends Character {
   constructor(oX, oY, bX, bY, overSpeed, battSpeed, ovrImg, batImg) {
     super(oX, oY, bX, bY, overSpeed, battSpeed, ovrImg, batImg);
-    this.clickAgain = true;
+    this.clickAgain = true; this.dashCoolDown = 0;
   }
   
   move() {
@@ -34,7 +34,6 @@ class Player extends Character {
         super.dir = 6;
     }
     else {  // Battle
-      if (!this.inAir) this.waitTIll = 0;
       if((keyIsDown(32) || keyIsDown(87) || keyIsDown(38)) && this.clickAgain) {  // Jump
         super.jump = true;  super.inAir = true;
         this.clickAgain = false;
@@ -43,7 +42,12 @@ class Player extends Character {
         super.fastFall = true;
         this.clickAgain = false;
       }
-      else if (keyIsDown(68) || keyIsDown(39)) {
+      else if (keyIsDown(16) && this.dashCoolDown < millis()) {
+        super.dash = true;
+        this.clickAgain = false;
+        this.dashCoolDown = millis() + 500;
+      }
+      if (keyIsDown(68) || keyIsDown(39)) {
         super.dir = 0;
         super.charState = 2;  // Walking right
       }
@@ -54,6 +58,10 @@ class Player extends Character {
       else
         super.charState = 1;
     }
+  }
+  
+  attack() {  // Maybe add to move()?
+    
   }
   
 }

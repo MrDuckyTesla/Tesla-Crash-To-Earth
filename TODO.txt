@@ -35,7 +35,17 @@ Other things to implement on a later date
   walls in battle should bounce player in opposite direction with the same speed (maybe, we also have the wall sliding ability)
   In Media.js, maybe change currFrame to something with frameRate()
   Player and enemy should attack the same way, player can choose different attacks and aim at enemy
-  Make sword get more red the more you kill
+  Make sword get more red the more you kill, maybe more blue the more pacifist you are
+  Add unlocking abilities (both pacifist and genocide routes have these)
+  Add unlocking attacks (only genocide)
+  Remember direction character was in during overworld after battle
+  Make dash frameRate baes like everything else
+  Fix dash activating if enough time passed the moment you hit the ground
+  maybe make visor shading more visible
+  Make battle character bounce when velocitY is greater than like 20 or something
+  Find way to calculate exact moment when colliding with something, only when going at extreme speeds
+  Only change color of current frame?
+  make everything not frame based, make up lost frames
 
 Maybe add libraries? 
 (depends on if its just quality of life (add), or if it will do work for me (want satisfaction of doing it myself))
