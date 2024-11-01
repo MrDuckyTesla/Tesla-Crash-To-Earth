@@ -6,7 +6,7 @@ Current Version 0.1.9
 
   MrDuckyTesla:  Programmer, Artist, Composer, Writer
   XedicZyzor:    Artist, Composer, Writer
-  LordOrb:       Writer, Composer
+  LordOrb:       Composer, Writer
   BaggyBelt:     Artist
 
 Controls (Currently):

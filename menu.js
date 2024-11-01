@@ -7,7 +7,7 @@ class Menu {
     // mouse mode?  (may not work in battle)
     // Show mouse? (off by default)
     // show fps?  (off by default) 
-    // ^(maybe have 2 settings for just the number and for "fps" appended)
+    // ^(maybe have 2 settings for just the number and for "fps" appended), also left/right side of sceen
     // dynamic animations?  
     // ^ (experimental, because fps fluctuates often, and the number has to be a integer)
     // color change?  (use slider)

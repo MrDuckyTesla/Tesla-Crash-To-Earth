@@ -1,7 +1,8 @@
 class Player extends Character {
   constructor(oX, oY, bX, bY, overSpeed, battSpeed, ovrImg, batImg) {
     super(oX, oY, bX, bY, overSpeed, battSpeed, ovrImg, batImg);
-    this.clickJump = true;  this.clickFall = true;  this.clickDash = true;
+    this.click = {jump: true, fall: true, dash: true};
+    // this.clickJump = true;  this.clickFall = true;  this.clickDash = true;
   }
   
   move() {
@@ -11,7 +12,7 @@ class Player extends Character {
       else if (keyIsDown(68) || keyIsDown(39) || keyIsDown(83) || keyIsDown(40) || keyIsDown(65) || keyIsDown(37) || keyIsDown(87) || keyIsDown(38))
         super.charState = 3;
       else super.charState = 1;
-      super.sprint = keyIsDown(16);  // Set sprint to is Shift is pressed
+      this.special.sprint = keyIsDown(16);  // Set sprint to is Shift is pressed
       // Check direction
       if ((keyIsDown(68) || keyIsDown(39)) && (keyIsDown(83) || keyIsDown(40))) super.dir = 1;  // Walk Right - Down
       else if ((keyIsDown(83) || keyIsDown(40)) && (keyIsDown(65) || keyIsDown(37))) super.dir = 3;  // Walk Down - Left
@@ -23,17 +24,17 @@ class Player extends Character {
       else if (keyIsDown(87) || keyIsDown(38)) super.dir = 6;  // Walk Up
     }
     else {  // Battle
-      if((keyIsDown(32) || keyIsDown(87) || keyIsDown(38)) && this.clickJump) {  // Jump
-        super.jump = true;  super.inAir = true;
-        this.clickJump = false;
+      if((keyIsDown(32) || keyIsDown(87) || keyIsDown(38)) && this.click.jump) {  // Jump
+        this.special.jump.bool = true;  this.special.inAir = true;
+        this.click.jump = false;
       }
-      else if ((keyIsDown(40) || keyIsDown(83)) && this.clickFall) {  // Fast fall
-        super.fastFall = true;
-        this.clickFall = false;
+      else if ((keyIsDown(40) || keyIsDown(83)) && this.click.fall) {  // Fast fall
+        this.special.fall.bool = true;
+        this.click.fall = false;
       }
-      else if (keyIsDown(16) && this.clickDash) {
-        super.dash = true;
-        this.clickDash = false;
+      else if (keyIsDown(16) && this.click.dash) {
+        this.special.dash.bool = true;
+        this.click.dash = false;
       }
       if (keyIsDown(68) || keyIsDown(39)) {
         super.dir = 0;
