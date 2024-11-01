@@ -101,7 +101,7 @@ class Media {
     let d = dist(centerX, centerY, endX, endY), crd = lineRadius(centerX, centerY, endX, endY, length1 + length2, true);
     if (d > length1 + length2)
       return [crd[0], crd[1], crd[0], crd[1]];
-    // Work on later, make line show for all scenarios (not necessary, just for more "stable" code)
+    // Work on later, make line show for all scenarios (not necessary, just for more "finished" code)
     // else if (d < length1 - length2)
     //   return [crd[0], crd[1], crd[0], crd[1]];
     // else if (d < length2 - length1) 
@@ -117,7 +117,7 @@ class Media {
     }
   }
   
-  sharpen(img, backgroundColor, replacementColor) {  // Needs work
+  sharpen(img, backgroundColor, replacementColor) {  // Change in order to allow less colors, and more replacement colors
     img.loadPixels()
     for (let i = 0; i < img.pixels.length; i += 4) {
       if (img.pixels[i] != backgroundColor[0] || img.pixels[i+1] != backgroundColor[1] || img.pixels[i+2] != backgroundColor[2]) {
@@ -129,7 +129,7 @@ class Media {
     img.updatePixels();
   }
   
-  leaveTrails(num) {  // Draw last num amount of players at once, maybe with transparency
+  leaveTrails(num) {  // Draw last num amount of images at once, maybe with increasing transparency
     // Make me first
   }
   

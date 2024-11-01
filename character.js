@@ -1,27 +1,26 @@
 class Character {
   constructor(oX, oY, bX, bY, ovrImg, batImg, col1, col2) {
-    // Movement varaibles
-    this.kinemat = {over: {x: oX, y: oY}, batt: {x: bX, y: bY, vX: 0, vY: 0, aX: 0, aY: 1, j: 17, f: 0.8}};
-    this.special = {sprint: false, inAir: false, jump: {bool: false, count: 2}, fall: {bool: false, count: 1}, dash: {bool: false, count: 1, time: 0}};
-    this.overSpeed = 3;  this.SpeedCap = this.overSpeed*2;  // How fast the overworld character can go
-    this.battSpeed = 2.5;  // Battle Characters Speed
+    // World Variables
+    this.frameMultiplier = 1;  // Make code consistant at lower frameRates
+    this.overWorld = true; // Controls if Character is battling
+    this.charState = 0;  // What animation the character is currently doing
+    this.dir = 0;  this.lastDir = 0;  // The direction that the character is facing
     // Animation and media varaibles
     this.MediaPlayer = new Media();  // Animates and colors Spritesheets 
-    this.overAnimSpeed = 12;  this.AnimSpeedCap = 6;  // Animation speed in  overworld
+    this.overAnimSpeed = 12;  this.AnimSpeedCap = 6;  // Animation speed in overworld
     this.battAnimSpeed = 5;  // Animation speed limit in battle
     this.changeAnimation = false; 
     this.ovrImg = ovrImg;  this.batImg = batImg;  // Characters Spritesheets
     this.col1 = col1;  this.col2 = col2;  // Body color followed by visor color
     this.col3 = {r: 255, g: 200, b: 0};  // Sword color
-    // Lists of pixels and their respective colors
+    // Movement varaibles
+    this.kinemat = {over: {x: oX, y: oY}, batt: {x: bX, y: bY, vX: 0, vY: 0, aX: 0, aY: 1, j: 17, f: 0.8}};
+    this.special = {sprint: false, inAir: false, jump: {bool: false, count: 2}, fall: {bool: false, count: 1}, dash: {bool: false, count: 1, time: 0}};
+    this.overSpeed = 3;  this.SpeedCap = this.overSpeed*2;  this.battSpeed = 2.5;  // Characters Speed
+    // Lists of changeable pixels and their respective colors
     this.ovrList = this.MediaPlayer.preCompile(ovrImg, [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Greyscale colors of original image, separated by their layers
     this.batList = this.MediaPlayer.preCompile(batImg, [[105, 85, 34], [104]]);  // Greyscale colors of original image, separated by their layers
     this.sclO = 3;  this.sclB = 4;  // Scale of Character (Size)
-    // World Variables
-    this.frameMultiplier = 0;  // Make code consistant at lower frameRates
-    this.overWorld = true; // Controls if Character is battling
-    this.charState = 0;  this.lastCharState = 0;  // What animation the character is currently doing
-    this.dir = 0;  this.lastDir = 0;  // The direction that the character is facing
   }
   show() {
     this.move();
@@ -186,11 +185,7 @@ class Character {
       this.battSpeed /= this.frameMultiplier
       this.battAnimSpeed *= this.frameMultiplier;
     }
-    // Update variables
     this.lastDir = this.dir;  // Get the last diection
-    this.lastCharState = this.charState;  // Get last state
-    this.prevOX = this.kinemat.over.x;  this.prevOY = this.kinemat.over.y;  // Get last Overworld XY Coords
-    this.prevBX = this.kinemat.batt.x;  this.prevBY = this.kinemat.batt.y;  // Get last  Battle XY Coords
   }
   
   specialMove() {

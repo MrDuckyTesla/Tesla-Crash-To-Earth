@@ -25,7 +25,7 @@ OverWorld:
 Battle:
   Move Left:               A, ArrowLeft
   Move Right:              D, ArrowRight
-  Jump:                    Space
+  Jump:                    W, ArrowUp, Space
   Fast Fall:               S, ArrowDown
   Dash:                    Shift
 
