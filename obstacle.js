@@ -2,9 +2,10 @@ class Obstacle {
   constructor(isMovable, walkThrough, damagePlayer) {
     this.isMovable = isMovable;  // Move object whenever moving
     this.walkThrough = walkThrough;  // Walk through object
-    this.damagePlayer = damagePlayer;  // Damages player in battle only (basically an attack)
+    this.damagePlayer = damagePlayer;  // Damages player, would be used in battle only
     // Make array of all ojects and their dimensions to check if collide
   }
+  
   overWorldCollision(x, y, wid, hgt, scl) {  // Obstructions
     // if ((x + wid * scl >= width) || (x <= 0) || (y + hgt * scl >= height) || (y <=  0))
     //   return true;

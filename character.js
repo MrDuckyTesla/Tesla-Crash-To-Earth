@@ -11,8 +11,7 @@ class Character {
     this.battAnimSpeed = 5;  // Animation speed limit in battle
     this.changeAnimation = false; 
     this.ovrImg = ovrImg;  this.batImg = batImg;  // Characters Spritesheets
-    this.col1 = col1;  this.col2 = col2;  // Body color followed by visor color
-    this.col3 = {r: 255, g: 200, b: 0};  // Sword color
+    this.colors = {c1: col1, c2: col2, c3: {r: 255, g: 200, b: 0}};
     // Movement varaibles
     this.kinemat = {over: {x: oX, y: oY}, batt: {x: bX, y: bY, vX: 0, vY: 0, aX: 0, aY: 1, j: 17, f: 0.8}};
     this.special = {sprint: false, inAir: false, jump: {bool: false, count: 2}, fall: {bool: false, count: 1}, dash: {bool: false, count: 1, time: 0}};
@@ -22,11 +21,12 @@ class Character {
     this.batList = this.MediaPlayer.preCompile(batImg, [[105, 85, 34], [104]]);  // Greyscale colors of original image, separated by their layers
     this.sclO = 3;  this.sclB = 4;  // Scale of Character (Size)
   }
+  
   show() {
     this.move();
     // Color :D (this took WAY too long)
-    this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [this.col1.r, this.col1.g, this.col1.b, this.col2.r, this.col2.g, this.col2.b, this.col3.r, this.col3.g, this.col3.b], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
-    this.MediaPlayer.changeColor(this.batImg, this.batList, [this.col1.r, this.col1.g, this.col1.b, this.col2.r, this.col2.g, this.col2.b], [[105, 85, 34], [104]]);  // Battle
+    this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b, this.colors.c3.r, this.colors.c3.g, this.colors.c3.b], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
+    this.MediaPlayer.changeColor(this.batImg, this.batList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b], [[105, 85, 34], [104]]);  // Battle
     // Random Colors:
     // Seizure warning if you uncomment the next 2 lines
     // this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255)], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld

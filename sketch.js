@@ -44,12 +44,12 @@ function keyReleased() {  // Cant even put this in player.js, big sad
   else if (key === "ArrowDown" || key === "s") Tesla.click.fall = true;  // Fast Fall
   else if (key === "Shift") Tesla.click.dash = true;  // Dash
   if (key === "Enter") Tesla.overWorld = !Tesla.overWorld;  // Swap from battle to overworld and vise versa
-  else if (key === "c") {  // Change Colors randomly
-    Tesla.col1 = {r: random(255), g: random(255), b: random(255)}
-    Tesla.col2 = {r: random(255), g: random(255), b:random(255)}
+  if (key === "c" || key === "C") {  // Change Colors randomly
+    Tesla.colors.c1 = {r: random(255), g: random(255), b: random(255)}
+    Tesla.colors.c2 = {r: random(255), g: random(255), b:random(255)}
   }
-  else if (key == "r") { // Reset Colors
-    Tesla.col1 = {r: 111, g: 111, b: 255}
-    Tesla.col2 = {r: 255, g: 111, b:111}
+  else if (key == "r" || key === "R") { // Reset Colors
+    Tesla.colors.c1 = {r: 111, g: 111, b: 255}
+    Tesla.colors.c2 = {r: 255, g: 111, b:111}
   }
 }
