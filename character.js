@@ -1,10 +1,5 @@
 class Character {
   constructor(oX, oY, bX, bY, ovrImg, batImg, col1, col2) {
-    // World Variables
-    this.frameMultiplier = 1;  // Make code consistant at lower frameRates
-    this.overWorld = true; // Controls if Character is battling
-    this.charState = 0;  // What animation the character is currently doing
-    this.dir = 0;  this.lastDir = 0;  // The direction that the character is facing
     // Animation and media varaibles
     this.MediaPlayer = new Media();  // Animates and colors Spritesheets 
     this.overAnimSpeed = 12;  this.AnimSpeedCap = 6;  // Animation speed in overworld
@@ -14,12 +9,18 @@ class Character {
     this.colors = {c1: col1, c2: col2, c3: {r: 255, g: 200, b: 0}};
     // Movement varaibles
     this.kinemat = {over: {x: oX, y: oY}, batt: {x: bX, y: bY, vX: 0, vY: 0, aX: 0, aY: 1, j: 17, f: 0.8}};
-    this.special = {sprint: false, inAir: false, jump: {bool: false, count: 2}, fall: {bool: false, count: 1}, dash: {bool: false, count: 1, time: 0}};
+    this.special = {sprint: false, inAir: false, jump: {bool: false, count: 2}, fall: {bool: false, count: 1}, dash: {bool: false, count: 1, time: 0}, wall: {bool: false, time: 0}};
     this.overSpeed = 3;  this.SpeedCap = this.overSpeed*2;  this.battSpeed = 2.5;  // Characters Speed
     // Lists of changeable pixels and their respective colors
     this.ovrList = this.MediaPlayer.preCompile(ovrImg, [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Greyscale colors of original image, separated by their layers
     this.batList = this.MediaPlayer.preCompile(batImg, [[105, 85, 34], [104]]);  // Greyscale colors of original image, separated by their layers
     this.sclO = 3;  this.sclB = 4;  // Scale of Character (Size)
+    // World Variables
+    this.rectBatt = {x1: 0, x2: width - 9*this.sclB, y1: 0, y2: height - 14*this.sclB};
+    this.frameMultiplier = 1;  // Make code consistant at lower frameRates
+    this.overWorld = true; // Controls if Character is battling
+    this.charState = 0;  // What animation the character is currently doing
+    this.dir = 0;  this.lastDir = 0;  // The direction that the character is facing
   }
   
   show() {
@@ -145,14 +146,8 @@ class Character {
       
     // Battle states below here
     }
-    else {
-      this.battSpeed *= this.frameMultiplier;
-      this.battAnimSpeed /= this.frameMultiplier;
-      // this.kinemat.batt.f *= this.frameMultiplier;
-      // this.kinemat.batt.j *= this.frameMultiplier;
-      // this.kinemat.batt.aY *= this.frameMultiplier;
-      
-      // Physics calculations
+    else {   
+      // Kinematics
       if (abs(this.kinemat.batt.aX) > this.battSpeed && this.kinemat.batt.aX != 0) this.kinemat.batt.aX = this.battSpeed * (this.kinemat.batt.aX / abs(this.kinemat.batt.aX));  // Cap the friction/speed
       if (abs(this.kinemat.batt.vX) <= 0.00001) this.kinemat.batt.vX = 0;  // We cant see the difference of speed
       this.kinemat.batt.vX += this.kinemat.batt.aX;  // Apply acceleration
@@ -160,7 +155,21 @@ class Character {
       // Animation
       this.battAnimSpeed = 5;  // Reset battle animation speed
       if (this.dir > 1) this.dir = 0;  // Make sure to only have battle directions
-
+      if (this.special.jump.bool) this.special.inAir = true;
+      // Battle Run
+      if (this.charState == 2) {
+        if (this.special.wall.time > millis())  this.charState = 1;
+        else {
+          // If the direction is right, then the acceleration is positive, negative otherwise
+          this.kinemat.batt.aX += this.dir == 0 ? this.battSpeed : -this.battSpeed;
+          this.specialMove();  // Run the jump function
+          this.battAnimSpeed = round(3 / (this.kinemat.batt.aX/7));  // Animation speed gets faster as well
+          if (this.dir == 0 && !this.special.inAir)  // Right
+            this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 4, 11, this.battAnimSpeed, this.changeAnimation);
+          else if (this.dir == 1 && !this.special.inAir)  // Left
+            this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 12, 19, this.battAnimSpeed, this.changeAnimation);
+        }
+      } 
       // Battle Idle
       if (this.charState == 1) {
         this.kinemat.batt.aX = 0;  // Dont let velocity grow
@@ -169,37 +178,27 @@ class Character {
           this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 0, 1, this.battAnimSpeed * 2, this.changeAnimation);
         else if (this.dir == 1 && !this.special.inAir)  // Left
           this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 2, 3, this.battAnimSpeed * 2, this.changeAnimation);
-      }
-      // Battle Run
-      else if (this.charState == 2) {
-        // If the direction is right, then the acceleration is positive, negative otherwise
-        this.kinemat.batt.aX += this.dir == 0 ? this.battSpeed : -this.battSpeed;
-        this.specialMove();  // Run the jump function
-        this.battAnimSpeed = round(3 / (this.kinemat.batt.aX/7));  // Animation speed gets faster as well
-        if (this.dir == 0 && !this.special.inAir)  // Right
-          this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 4, 11, this.battAnimSpeed, this.changeAnimation);
-        else if (this.dir == 1 && !this.special.inAir)  // Left
-          this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 12, 19, this.battAnimSpeed, this.changeAnimation);
-      }  // Add new battle states below here
-      // Make code consistant at different frameRates
-      this.battSpeed /= this.frameMultiplier
-      this.battAnimSpeed *= this.frameMultiplier;
+      } 
     }
     this.lastDir = this.dir;  // Get the last diection
   }
   
   specialMove() {
+    // By the way, height of character is 13px * scale, and width is 9 * scale, make sure to replace these with width/height * scale, and not some random multiple
+    // Jump
     if (this.special.jump.bool && this.special.jump.count > 0) {  // If has enough jumps, jump
       this.kinemat.batt.vY = -this.kinemat.batt.j;  // Add an impulse to make character go up
       this.special.jump.count --;  // Subtract from jump count for double jumps
       this.special.jump.bool = false;  // Without this, both jumps would activate almost instanly
     }
     else this.special.jump.bool = false;  // Not jumping
+    // Fast Fall
     if (this.special.fall.bool && this.special.fall.count > 0) {
       this.kinemat.batt.vY = this.kinemat.batt.j*2;  // Add an impulse to make character go up
       this.special.fall.count --;  // Subtract from jump count for double jumps
       this.special.fall.bool = false;  // No longer "Fast Falling" just "falling with extra steps" now
     }
+    // Dash
     if (this.special.dash.bool && this.special.dash.count > 0 && this.special.dash.time < millis()) {
       this.kinemat.batt.vX += this.dir == 0 ? this.kinemat.batt.j*2 : -this.kinemat.batt.j*2;  // Add impulse in X direction to dash
       this.special.dash.count --;  // Subtract from dash count so only one dash mid air
@@ -207,18 +206,44 @@ class Character {
       this.special.dash.time = millis() + 500;
     }
     else this.special.dash.bool = false;  // Without this, dash would activate inconsistently
-    if (this.kinemat.batt.y + this.kinemat.batt.vY > height - 26*2) {  // Use a function to detect what we consider "ground" (create function first)
-      this.kinemat.batt.y = height - 26*2;  // Set Y coords to ground level (make function)
-      this.special.jump.count = 2;  // Reset jump count
-      this.special.fall.count = 1;  // Reset fall count
-      this.special.dash.count = 1;  // Reset dash count
-      this.special.inAir = false;  // Is on the ground, so no longer in air
+    // On ground
+    if (this.kinemat.batt.y + this.kinemat.batt.vY > height - 52 || (this.kinemat.batt.y + this.battSpeed > height - 52 && this.special.wall.bool)) {  // Use a function to detect what we consider "ground" (create function first)
+      this.resetSpecialCount();
+      if (this.kinemat.batt.vY > this.kinemat.batt.j*1.5 && this.special.inAir)  this.kinemat.batt.vY = -this.kinemat.batt.vY/5;
+      else {
+        this.kinemat.batt.y = height - 52;  // Set Y coords to ground level (make function)
+        this.special.inAir = false;  // Is on the ground, so no longer in air
+        this.special.wall.bool = false;  // No longer on a wall
+      }
     }
+    // Collides with wall
+    if (this.kinemat.batt.x + this.kinemat.batt.vX >= width - 36 || this.kinemat.batt.x + this.kinemat.batt.vX <= 0) {  // Make a function
+      // Distance between surfaces, may eventually need to use 2d distance when platforms get involved
+      this.kinemat.batt.x = this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? this.rectBatt.x2 : this.rectBatt.x1;
+      this.special.wall.bool = true;
+      // Wall Slide
+      if (this.special.inAir) {
+        this.resetSpecialCount();
+        if (this.dir == 0)  // Right
+          this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.battSpeed, 9, 13, this.sclB, 31, 32, this.battAnimSpeed * 2, this.changeAnimation);
+        else if (this.dir == 1)  // Left
+          this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.battSpeed, 9, 13, this.sclB, 36, 37, this.battAnimSpeed * 2, this.changeAnimation);
+      }
+      // Bump off wall
+      else {
+        this.special.wall.bool = false;
+        this.special.wall.time = millis() + abs(this.kinemat.batt.vX*15);
+        this.kinemat.batt.vX = -this.kinemat.batt.vX;
+      }
+    }
+    // Falling normally
+    else {
       if (this.dir == 0 && this.special.inAir)  // Right
         this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y += this.kinemat.batt.vY, 9, 13, this.sclB, 20, 24, this.battAnimSpeed, this.changeAnimation);
       else if (this.dir == 1 && this.special.inAir)  // Left
         this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y += this.kinemat.batt.vY, 9, 13, this.sclB, 25, 29, this.battAnimSpeed, this.changeAnimation);
-    this.kinemat.batt.vY += this.kinemat.batt.aY;
+      this.kinemat.batt.vY += this.kinemat.batt.aY;
+    }
   }
   
   collisionOver(state, x1=0, y1=0, x2=width, y2=height) {
@@ -240,6 +265,16 @@ class Character {
       return this.dir;  // Up
     }
     this.charState = state;
+  }
+  
+  collisionBattWall() {
+    
+  }
+  
+  resetSpecialCount() {
+    this.special.jump.count = 2;  // Reset jump count
+    this.special.fall.count = 1;  // Reset fall count
+    this.special.dash.count = 1;  // Reset dash count
   }
   
 }

@@ -25,7 +25,7 @@ class Player extends Character {
     }
     else {  // Battle
       if((keyIsDown(32) || keyIsDown(87) || keyIsDown(38)) && this.click.jump) {  // Jump
-        this.special.jump.bool = true;  this.special.inAir = true;
+        this.special.jump.bool = true;
         this.click.jump = false;
       }
       else if ((keyIsDown(40) || keyIsDown(83)) && this.click.fall) {  // Fast fall
