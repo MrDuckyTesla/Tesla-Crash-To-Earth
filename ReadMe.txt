@@ -1,8 +1,8 @@
 Start Date:  7/11/2024
-Last Updated:  11/7/2024
-Current Version 0.2.1
+Last Updated:  11/9/2024
+Current Version 0.2.3
 
-"Tesla: Crash to Earth" was (or will be) made by:
+"Tesla: Crash to Earth" is (or will be) made by:
 
   MrDuckyTesla:  Programmer, Artist, Composer, Writer
   XedicZyzor:    Artist, Composer, Writer
@@ -38,6 +38,9 @@ Software used (or will be used):
   SFXR (Sound Effects):  https://www.drpetter.se/project_sfxr.html
   BeepBox (Music):       https://www.beepbox.co/
   Electron (Run Game):   https://www.electronjs.org/
+  GitHub (Repository):   https://github.com/MrDuckyTesla/Tesla-Crash-To-Earth
+  
+  Aseprite (Consider)
 
 License:
 

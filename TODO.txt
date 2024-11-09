@@ -7,15 +7,13 @@ TOP PRIORITIES
 #05:  add enemy overworld
 #06:  add overworld interacting
 #07:  add overworld and battle dialogue
-#08:  add battle platforms
-#09:  add overworld sword
-#10:  optimize code using switch statements, canvas imaging thing, and others:  https://www.w3schools.com/js/js_performance.asp
-#11:  add menu
-#12:  add enemy battle
-#13:  add enemy battle ai
-#14:  add save files (probably need electron or node.js (included in electron))
-#15:  Tweak overworld sword animation
-#16:  Add battle animations (use procedural animation)
+#08:  add overworld sword
+#9:  optimize code using switch statements, canvas imaging thing, and others:  https://www.w3schools.com/js/js_performance.asp
+#10:  add menu
+#11:  add enemy battle ai
+#12:  add save files (probably need electron or node.js (included in electron))
+#13:  Tweak overworld sword animation
+#14:  Add battle animations (use procedural animation)
 
 Other things to implement on a later date
 
@@ -24,25 +22,19 @@ Other things to implement on a later date
   Procedural music/attacks?
   Making music sync with attacks by training neural network to reconize beats and sync
   Render Pixelization on side or before game is drawn?
-  Use hashs? for what?
-  In overworld, keep atatck animation going in single direction without a way to stop
+  Use hashs? for what? i dont know what past nico was saying
+  In overworld, keep attack animation going in single direction without a way to stop
   Open world? make an enemy ai that will secretly fight in background
   Have secret room/way to fight editor or kwack as joke
-  Dynamic frame rate
   Air dash that can be aimed and rotated
   Make "one respawn" powerup where you place it somewhere during battle and only respawn once
-  Make quick fall if has double jump available
-  walls in battle should bounce player in opposite direction with the same speed (maybe, we also have the wall sliding ability)
   In Media.js, maybe change currFrame to something with frameRate()
   Player and enemy should attack the same way, player can choose different attacks and aim at enemy
   Make sword get more red the more you kill, maybe more blue the more pacifist you are
   Add unlocking abilities (both pacifist and genocide routes have these)
   Add unlocking attacks (only genocide)
-  Remember direction character was in during overworld after battle
   Make dash frameRate baes like everything else
-  Fix dash activating if enough time passed the moment you hit the ground
   maybe make visor shading more visible
-  Make battle character bounce when velocitY is greater than like 20 or something
   Find way to calculate exact moment when colliding with something, only when going at extreme speeds
   Only change color of current frame?
   make everything not frame based, make up lost frames
@@ -50,6 +42,10 @@ Other things to implement on a later date
   make player get darker red during genocide
   local coop before networking
   add private variables
+  Exponential slide (faster over time)
+  battle character should be bounced off wall if going too fast, also should act like overworld character if going slow towards wall and on ground
+  battle character should hit ground before getting launched upwards
+  battle character should bonk head on ceiling
 
 Maybe add libraries? 
 (depends on if its just quality of life (add), or if it will do work for me (want satisfaction of doing it myself))

@@ -18,9 +18,10 @@ class Character {
     // World Variables
     this.rectBatt = {x1: 0, x2: width - 9*this.sclB, y1: 0, y2: height - 14*this.sclB};
     this.frameMultiplier = 1;  // Make code consistant at lower frameRates
-    this.overWorld = true; // Controls if Character is battling
+    // this.world.over.curr = true; // Controls if Character is battling
     this.charState = 0;  // What animation the character is currently doing
-    this.dir = 0;  this.lastDir = 0;  // The direction that the character is facing
+    // this.world.over.last = false;
+    this.world = {dir: {over: {curr: 0, last: 0}, batt: {curr: 0, last: 0}}, over: {curr: true, last: true}};  // The direction that the character is facing
   }
   
   show() {
@@ -37,8 +38,9 @@ class Character {
   move() {
     // Add switch statements
     this.frameMultiplier = round(60 / frameRate());  // If lower framerate, keep gameplay consistant
-    this.changeAnimation = this.lastDir == this.dir;  // Check if new direction
-    if (this.overWorld) {
+    this.changeAnimation = this.world.over.curr? this.world.dir.over.last == this.world.dir.over.curr : this.world.dir.batt.last == this.world.dir.batt.curr;  // Check if new direction
+    if (this.world.over.last != this.world.over.curr) this.changeAnimation = false;
+    if (this.world.over.curr) {
       if (this.special.sprint) {  // If sprinting, double all speeds
         this.overSpeed *= 2;
         this.overAnimSpeed /= 2;
@@ -47,8 +49,8 @@ class Character {
       this.overSpeed *= this.frameMultiplier;
       this.overAnimSpeed /= this.frameMultiplier; 
       if (this.charState == 3) {  // Overworld Walk
-        if (this.collisionOver(this.charState) != this.dir) {
-          switch (this.dir) {
+        if (this.collisionOver(this.charState) != this.world.dir.over.curr) {
+          switch (this.world.dir.over.curr) {
             case 0:  // Right
               this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x += this.overSpeed, this.kinemat.over.y, 28, 28, this.sclO, 16, 19, this.overAnimSpeed, this.changeAnimation);
               break;
@@ -77,8 +79,8 @@ class Character {
         }
       }
       if (this.charState == 2) {  // Sword Swing (walking)
-        if (this.collisionOver(this.charState) != this.dir) {
-          switch (this.dir) {
+        if (this.collisionOver(this.charState) != this.world.dir.over.curr) {
+          switch (this.world.dir.over.curr) {
             case 0:  // Right
               this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x += this.overSpeed/2, this.kinemat.over.y, 28, 28, this.sclO, 48, 51, this.overAnimSpeed, this.changeAnimation);
               break;
@@ -107,7 +109,7 @@ class Character {
         }
       }
       if (this.charState == 1) {  // Overworld Idle
-        switch (this.dir) {
+        switch (this.world.dir.over.curr) {
           case 0:  // Right
             this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.sclO, 0, 1, this.overAnimSpeed, this.changeAnimation);
             break;
@@ -154,19 +156,18 @@ class Character {
       this.kinemat.batt.vX *= this.kinemat.batt.f;  // Apply friction
       // Animation
       this.battAnimSpeed = 5;  // Reset battle animation speed
-      if (this.dir > 1) this.dir = 0;  // Make sure to only have battle directions
       if (this.special.jump.bool) this.special.inAir = true;
       // Battle Run
       if (this.charState == 2) {
         if (this.special.wall.time > millis())  this.charState = 1;
         else {
           // If the direction is right, then the acceleration is positive, negative otherwise
-          this.kinemat.batt.aX += this.dir == 0 ? this.battSpeed : -this.battSpeed;
+          this.kinemat.batt.aX += this.world.dir.batt.curr == 0 ? this.battSpeed : -this.battSpeed;
           this.specialMove();  // Run the jump function
           this.battAnimSpeed = round(3 / (this.kinemat.batt.aX/7));  // Animation speed gets faster as well
-          if (this.dir == 0 && !this.special.inAir)  // Right
+          if (this.world.dir.batt.curr == 0 && !this.special.inAir)  // Right
             this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 4, 11, this.battAnimSpeed, this.changeAnimation);
-          else if (this.dir == 1 && !this.special.inAir)  // Left
+          else if (this.world.dir.batt.curr == 1 && !this.special.inAir)  // Left
             this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 12, 19, this.battAnimSpeed, this.changeAnimation);
         }
       } 
@@ -174,13 +175,16 @@ class Character {
       if (this.charState == 1) {
         this.kinemat.batt.aX = 0;  // Dont let velocity grow
         this.specialMove();  // Run the jump function
-        if (this.dir == 0 && !this.special.inAir)  // Right
+        if (this.world.dir.batt.curr == 0 && !this.special.inAir)  // Right
           this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 0, 1, this.battAnimSpeed * 2, this.changeAnimation);
-        else if (this.dir == 1 && !this.special.inAir)  // Left
+        else if (this.world.dir.batt.curr == 1 && !this.special.inAir)  // Left
           this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 2, 3, this.battAnimSpeed * 2, this.changeAnimation);
       } 
     }
-    this.lastDir = this.dir;  // Get the last diection
+    // Get the last diections
+    this.world.dir.batt.last = this.world.dir.batt.curr;
+    this.world.dir.over.last = this.world.dir.over.curr;
+    this.world.over.last = this.world.over.curr;
   }
   
   specialMove() {
@@ -200,7 +204,7 @@ class Character {
     }
     // Dash
     if (this.special.dash.bool && this.special.dash.count > 0 && this.special.dash.time < millis()) {
-      this.kinemat.batt.vX += this.dir == 0 ? this.kinemat.batt.j*2 : -this.kinemat.batt.j*2;  // Add impulse in X direction to dash
+      this.kinemat.batt.vX += this.world.dir.batt.curr == 0 ? this.kinemat.batt.j*2 : -this.kinemat.batt.j*2;  // Add impulse in X direction to dash
       this.special.dash.count --;  // Subtract from dash count so only one dash mid air
       this.special.dash.bool = false;  // No longer "dashing"
       this.special.dash.time = millis() + 500;
@@ -224,9 +228,9 @@ class Character {
       // Wall Slide
       if (this.special.inAir) {
         this.resetSpecialCount();
-        if (this.dir == 0)  // Right
+        if (this.world.dir.batt.curr == 0)  // Right
           this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.battSpeed, 9, 13, this.sclB, 31, 32, this.battAnimSpeed * 2, this.changeAnimation);
-        else if (this.dir == 1)  // Left
+        else if (this.world.dir.batt.curr == 1)  // Left
           this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.battSpeed, 9, 13, this.sclB, 36, 37, this.battAnimSpeed * 2, this.changeAnimation);
       }
       // Bump off wall
@@ -238,9 +242,9 @@ class Character {
     }
     // Falling normally
     else {
-      if (this.dir == 0 && this.special.inAir)  // Right
+      if (this.world.dir.batt.curr == 0 && this.special.inAir)  // Right
         this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y += this.kinemat.batt.vY, 9, 13, this.sclB, 20, 24, this.battAnimSpeed, this.changeAnimation);
-      else if (this.dir == 1 && this.special.inAir)  // Left
+      else if (this.world.dir.batt.curr == 1 && this.special.inAir)  // Left
         this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y += this.kinemat.batt.vY, 9, 13, this.sclB, 25, 29, this.battAnimSpeed, this.changeAnimation);
       this.kinemat.batt.vY += this.kinemat.batt.aY;
     }
@@ -248,21 +252,21 @@ class Character {
   
   collisionOver(state, x1=0, y1=0, x2=width, y2=height) {
     this.charState = 1;   
-    if ((this.dir == 0 || this.dir == 1 || this.dir == 7) && this.kinemat.over.x + this.overSpeed > x2 - 28*this.sclO) {
+    if ((this.world.dir.over.curr == 0 || this.world.dir.over.curr == 1 || this.world.dir.over.curr == 7) && this.kinemat.over.x + this.overSpeed > x2 - 28*this.sclO) {
       this.kinemat.over.x = x2 - 28*this.sclO;
-      return this.dir;  // Right
+      return this.world.dir.over.curr;  // Right
     }
-    if ((this.dir == 1 || this.dir == 2 || this.dir == 3) && this.kinemat.over.y + this.overSpeed > y2 - 28*this.sclO) {
+    if ((this.world.dir.over.curr == 1 || this.world.dir.over.curr == 2 || this.world.dir.over.curr == 3) && this.kinemat.over.y + this.overSpeed > y2 - 28*this.sclO) {
       this.kinemat.over.y = y2 - 28*this.sclO;
-      return this.dir;  // Down
+      return this.world.dir.over.curr;  // Down
     }
-    if ((this.dir == 3 || this.dir == 4 || this.dir == 5) && this.kinemat.over.x - this.overSpeed < x1) {
+    if ((this.world.dir.over.curr == 3 || this.world.dir.over.curr == 4 || this.world.dir.over.curr == 5) && this.kinemat.over.x - this.overSpeed < x1) {
       this.kinemat.over.x = x1;
-      return this.dir;  // Left
+      return this.world.dir.over.curr;  // Left
     }
-    if ((this.dir == 5 || this.dir == 6 || this.dir == 7) && this.kinemat.over.y - this.overSpeed < y1) {
+    if ((this.world.dir.over.curr == 5 || this.world.dir.over.curr == 6 || this.world.dir.over.curr == 7) && this.kinemat.over.y - this.overSpeed < y1) {
       this.kinemat.over.y = y1;
-      return this.dir;  // Up
+      return this.world.dir.over.curr;  // Up
     }
     this.charState = state;
   }
