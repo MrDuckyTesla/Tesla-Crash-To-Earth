@@ -8,20 +8,18 @@ class Character {
     this.ovrImg = ovrImg;  this.batImg = batImg;  // Characters Spritesheets
     this.colors = {c1: col1, c2: col2, c3: {r: 255, g: 200, b: 0}};
     // Movement varaibles
-    this.kinemat = {over: {x: oX, y: oY}, batt: {x: bX, y: bY, vX: 0, vY: 0, aX: 0, aY: 1, j: 17, f: 0.8}};
-    this.special = {sprint: false, inAir: false, jump: {bool: false, count: 2}, fall: {bool: false, count: 1}, dash: {bool: false, count: 1, time: 0}, wall: {bool: false, time: 0}};
     this.overSpeed = 3;  this.SpeedCap = this.overSpeed*2;  this.battSpeed = 2.5;  // Characters Speed
+    this.kinemat = {over: {x: oX, y: oY}, batt: {x: bX, y: bY, vX: 0, vY: 0, aX: 0, aY: 1, j: 17, f: 0.8}};
+    this.special = {sprint: false, inAir: false, jump: {bool: false, count: 2}, fall: {bool: false, count: 1}, dash: {bool: false, count: 1, time: 0}, wall: {bool: false, speed: this.battSpeed, time: 0}};
     // Lists of changeable pixels and their respective colors
     this.ovrList = this.MediaPlayer.preCompile(ovrImg, [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Greyscale colors of original image, separated by their layers
     this.batList = this.MediaPlayer.preCompile(batImg, [[105, 85, 34], [104]]);  // Greyscale colors of original image, separated by their layers
     this.sclO = 3;  this.sclB = 4;  // Scale of Character (Size)
     // World Variables
+    this.world = {dir: {over: {curr: 0, last: 0}, batt: {curr: 0, last: 0}}, over: {curr: true, last: true}};
     this.rectBatt = {x1: 0, x2: width - 9*this.sclB, y1: 0, y2: height - 14*this.sclB};
     this.frameMultiplier = 1;  // Make code consistant at lower frameRates
-    // this.world.over.curr = true; // Controls if Character is battling
     this.charState = 0;  // What animation the character is currently doing
-    // this.world.over.last = false;
-    this.world = {dir: {over: {curr: 0, last: 0}, batt: {curr: 0, last: 0}}, over: {curr: true, last: true}};  // The direction that the character is facing
   }
   
   show() {
@@ -228,10 +226,11 @@ class Character {
       // Wall Slide
       if (this.special.inAir) {
         this.resetSpecialCount();
+        this.special.wall.speed += this.battSpeed/10;
         if (this.world.dir.batt.curr == 0)  // Right
-          this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.battSpeed, 9, 13, this.sclB, 31, 32, this.battAnimSpeed * 2, this.changeAnimation);
+          this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.special.wall.speed, 9, 13, this.sclB, 31, 32, this.battAnimSpeed * 2, this.changeAnimation);
         else if (this.world.dir.batt.curr == 1)  // Left
-          this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.battSpeed, 9, 13, this.sclB, 36, 37, this.battAnimSpeed * 2, this.changeAnimation);
+          this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.special.wall.speed, 9, 13, this.sclB, 36, 37, this.battAnimSpeed * 2, this.changeAnimation);
       }
       // Bump off wall
       else {
@@ -242,6 +241,7 @@ class Character {
     }
     // Falling normally
     else {
+        this.special.wall.speed = this.battSpeed;
       if (this.world.dir.batt.curr == 0 && this.special.inAir)  // Right
         this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y += this.kinemat.batt.vY, 9, 13, this.sclB, 20, 24, this.battAnimSpeed, this.changeAnimation);
       else if (this.world.dir.batt.curr == 1 && this.special.inAir)  // Left
