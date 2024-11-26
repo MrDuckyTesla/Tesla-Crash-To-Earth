@@ -222,9 +222,9 @@ class Character {
     if (this.kinemat.batt.x + this.kinemat.batt.vX >= width - 36 || this.kinemat.batt.x + this.kinemat.batt.vX <= 0) {  // Make a function
       // Distance between surfaces, may eventually need to use 2d distance when platforms get involved
       this.kinemat.batt.x = this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? this.rectBatt.x2 : this.rectBatt.x1;
-      this.special.wall.bool = true;
       // Wall Slide
-      if (this.special.inAir) {
+      if (abs(this.kinemat.batt.vX) <= 20 && this.special.inAir) {
+        this.special.wall.bool = true;
         this.resetSpecialCount();
         this.special.wall.speed += this.battSpeed/10;
         if (this.world.dir.batt.curr == 0)  // Right

@@ -13,6 +13,7 @@ class Menu {
     // color change?  (use slider)
     // Fullscreen
     // Add icons when battling to show when an ability is ready, and add option to hide them
+    // Probably a good idea to make a list of every button and whatnot
   }
   
   button(x, y, wdth, hgt, txt) {

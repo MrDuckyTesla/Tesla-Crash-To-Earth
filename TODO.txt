@@ -9,7 +9,7 @@ TOP PRIORITIES
 #06:  add overworld interacting
 #07:  add overworld and battle dialogue
 #08:  add overworld sword
-#9:  optimize code using switch statements, canvas imaging thing, and others:  https://www.w3schools.com/js/js_performance.asp
+#09:  optimize code using switch statements, canvas imaging thing, and others:  https://www.w3schools.com/js/js_performance.asp
 #10:  add menu
 #11:  add enemy battle ai
 #12:  add save files (probably need electron or node.js (included in electron))
