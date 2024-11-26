@@ -213,6 +213,7 @@ class Character {
       this.resetSpecialCount();
       if (this.kinemat.batt.vY > this.kinemat.batt.j*1.5 && this.special.inAir)  this.kinemat.batt.vY = -this.kinemat.batt.vY/5;
       else {
+        this.kinemat.batt.vY = 0;
         this.kinemat.batt.y = height - 52;  // Set Y coords to ground level (make function)
         this.special.inAir = false;  // Is on the ground, so no longer in air
         this.special.wall.bool = false;  // No longer on a wall
@@ -247,6 +248,7 @@ class Character {
       else if (this.world.dir.batt.curr == 1 && this.special.inAir)  // Left
         this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y += this.kinemat.batt.vY, 9, 13, this.sclB, 25, 29, this.battAnimSpeed, this.changeAnimation);
       this.kinemat.batt.vY += this.kinemat.batt.aY;
+      // console.log(round(this.kinemat.batt.vX), this.kinemat.batt.vY);
     }
   }
   
@@ -272,7 +274,9 @@ class Character {
   }
   
   collisionBattWall() {
-    
+//     if (this.world.dir.batt.curr == 0 && ) {
+      
+//     }
   }
   
   resetSpecialCount() {
