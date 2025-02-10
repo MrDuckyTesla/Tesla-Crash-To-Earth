@@ -1,23 +1,24 @@
 class Obstacle {
-  constructor(isMovable, walkThrough, damagePlayer) {
-    this.isMovable = isMovable;  // Move object whenever moving
-    this.walkThrough = walkThrough;  // Walk through object
-    this.damagePlayer = damagePlayer;  // Damages player, would be used in battle only
+  constructor(x, y, wid, hgt, isMovable=false, walkThrough=false, damagePlayer=false) {
+    this.x = 0;
+    this.y = 0;
+    this.wid = wid;
+    this.hgt = hgt;
+    this.isMve = isMovable;  // Move object whenever moving
+    this.wlkThu = walkThrough;  // Walk through object
+    this.dmgPlr = damagePlayer;  // Damages player, would be used in battle only
     // Make array of all ojects and their dimensions to check if collide
   }
-  
-  overWorldCollision(x, y, wid, hgt, scl) {  // Obstructions
+
+  checkCollide(x, y, wid, hgt) {  // Platforms
+    if ((x + wid > this.x || x < this.x + this.wid) && !this.wlkThu) {
+        console.log("Collide");
+      }
     // if ((x + wid * scl >= width) || (x <= 0) || (y + hgt * scl >= height) || (y <=  0))
     //   return true;
     // return false;
   }
-  
-  battleCollision(x, y, wid, hgt, scl) {  // Platforms
-    // if ((x + wid * scl >= width) || (x <= 0) || (y + hgt * scl >= height) || (y <=  0))
-    //   return true;
-    // return false;
-  }
-  
+
   // getBackHereOverworld() {
     // if (this.oX >= width + 28 * this.sclO) {
     //   this.oX = (28 * this.sclO * -1);

@@ -42,6 +42,13 @@ Software used (or will be used):
   
   Aseprite (Consider)
 
+TRY OUT
+https://github.com/electron/windows-installer
+https://www.jetbrains.com/webstorm/
+https://atom-editor.cc/
+https://www.sublimetext.com/
+https://code.visualstudio.com/
+
 License:
 
   This program uses p5.js licensed under GNU Lesser General Public License v2.1

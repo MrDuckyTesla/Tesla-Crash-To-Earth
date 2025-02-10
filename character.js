@@ -233,16 +233,23 @@ class Character {
         else if (this.world.dir.batt.curr == 1)  // Left
           this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.special.wall.speed, 9, 13, this.sclB, 36, 37, this.battAnimSpeed * 2, this.changeAnimation);
       }
+      else if (abs(this.kinemat.batt.vX) <= 10) { //&& this.world.dir.batt.curr == this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? 0: 1) {
+        this.kinemat.batt.x = this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? width - 9*this.sclB : 0;
+        this.kinemat.batt.vX = 0;
+        if (!(this.special.inAir || this.special.jump.bool)) this.special.wall.time = millis() + 100;
+      }
       // Bump off wall
       else {
         this.special.wall.bool = false;
         this.special.wall.time = millis() + abs(this.kinemat.batt.vX*15);
         this.kinemat.batt.vX = -this.kinemat.batt.vX;
+        this.kinemat.batt.x = this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? width - 9*this.sclB : 0;
       }
     }
     // Falling normally
     else {
-        this.special.wall.speed = this.battSpeed;
+      // console.log(round(this.kinemat.batt.x), width);
+      this.special.wall.speed = this.battSpeed;
       if (this.world.dir.batt.curr == 0 && this.special.inAir)  // Right
         this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y += this.kinemat.batt.vY, 9, 13, this.sclB, 20, 24, this.battAnimSpeed, this.changeAnimation);
       else if (this.world.dir.batt.curr == 1 && this.special.inAir)  // Left
@@ -274,9 +281,11 @@ class Character {
   }
   
   collisionBattWall() {
-//     if (this.world.dir.batt.curr == 0 && ) {
-      
-//     }
+    // this.charState = 1;
+    if (this.world.dir.batt.curr == 0 || this.kinemat.batt.x + this.kinemat.batt.vX < 0) {
+      this.kinemat.batt.x = 0;
+      return 0;
+    }
   }
   
   resetSpecialCount() {
