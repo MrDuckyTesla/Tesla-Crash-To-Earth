@@ -49,6 +49,69 @@ function draw() {
 
 
 
+
+  // if (circRectCollide(mouseX, mouseY, 50, 100, 240, 45, 100)) fill(0, 255, 0);
+  // else fill(255, 0, 0);
+  // circle(mouseX, mouseY, 50);
+  // rect(100, 240, 45, 100);
+// }
+
+// function rectRectCollide(r1x, r1y, r1w, r1h, r2x, r2y, r2w, r2h) {
+//   if (r1x + r1w <= r2x || r2x + r2w <= r1x || r1y + r1h <= r2y || r2y + r2h <= r1y) return true;
+//   return false;
+// }
+
+// function circCircCollide(c1x, c1y, c1r, c2x, c2y, c2r) {
+//   if (dist(c1x, c1y, c2x, c2y) >= c1r/2 + c2r/2) return true;
+//   return false;
+// }
+
+// function circRectCollide(cx, cy, cr, rx, ry, rw, rh) {
+//   if (cx + cr/2 >= rx && rx + rw >= cx - cr/2 && cy + cr/2 >= ry && ry + rh >= cy - cr/2) return true;
+//   return false;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // function setup() {
 //   createCanvas(400, 400);
 // }

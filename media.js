@@ -142,13 +142,28 @@ class Media {
     return [lineLine(x1, y1, x2, y2, rx, ry, rx+rw, ry), lineLine(x1, y1, x2, y2, rx+rw, ry, rx+rw, ry+rh), lineLine(x1, y1, x2, y2, rx+rw, ry+rh, rx, ry+rh), lineLine(x1, y1, x2, y2, rx, ry+rh, rx, ry)];
   }
   
-  pointRect(px, py, rx, ry, rw, rh) {
-    if (px > rx && px < rx + rw && py > ry && py < ry + rh) return true;
+  pointRectCollide(px, py, rx, ry, rw, rh) {
+    if (px >= rx && px <= rx + rw && py >= ry && py <= ry + rh) return true;
     return false;
   }
 
-  pointCirc(px, py, cx, cy, cr) {
-    if (dist(px, py, cx, cy) < cr/2) return true;
+  pointCircCollide(px, py, cx, cy, cr) {
+    if (dist(px, py, cx, cy) <= cr/2) return true;
+    return false;
+  }
+  
+  rectRectCollide(r1x, r1y, r1w, r1h, r2x, r2y, r2w, r2h) {
+    if (r1x + r1w <= r2x || r2x + r2w <= r1x || r1y + r1h <= r2y || r2y + r2h <= r1y) return true;
+    return false;
+  }
+
+  circCircCollide(c1x, c1y, c1r, c2x, c2y, c2r) {
+    if (dist(c1x, c1y, c2x, c2y) >= c1r/2 + c2r/2) return true;
+    return false;
+  }
+  
+  circRectCollide(cx, cy, cr, rx, ry, rw, rh) {
+    if (cx + cr/2 >= rx && rx + rw >= cx - cr/2 && cy + cr/2 >= ry && ry + rh >= cy - cr/2) return true;
     return false;
   }
   
