@@ -89,12 +89,10 @@ class Media {
     if (forceRadius || dist(centerX, centerY, endX, endY) > radius) {  // If the line is outside the radius
       endX -= centerX; endY -= centerY;  // Make sure the x and y can never be 0
       let temp = endX, num = 1;  // Make a copy of x
-      if (endX < 0)
-        num = -1;
+      if (endX < 0) num = -1;
       return [num*radius*cos(atan(endY/endX)) + centerX, num*radius*sin(atan(endY/temp)) + centerY];
     }
-    else
-      return [endX, endY];
+    else return [endX, endY];
   }
   
   getLimbCoords(centerX, centerY, length1, length2, endX, endY, bendRight=false) {
@@ -115,6 +113,43 @@ class Media {
       crd = lineRadius(x, y, endX + centerX, endY + centerY, length2, true);
       return [x, y, crd[0], crd[1]];
     }
+  }
+  
+  lineLineCollide(x1, y1, x2, y2, x3, y3, x4, y4) {
+    let temp, m1, m2, b1, b2, iX, iY, d1, d2;
+    // Find slopes
+    m1 = (y2 - y1) / (x2 - x1);
+    m2 = (y4 - y3) / (x4 - x3);
+    // Find y intercepts
+    b1 = y1 - m1 * x1;
+    b2 = y3 - m2 * x3;
+    // Find X coordinate while also dealing with vertical and horizontal slopes
+    if (x4 - x3 == 0) iX = x3;
+    else if (x2 - x1 == 0) iX = x1;
+    else iX = (b1 - b2) / (m2 - m1);
+    // Get Y coordinate while also dealing with horizontal slope
+    iY = (x4 - x3) == 0? m1 * iX + b1: m2 * iX + b2;
+    // Get lengths of line segments
+    d1 = dist(x1, y1, x2, y2);
+    d2 = dist(x3, y3, x4, y4);
+    // Check if X and Y coordinates is within line segments
+    if (dist(iX, iY, x2, y2) > d1 || dist(iX, iY, x1, y1) > d1 || dist(iX, iY, x3, y3) > d2 || dist(iX, iY, x4, y4) > d2) return [false];
+    return [true, iX, iY];
+  }
+
+  lineRectCollide(x1, y1, x2, y2, rx, ry, rw, rh) {
+    // Rectangle is just four lines, so we return a list of line vs line collisions
+    return [lineLine(x1, y1, x2, y2, rx, ry, rx+rw, ry), lineLine(x1, y1, x2, y2, rx+rw, ry, rx+rw, ry+rh), lineLine(x1, y1, x2, y2, rx+rw, ry+rh, rx, ry+rh), lineLine(x1, y1, x2, y2, rx, ry+rh, rx, ry)];
+  }
+  
+  pointRect(px, py, rx, ry, rw, rh) {
+    if (px > rx && px < rx + rw && py > ry && py < ry + rh) return true;
+    return false;
+  }
+
+  pointCirc(px, py, cx, cy, cr) {
+    if (dist(px, py, cx, cy) < cr/2) return true;
+    return false;
   }
   
   sharpen(img, backgroundColor, replacementColor) {  // Change in order to allow less colors, and more replacement colors

@@ -5,7 +5,11 @@ class Room {  // A Room is full of Obstacles, NPCs, and such
   }
   
   addObstacle(x, y, wid, hgt, isMov=false, wlkThu=false, dmgPlr=false) {
-    this.roomList.push(new Obstacle(x, y, wid, hgt, isMov, wlkThu, dmgPlr))
+    this.obstList.push(new Obstacle(x, y, wid, hgt, isMov, wlkThu, dmgPlr));
+  }
+  
+  addObstacleClass(obstacle) {
+    this.obstList.push(obstacle);
   }
   
   addNPC() {

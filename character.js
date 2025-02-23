@@ -20,9 +20,19 @@ class Character {
     this.rectBatt = {x1: 0, x2: width - 9*this.sclB, y1: 0, y2: height - 14*this.sclB};
     this.frameMultiplier = 1;  // Make code consistant at lower frameRates
     this.charState = 0;  // What animation the character is currently doing
+    // Platforms (test)
+    this.RoomVar = new Room();
+    this.RoomVar.addObstacle(0, 0, width, height, true);
+    this.RoomVar.addObstacle(200, 400, 200, 30);
+    
   }
   
   show() {
+    if (!Tesla.world.over.curr) {  // TEST PLATFORM
+      for (let i = 0; i < this.RoomVar.obstList.length; i ++) {
+        this.RoomVar.obstList[i].drawHitbox();
+      }
+    }
     this.move();
     // Color :D (this took WAY too long)
     this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b, this.colors.c3.r, this.colors.c3.g, this.colors.c3.b], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
@@ -219,6 +229,7 @@ class Character {
         this.special.wall.bool = false;  // No longer on a wall
       }
     }
+    // console.log(width/2 - this.kinemat.batt.x - 9/2*this.sclB < 0, this.world.dir.batt.curr);
     // Collides with wall
     if (this.kinemat.batt.x + this.kinemat.batt.vX >= width - 36 || this.kinemat.batt.x + this.kinemat.batt.vX <= 0) {  // Make a function
       // Distance between surfaces, may eventually need to use 2d distance when platforms get involved
@@ -234,6 +245,7 @@ class Character {
           this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.special.wall.speed, 9, 13, this.sclB, 36, 37, this.battAnimSpeed * 2, this.changeAnimation);
       }
       else if (abs(this.kinemat.batt.vX) <= 10) { //&& this.world.dir.batt.curr == this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? 0: 1) {
+        // console.log(abs(width/2 - this.kinemat.batt.x));
         this.kinemat.batt.x = this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? width - 9*this.sclB : 0;
         this.kinemat.batt.vX = 0;
         if (!(this.special.inAir || this.special.jump.bool)) this.special.wall.time = millis() + 100;

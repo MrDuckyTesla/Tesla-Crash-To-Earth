@@ -1,9 +1,10 @@
 class Obstacle {
-  constructor(x, y, wid, hgt, isMovable=false, walkThrough=false, damagePlayer=false) {
-    this.x = 0;
-    this.y = 0;
+  constructor(x, y, wid, hgt, mustStayIn=false, isMovable=false, walkThrough=false, damagePlayer=false) {
+    this.x = x;
+    this.y = y;
     this.wid = wid;
     this.hgt = hgt;
+    this.mstSty = mustStayIn  // Entities must stay in the box, opposite of normal
     this.isMve = isMovable;  // Move object whenever moving
     this.wlkThu = walkThrough;  // Walk through object
     this.dmgPlr = damagePlayer;  // Damages player, would be used in battle only
@@ -17,6 +18,11 @@ class Obstacle {
     // if ((x + wid * scl >= width) || (x <= 0) || (y + hgt * scl >= height) || (y <=  0))
     //   return true;
     // return false;
+  }
+  
+  drawHitbox() {
+    fill(255, 0, 0, 25);
+    rect(this.x, this.y, this.wid, this.hgt);
   }
 
   // getBackHereOverworld() {

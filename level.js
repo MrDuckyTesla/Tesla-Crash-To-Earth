@@ -1,6 +1,7 @@
 class Level {  // Level has multiple Rooms
-  constructor() {
-    
+  constructor(num) {
+    this.levelList = [];
+    this.num = num;
   }
   
 }
