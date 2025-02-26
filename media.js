@@ -96,7 +96,7 @@ class Media {
   }
   
   getLimbCoords(centerX, centerY, length1, length2, endX, endY, bendRight=false) {
-    let d = dist(centerX, centerY, endX, endY), crd = lineRadius(centerX, centerY, endX, endY, length1 + length2, true);
+    let d = dist(centerX, centerY, endX, endY), crd = this.lineRadius(centerX, centerY, endX, endY, length1 + length2, true);
     if (d > length1 + length2)
       return [crd[0], crd[1], crd[0], crd[1]];
     // Work on later, make line show for all scenarios (not necessary, just for more "finished" code)
@@ -110,9 +110,29 @@ class Media {
       if (bendRight)  theta *= -1;  // Make theta bend right if true
       if (endX < 0)  num = -1;  // Make line not go back 180 degrees
       let x = num*length1*cos(theta+atan(endY/endX)) + centerX, y = num*length1*sin(theta+atan(endY/endX)) + centerY;
-      crd = lineRadius(x, y, endX + centerX, endY + centerY, length2, true);
+      crd = this.lineRadius(x, y, endX + centerX, endY + centerY, length2, true);
       return [x, y, crd[0], crd[1]];
     }
+  }
+  
+  pLineCollide(x1, y1, x2, y2, x3, y3, x4, y4) {  // Parallel Lines
+    // Deal with double vertical or double horizontal lines
+    if (x1 - x2 == 0 && x3 - x4 == 0 && dist(x1, 0, x3, 0) == 0) return true;
+    else if (y1 - y2 == 0 && y3 - y4 == 0 && dist(0, y1, 0, y3) == 0) return true;
+    return false;
+  }
+  
+  lRectRectCollide(rx1, ry1, rw1, rh1, rx2, ry2, rw2, rh2) {  // Used to find which sides two rectangles are touching
+    // Rectangle is just four lines, so we return a list of line vs line collisions
+    return [this.pLineCollide(rx1+rw1, ry1, rx1+rw1, ry1+rh1, rx2+rw2, ry2, rx2+rw2, ry2+rh2), this.pLineCollide(rx1+rw1, ry1+rh1, rx1, ry1+rh1, rx2+rw2, ry2+rh2, rx2, ry2+rh2), this.pLineCollide(rx1, ry1+rh1, rx1, ry1, rx2, ry2+rh2, rx2, ry2), this.pLineCollide(rx1, ry1, rx1+rw1, ry1, rx2, ry2, rx2+rw2, ry2)];
+  }
+  
+  lRectRectClosest(rx1, ry1, rw1, rh1, rx2, ry2, rw2, rh2)  {  // Used to find where the closest side of two rectangles can be found
+    return [
+         dist(rx1+rw1/2, ry1 + rh1/2, rx2, ry2 + rh2), 
+         dist(rx1+rw1/2, ry1 + rh1/2, rx2, ry2 + rh2/2), 
+         dist(), 
+         dist()];
   }
   
   lineLineCollide(x1, y1, x2, y2, x3, y3, x4, y4) {
@@ -137,9 +157,9 @@ class Media {
     return [true, iX, iY];
   }
 
-  lineRectCollide(x1, y1, x2, y2, rx, ry, rw, rh) {
+  lineRectCollide(x1, y1, x2, y2, rx, ry, rw, rh) {  // Used to find points of intersection of a line and rectangle
     // Rectangle is just four lines, so we return a list of line vs line collisions
-    return [lineLine(x1, y1, x2, y2, rx, ry, rx+rw, ry), lineLine(x1, y1, x2, y2, rx+rw, ry, rx+rw, ry+rh), lineLine(x1, y1, x2, y2, rx+rw, ry+rh, rx, ry+rh), lineLine(x1, y1, x2, y2, rx, ry+rh, rx, ry)];
+    return [this.lineLineCollide(x1, y1, x2, y2, rx, ry, rx+rw, ry), this.lineLineCollide(x1, y1, x2, y2, rx+rw, ry, rx+rw, ry+rh), this.lineLineCollide(x1, y1, x2, y2, rx+rw, ry+rh, rx, ry+rh), this.lineLineCollide(x1, y1, x2, y2, rx, ry+rh, rx, ry)];
   }
   
   pointRectCollide(px, py, rx, ry, rw, rh) {

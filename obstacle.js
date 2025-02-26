@@ -1,5 +1,6 @@
 class Obstacle {
   constructor(x, y, wid, hgt, mustStayIn=false, isMovable=false, walkThrough=false, damagePlayer=false) {
+    this.MediaPlayer = new Media();  // Used for collision
     this.x = x;
     this.y = y;
     this.wid = wid;
@@ -12,9 +13,7 @@ class Obstacle {
   }
 
   checkCollide(x, y, wid, hgt) {  // Platforms
-    if ((x + wid > this.x || x < this.x + this.wid) && !this.wlkThu) {
-        console.log("Collide");
-      }
+    // if ()
     // if ((x + wid * scl >= width) || (x <= 0) || (y + hgt * scl >= height) || (y <=  0))
     //   return true;
     // return false;

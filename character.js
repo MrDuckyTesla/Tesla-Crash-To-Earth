@@ -28,12 +28,25 @@ class Character {
   }
   
   show() {
-    if (!Tesla.world.over.curr) {  // TEST PLATFORM
+    this.move();
+    // console.log(this.world.dir.over.curr)
+    // TEST PLATFORM
+    if (!Tesla.world.over.curr) {
       for (let i = 0; i < this.RoomVar.obstList.length; i ++) {
         this.RoomVar.obstList[i].drawHitbox();
       }
-    }
-    this.move();
+      // Hitbox for battle character
+      // rect(this.kinemat.batt.x, this.kinemat.batt.y, 9 * this.sclB, 13 * this.sclB);
+      console.log(this.MediaPlayer.lRectRectClosest(0, 0, width, height, this.kinemat.batt.x, this.kinemat.batt.y, 9 * this.sclB, 13 * this.sclB));
+      // this.MediaPlayer.parallelLineCollide(width, 0, width, 0);
+      // this.MediaPlayer.parallelLineCollide(this.kinemat.batt.x, this.kinemat.batt.y, this.kinemat.batt.x + 9 * this.sclB, this.kinemat.batt.y);
+      
+      // console.log(this.MediaPlayer.lRectRectCollide(0, 0, width, height, this.kinemat.batt.x, this.kinemat.batt.y, 9 * this.sclB, 13 * this.sclB));
+      // rect(this.kinemat.batt.x, this.kinemat.batt.y, 9 * this.sclB, 1);
+      // rect(this.kinemat.batt.x, this.kinemat.batt.y, 1, 13 * this.sclB);
+      // rect(this.kinemat.batt.x + 9 * this.sclB - 1, this.kinemat.batt.y, 1, 13 * this.sclB);
+      // rect(this.kinemat.batt.x, this.kinemat.batt.y + 13 * this.sclB - 1, 9 * this.sclB, 1);
+    }   
     // Color :D (this took WAY too long)
     this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b, this.colors.c3.r, this.colors.c3.g, this.colors.c3.b], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
     this.MediaPlayer.changeColor(this.batImg, this.batList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b], [[105, 85, 34], [104]]);  // Battle
