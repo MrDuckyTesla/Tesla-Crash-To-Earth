@@ -127,15 +127,8 @@ class Media {
     return [this.pLineCollide(rx1+rw1, ry1, rx1+rw1, ry1+rh1, rx2+rw2, ry2, rx2+rw2, ry2+rh2), this.pLineCollide(rx1+rw1, ry1+rh1, rx1, ry1+rh1, rx2+rw2, ry2+rh2, rx2, ry2+rh2), this.pLineCollide(rx1, ry1+rh1, rx1, ry1, rx2, ry2+rh2, rx2, ry2), this.pLineCollide(rx1, ry1, rx1+rw1, ry1, rx2, ry2, rx2+rw2, ry2)];
   }
   
-  lRectRectClosest(rx1, ry1, rw1, rh1, rx2, ry2, rw2, rh2)  {  // Used to find where the closest side of two rectangles can be found
-    return [
-         dist(rx1+rw1/2, ry1 + rh1/2, rx2, ry2 + rh2), 
-         dist(rx1+rw1/2, ry1 + rh1/2, rx2, ry2 + rh2/2), 
-         dist(), 
-         dist()];
-  }
-  
   lineLineCollide(x1, y1, x2, y2, x3, y3, x4, y4) {
+    if ((dist(x1, y1, x2, y2) == 0 || dist(x3, y3,  x4, y4) == 0) || (x1 - x2 == 0 && x3 - x4 == 0) || (y1 - y2 == 0 && y3 - y4 == 0)) return [false];
     let temp, m1, m2, b1, b2, iX, iY, d1, d2;
     // Find slopes
     m1 = (y2 - y1) / (x2 - x1);
@@ -163,28 +156,29 @@ class Media {
   }
   
   pointRectCollide(px, py, rx, ry, rw, rh) {
-    if (px >= rx && px <= rx + rw && py >= ry && py <= ry + rh) return true;
-    return false;
+    return px >= rx && px <= rx + rw && py >= ry && py <= ry + rh;
   }
 
   pointCircCollide(px, py, cx, cy, cr) {
-    if (dist(px, py, cx, cy) <= cr/2) return true;
-    return false;
+    return (dist(px, py, cx, cy) <= cr/2);
   }
   
   rectRectCollide(r1x, r1y, r1w, r1h, r2x, r2y, r2w, r2h) {
-    if (r1x + r1w <= r2x || r2x + r2w <= r1x || r1y + r1h <= r2y || r2y + r2h <= r1y) return true;
-    return false;
+    return r1x + r1w >= r2x && r1x <= r2x+r2w && r1y + r1h >= r2y && r1y <= r2y+r2h;
+  }
+
+  nRectRectCollide(r1x, r1y, r1w, r1h, r2x, r2y, r2w, r2h) {  // opposite of rectRectCollide
+    // Smaller rectangle goes FIRST
+    if (r1w * r1h > r2w * r2h) return r1x >= r2x || r1x+r1w  <= r2x+r2w || r1y >= r2y || r1y+r1h <= r2y+r2h;
+    return r1x <= r2x || r1x+r1w >= r2x+r2w || r1y <= r2y || r1y+r1h >= r2y+r2h;
   }
 
   circCircCollide(c1x, c1y, c1r, c2x, c2y, c2r) {
-    if (dist(c1x, c1y, c2x, c2y) >= c1r/2 + c2r/2) return true;
-    return false;
+    return dist(c1x, c1y, c2x, c2y) >= c1r/2 + c2r/2;
   }
   
   circRectCollide(cx, cy, cr, rx, ry, rw, rh) {
-    if (cx + cr/2 >= rx && rx + rw >= cx - cr/2 && cy + cr/2 >= ry && ry + rh >= cy - cr/2) return true;
-    return false;
+    return cx + cr/2 >= rx && rx + rw >= cx - cr/2 && cy + cr/2 >= ry && ry + rh >= cy - cr/2;
   }
   
   sharpen(img, backgroundColor, replacementColor) {  // Change in order to allow less colors, and more replacement colors

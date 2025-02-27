@@ -24,7 +24,7 @@ Other things to implement on a later date
   Procedural music/attacks?
   Making music sync with attacks by training neural network to reconize beats and sync
   Render Pixelization on side or before game is drawn?
-  Use hashs? for what? i dont know what past nico was saying
+  Use hashs to store images and skip CORS policy
   In overworld, keep attack animation going in single direction without a way to stop
   Open world? make an enemy ai that will secretly fight in background
   Have secret room/way to fight editor or kwack as joke

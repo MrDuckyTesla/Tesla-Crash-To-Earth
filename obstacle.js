@@ -5,7 +5,7 @@ class Obstacle {
     this.y = y;
     this.wid = wid;
     this.hgt = hgt;
-    this.mstSty = mustStayIn  // Entities must stay in the box, opposite of normal
+    this.mstSty = mustStayIn;  // Entities must stay in the box, opposite of normal
     this.isMve = isMovable;  // Move object whenever moving
     this.wlkThu = walkThrough;  // Walk through object
     this.dmgPlr = damagePlayer;  // Damages player, would be used in battle only
@@ -13,10 +13,12 @@ class Obstacle {
   }
 
   checkCollide(x, y, wid, hgt) {  // Platforms
-    // if ()
-    // if ((x + wid * scl >= width) || (x <= 0) || (y + hgt * scl >= height) || (y <=  0))
-    //   return true;
-    // return false;
+    // if (this.mstSty) this.roomCollide = this.MediaPlayer.nRectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
+    // else this.roomCollide = this.MediaPlayer.rectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
+    // if (this.roomCollide) {
+    //   // Only do things if rectangle detects collision
+    //   line(this.kinemat.batt.x+(9*this.sclB)/2,this.kinemat.batt.y+(13*this.sclB)/2, this.RoomVar.obstList[i].x+this.RoomVar.obstList[i].wid/2, this.RoomVar.obstList[i].y+this.RoomVar.obstList[i].hgt/2)
+    // }
   }
   
   drawHitbox() {
