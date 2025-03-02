@@ -155,12 +155,29 @@ class Media {
     return [this.lineLineCollide(x1, y1, x2, y2, rx, ry, rx+rw, ry), this.lineLineCollide(x1, y1, x2, y2, rx+rw, ry, rx+rw, ry+rh), this.lineLineCollide(x1, y1, x2, y2, rx+rw, ry+rh, rx, ry+rh), this.lineLineCollide(x1, y1, x2, y2, rx, ry+rh, rx, ry)];
   }
   
-  pointRectCollide(px, py, rx, ry, rw, rh) {
-    return px >= rx && px <= rx + rw && py >= ry && py <= ry + rh;
-  }
-
-  pointCircCollide(px, py, cx, cy, cr) {
-    return (dist(px, py, cx, cy) <= cr/2);
+  rectRectCollideCoords(px, py, x1, y1, w1, h1, x2, y2, w2, h2) {
+    // This function needs previous X & Y (px & py), and should only be used when colliding with an rectangle
+    // This function also implies that the first rectangle is the moving one, with the second being the base
+    // Get coordinates where line cast from center of both rectangles intersect with base rectangle
+    let coordRectangle = lineRectCollide(px+w1/2, py+h1/2, x2+w2/2, y2+h2/2, x2, y2, w2, h2);
+    // Iterate through list of coordinates and secure which coordinates are intersecting
+    for (let i = 0; i < coordRectangle.length; i++) {
+      // Check if intersects via function
+      if (coordRectangle[i][0]) coordRectangle = [coordRectangle[i][1], coordRectangle[i][2]];
+    }
+    // Make variables for final coordiantes
+    let numX = 1, numY = 1, minCoords = [width, height];
+    // Check if on opposite X or Y of rectangle
+    if (coordRectangle[0] - w2/2 < x2 - w2/2) numX = -1;
+    if (coordRectangle[1] - h2/2 > y2 - h2/2) numY = -1;
+    // Find coordinates where moving rectangle touches the base rectangle
+    let coordClosestTouch = [lineLineCollide(coordRectangle[0], coordRectangle[1]-h1/2*numY, px+w1/2, coordRectangle[1]-h1/2*numY, px+w1/2, py+h1/2, x2+w2/2, y2+h2/2), lineLineCollide(x2+w2+w1/2*numX, coordRectangle[1], x2+w2+w1/2*numX, py+h1/2, px+w1/2, py+h1/2, x2+w2/2, y2+h2/2), lineLineCollide(x2-w1/2, py+h1/2, x2-w1/2, y2+h2/2, px+w1/2, py+h1/2, x2+w2/2, y2+h2/2)];
+    // Iterate to find the closest coordinate
+    for (let i = 0; i < coordClosestTouch.length; i++) {
+      if (coordClosestTouch[i][0] && dist(coordClosestTouch[i][1], coordClosestTouch[i][2], coordRectangle[0], coordRectangle[1]) < dist(coordRectangle[0], coordRectangle[1], minCoords[0], minCoords[1])) minCoords = [coordClosestTouch[i][1], coordClosestTouch[i][2]];
+    }
+    // Return coordinates
+    return [minCoords[0]-w1/2, minCoords[1]-h1/2];
   }
   
   rectRectCollide(r1x, r1y, r1w, r1h, r2x, r2y, r2w, r2h) {
@@ -172,13 +189,21 @@ class Media {
     if (r1w * r1h > r2w * r2h) return r1x >= r2x || r1x+r1w  <= r2x+r2w || r1y >= r2y || r1y+r1h <= r2y+r2h;
     return r1x <= r2x || r1x+r1w >= r2x+r2w || r1y <= r2y || r1y+r1h >= r2y+r2h;
   }
-
+  
+  circRectCollide(cx, cy, cr, rx, ry, rw, rh) {
+    return cx + cr/2 >= rx && rx + rw >= cx - cr/2 && cy + cr/2 >= ry && ry + rh >= cy - cr/2;
+  }
+  
   circCircCollide(c1x, c1y, c1r, c2x, c2y, c2r) {
     return dist(c1x, c1y, c2x, c2y) >= c1r/2 + c2r/2;
   }
   
-  circRectCollide(cx, cy, cr, rx, ry, rw, rh) {
-    return cx + cr/2 >= rx && rx + rw >= cx - cr/2 && cy + cr/2 >= ry && ry + rh >= cy - cr/2;
+  pointRectCollide(px, py, rx, ry, rw, rh) {
+    return px >= rx && px <= rx + rw && py >= ry && py <= ry + rh;
+  }
+
+  pointCircCollide(px, py, cx, cy, cr) {
+    return (dist(px, py, cx, cy) <= cr/2);
   }
   
   sharpen(img, backgroundColor, replacementColor) {  // Change in order to allow less colors, and more replacement colors
