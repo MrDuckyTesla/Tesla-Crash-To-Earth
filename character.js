@@ -24,7 +24,7 @@ class Character {
     this.RoomVar = new Room();
     // this.RoomVar.addObstacle(0, 0, width, height, true);
     this.RoomVar.addObstacle(200, 400, 200, 30);
-    this.roomCollide = false;
+    this.roomCollide = false; this.freeFrameGo = false; this.freeFrameCount = 0;
     
   }
   
@@ -315,17 +315,33 @@ class Character {
         // Draw the hitbox
         this.RoomVar.obstList[i].drawHitbox();
         // Check collision
-        if (this.RoomVar.obstList[i].mstSty) this.roomCollide = this.MediaPlayer.nRectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
-        else this.roomCollide = this.MediaPlayer.rectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
+        // if (this.RoomVar.obstList[i].mstSty) this.roomCollide = this.MediaPlayer.nRectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
+        // else this.roomCollide = this.MediaPlayer.rectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(c, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
         // If it does collide
-        if (this.roomCollide) {
+        if (this.freeFrameGo && this.freeFrameCount < frameCount) this.freeFrameGo = false;
+        this.roomCollide = this.MediaPlayer.RectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, 9*this.sclB, 13*this.sclB, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
+        if (this.roomCollide[0] && !this.freeFrameGo) {
+          this.kinemat.batt.x = this.roomCollide[1];
+          this.kinemat.batt.y = this.roomCollide[2];
+          if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) this.kinemat.batt.vX = -this.kinemat.batt.vX;
+          else if (this.roomCollide[3] == 2) this.kinemat.batt.vY = -this.kinemat.batt.vY;
+          else {
+            this.special.inAir = false;
+            this.kinemat.batt.vY = 0;
+          }
+          // console.log(this.sideTouching);
+          this.resetSpecialCount();
+          this.freeFrameGo = true;
+          this.freeFrameCount = frameCount+1;
+          
+          // RectRectCollideCoords
           // Check if x or y needs changing
           // Do a check of some sort to see which x or y component is smallest
           // Maybe use trig or use lineline collision
           // if () {
             // Change kinematic values
-            this.kinemat.batt.y = this.RoomVar.obstList[i].y + (13*this.sclB);
-            this.kinemat.batt.vY = -this.kinemat.batt.vY;
+            // this.kinemat.batt.y = this.RoomVar.obstList[i].y + (13*this.sclB);
+            // this.kinemat.batt.vY = -this.kinemat.batt.vY;
             // this.kinemat.batt.aY = 0;
           // }
         }

@@ -115,18 +115,6 @@ class Media {
     }
   }
   
-  pLineCollide(x1, y1, x2, y2, x3, y3, x4, y4) {  // Parallel Lines
-    // Deal with double vertical or double horizontal lines
-    if (x1 - x2 == 0 && x3 - x4 == 0 && dist(x1, 0, x3, 0) == 0) return true;
-    else if (y1 - y2 == 0 && y3 - y4 == 0 && dist(0, y1, 0, y3) == 0) return true;
-    return false;
-  }
-  
-  lRectRectCollide(rx1, ry1, rw1, rh1, rx2, ry2, rw2, rh2) {  // Used to find which sides two rectangles are touching
-    // Rectangle is just four lines, so we return a list of line vs line collisions
-    return [this.pLineCollide(rx1+rw1, ry1, rx1+rw1, ry1+rh1, rx2+rw2, ry2, rx2+rw2, ry2+rh2), this.pLineCollide(rx1+rw1, ry1+rh1, rx1, ry1+rh1, rx2+rw2, ry2+rh2, rx2, ry2+rh2), this.pLineCollide(rx1, ry1+rh1, rx1, ry1, rx2, ry2+rh2, rx2, ry2), this.pLineCollide(rx1, ry1, rx1+rw1, ry1, rx2, ry2, rx2+rw2, ry2)];
-  }
-  
   lineLineCollide(x1, y1, x2, y2, x3, y3, x4, y4) {
     if ((dist(x1, y1, x2, y2) == 0 || dist(x3, y3,  x4, y4) == 0) || (x1 - x2 == 0 && x3 - x4 == 0) || (y1 - y2 == 0 && y3 - y4 == 0)) return [false];
     let temp, m1, m2, b1, b2, iX, iY, d1, d2;
@@ -155,29 +143,14 @@ class Media {
     return [this.lineLineCollide(x1, y1, x2, y2, rx, ry, rx+rw, ry), this.lineLineCollide(x1, y1, x2, y2, rx+rw, ry, rx+rw, ry+rh), this.lineLineCollide(x1, y1, x2, y2, rx+rw, ry+rh, rx, ry+rh), this.lineLineCollide(x1, y1, x2, y2, rx, ry+rh, rx, ry)];
   }
   
-  rectRectCollideCoords(px, py, x1, y1, w1, h1, x2, y2, w2, h2) {
-    // This function needs previous X & Y (px & py), and should only be used when colliding with an rectangle
-    // This function also implies that the first rectangle is the moving one, with the second being the base
-    // Get coordinates where line cast from center of both rectangles intersect with base rectangle
-    let coordRectangle = lineRectCollide(px+w1/2, py+h1/2, x2+w2/2, y2+h2/2, x2, y2, w2, h2);
-    // Iterate through list of coordinates and secure which coordinates are intersecting
-    for (let i = 0; i < coordRectangle.length; i++) {
-      // Check if intersects via function
-      if (coordRectangle[i][0]) coordRectangle = [coordRectangle[i][1], coordRectangle[i][2]];
-    }
-    // Make variables for final coordiantes
-    let numX = 1, numY = 1, minCoords = [width, height];
-    // Check if on opposite X or Y of rectangle
-    if (coordRectangle[0] - w2/2 < x2 - w2/2) numX = -1;
-    if (coordRectangle[1] - h2/2 > y2 - h2/2) numY = -1;
+  RectRectCollideCoords(px, py, x1, y1, w1, h1, x2, y2, w2, h2) {
     // Find coordinates where moving rectangle touches the base rectangle
-    let coordClosestTouch = [lineLineCollide(coordRectangle[0], coordRectangle[1]-h1/2*numY, px+w1/2, coordRectangle[1]-h1/2*numY, px+w1/2, py+h1/2, x2+w2/2, y2+h2/2), lineLineCollide(x2+w2+w1/2*numX, coordRectangle[1], x2+w2+w1/2*numX, py+h1/2, px+w1/2, py+h1/2, x2+w2/2, y2+h2/2), lineLineCollide(x2-w1/2, py+h1/2, x2-w1/2, y2+h2/2, px+w1/2, py+h1/2, x2+w2/2, y2+h2/2)];
+    let coordCollide = this.lineRectCollide(px+w1/2, py+h1/2, x1+w1/2, y1+h1/2, x2-w1/2, y2-h1/2, w2+w1, h2+h1);
     // Iterate to find the closest coordinate
-    for (let i = 0; i < coordClosestTouch.length; i++) {
-      if (coordClosestTouch[i][0] && dist(coordClosestTouch[i][1], coordClosestTouch[i][2], coordRectangle[0], coordRectangle[1]) < dist(coordRectangle[0], coordRectangle[1], minCoords[0], minCoords[1])) minCoords = [coordClosestTouch[i][1], coordClosestTouch[i][2]];
+    for (let i = 0; i < coordCollide.length; i++) {
+      if (coordCollide[i][0]) return [true, coordCollide[i][1]-w1/2, coordCollide[i][2]-h1/2, i];
     }
-    // Return coordinates
-    return [minCoords[0]-w1/2, minCoords[1]-h1/2];
+    return [false];
   }
   
   rectRectCollide(r1x, r1y, r1w, r1h, r2x, r2y, r2w, r2h) {
@@ -204,6 +177,18 @@ class Media {
 
   pointCircCollide(px, py, cx, cy, cr) {
     return (dist(px, py, cx, cy) <= cr/2);
+  }
+  
+  pLineCollide(x1, y1, x2, y2, x3, y3, x4, y4) {  // Parallel Lines
+    // Deal with double vertical or double horizontal lines
+    if (x1 - x2 == 0 && x3 - x4 == 0 && dist(x1, 0, x3, 0) == 0) return true;
+    else if (y1 - y2 == 0 && y3 - y4 == 0 && dist(0, y1, 0, y3) == 0) return true;
+    return false;
+  }
+  
+  lRectRectCollide(rx1, ry1, rw1, rh1, rx2, ry2, rw2, rh2) {  // Used to find which sides two rectangles are touching
+    // Rectangle is just four lines, so we return a list of line vs line collisions
+    return [this.pLineCollide(rx1+rw1, ry1, rx1+rw1, ry1+rh1, rx2+rw2, ry2, rx2+rw2, ry2+rh2), this.pLineCollide(rx1+rw1, ry1+rh1, rx1, ry1+rh1, rx2+rw2, ry2+rh2, rx2, ry2+rh2), this.pLineCollide(rx1, ry1+rh1, rx1, ry1, rx2, ry2+rh2, rx2, ry2), this.pLineCollide(rx1, ry1, rx1+rw1, ry1, rx2, ry2, rx2+rw2, ry2)];
   }
   
   sharpen(img, backgroundColor, replacementColor) {  // Change in order to allow less colors, and more replacement colors
