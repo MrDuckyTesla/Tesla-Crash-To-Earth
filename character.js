@@ -34,31 +34,7 @@ class Character {
     this.kinemat.batt.pY = this.kinemat.batt.y;
     // Update present player coords
     this.move();
-    // If in battle
-    if (!Tesla.world.over.curr) {
-      // For each obstacle in the list
-      for (let i = 0; i < this.RoomVar.obstList.length; i ++) {
-        // Draw the hitbox
-        this.RoomVar.obstList[i].drawHitbox();
-        // Check collision
-        if (this.RoomVar.obstList[i].mstSty) this.roomCollide = this.MediaPlayer.nRectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
-        else this.roomCollide = this.MediaPlayer.rectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
-        // If it does collide
-        if (this.roomCollide) {
-          // Check if x or y needs changing
-          // Do a check of some sort to see which x or y component is smallest
-          // Maybe use trig or use lineline collision
-          // if () {
-            // Change kinematic values
-            this.kinemat.batt.y = this.RoomVar.obstList[i].y + (13*this.sclB);
-            this.kinemat.batt.vY = -this.kinemat.batt.vY;
-            // this.kinemat.batt.aY = 0;
-          // }
-        }
-        // Players hitbox
-        rect(min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
-      }
-    }   
+    this.collision();
     // Color :D (this took WAY too long)
     this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b, this.colors.c3.r, this.colors.c3.g, this.colors.c3.b], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
     this.MediaPlayer.changeColor(this.batImg, this.batList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b], [[105, 85, 34], [104]]);  // Battle
@@ -329,6 +305,34 @@ class Character {
     this.special.jump.count = 2;  // Reset jump count
     this.special.fall.count = 1;  // Reset fall count
     this.special.dash.count = 1;  // Reset dash count
+  }
+  
+  collision() {
+    // If in battle
+    if (!Tesla.world.over.curr) {
+      // For each obstacle in the list
+      for (let i = 0; i < this.RoomVar.obstList.length; i ++) {
+        // Draw the hitbox
+        this.RoomVar.obstList[i].drawHitbox();
+        // Check collision
+        if (this.RoomVar.obstList[i].mstSty) this.roomCollide = this.MediaPlayer.nRectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
+        else this.roomCollide = this.MediaPlayer.rectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
+        // If it does collide
+        if (this.roomCollide) {
+          // Check if x or y needs changing
+          // Do a check of some sort to see which x or y component is smallest
+          // Maybe use trig or use lineline collision
+          // if () {
+            // Change kinematic values
+            this.kinemat.batt.y = this.RoomVar.obstList[i].y + (13*this.sclB);
+            this.kinemat.batt.vY = -this.kinemat.batt.vY;
+            // this.kinemat.batt.aY = 0;
+          // }
+        }
+        // Players hitbox
+        rect(min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
+      }
+    }
   }
   
 }
