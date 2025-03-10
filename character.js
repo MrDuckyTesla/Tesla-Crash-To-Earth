@@ -24,7 +24,9 @@ class Character {
     this.RoomVar = new Room();
     // this.RoomVar.addObstacle(0, 0, width, height, true);
     this.RoomVar.addObstacle(200, 400, 200, 30);
-    this.roomCollide = false; this.freeFrameGo = false; this.freeFrameCount = 0;
+    this.roomCollide = false;
+    this.lastCollision = false;
+    this.madeCalcs = false;  // For those who are new to the sketch, "calc" is short for calculation, im just using slang
     
   }
   
@@ -34,7 +36,7 @@ class Character {
     this.kinemat.batt.pY = this.kinemat.batt.y;
     // Update present player coords
     this.move();
-    this.collision();
+    // this.collision();
     // Color :D (this took WAY too long)
     this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b, this.colors.c3.r, this.colors.c3.g, this.colors.c3.b], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
     this.MediaPlayer.changeColor(this.batImg, this.batList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b], [[105, 85, 34], [104]]);  // Battle
@@ -160,7 +162,7 @@ class Character {
     else {   
       // Kinematics
       if (abs(this.kinemat.batt.aX) > this.battSpeed && this.kinemat.batt.aX != 0) this.kinemat.batt.aX = this.battSpeed * (this.kinemat.batt.aX / abs(this.kinemat.batt.aX));  // Cap the friction/speed
-      if (abs(this.kinemat.batt.vX) <= 0.00001) this.kinemat.batt.vX = 0;  // We cant see the difference of speed
+      if (abs(this.kinemat.batt.vX) <= 0.00001) this.kinemat.batt.vX = 0;  // We cant see the difference in speed
       this.kinemat.batt.vX += this.kinemat.batt.aX;  // Apply acceleration
       this.kinemat.batt.vX *= this.kinemat.batt.f;  // Apply friction
       // Animation
@@ -307,48 +309,38 @@ class Character {
     this.special.dash.count = 1;  // Reset dash count
   }
   
-  collision() {
-    // If in battle
-    if (!Tesla.world.over.curr) {
-      // For each obstacle in the list
-      for (let i = 0; i < this.RoomVar.obstList.length; i ++) {
-        // Draw the hitbox
-        this.RoomVar.obstList[i].drawHitbox();
-        // Check collision
-        // if (this.RoomVar.obstList[i].mstSty) this.roomCollide = this.MediaPlayer.nRectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
-        // else this.roomCollide = this.MediaPlayer.rectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(c, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
-        // If it does collide
-        if (this.freeFrameGo && this.freeFrameCount < frameCount) this.freeFrameGo = false;
-        this.roomCollide = this.MediaPlayer.RectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, 9*this.sclB, 13*this.sclB, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
-        if (this.roomCollide[0] && !this.freeFrameGo) {
-          this.kinemat.batt.x = this.roomCollide[1];
-          this.kinemat.batt.y = this.roomCollide[2];
-          if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) this.kinemat.batt.vX = -this.kinemat.batt.vX;
-          else if (this.roomCollide[3] == 2) this.kinemat.batt.vY = -this.kinemat.batt.vY;
-          else {
-            this.special.inAir = false;
-            this.kinemat.batt.vY = 0;
-          }
-          // console.log(this.sideTouching);
-          this.resetSpecialCount();
-          this.freeFrameGo = true;
-          this.freeFrameCount = frameCount+1;
-          
-          // RectRectCollideCoords
-          // Check if x or y needs changing
-          // Do a check of some sort to see which x or y component is smallest
-          // Maybe use trig or use lineline collision
-          // if () {
-            // Change kinematic values
-            // this.kinemat.batt.y = this.RoomVar.obstList[i].y + (13*this.sclB);
-            // this.kinemat.batt.vY = -this.kinemat.batt.vY;
-            // this.kinemat.batt.aY = 0;
-          // }
-        }
-        // Players hitbox
-        rect(min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
-      }
-    }
-  }
+  // collision() {
+  //   // If in battle
+  //   if (!Tesla.world.over.curr) {
+  //     // For each obstacle in the list
+  //     this.special.inAir = true;
+  //     this.special.wall.bool = false;
+  //     for (let i = 0; i < this.RoomVar.obstList.length; i ++) {
+  //       // Draw the hitbox
+  //       this.RoomVar.obstList[i].drawHitbox();
+  //       // if (this.RoomVar.obstList[i].mustStayIn) this.roomCollide = this.MediaPlayer.nRectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, 9*this.sclB, 13*this.sclB, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
+  //       this.roomCollide = this.MediaPlayer.rectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, 9*this.sclB, 13*this.sclB, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
+  //       if (this.roomCollide[0]) {
+  //         if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
+  //           this.kinemat.batt.x = this.roomCollide[1];
+  //           this.kinemat.batt.vX *= -1;
+  //         }
+  //         else if (this.roomCollide[3] == 2) {
+  //           this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
+  //           this.kinemat.batt.vY *= -1;
+  //         }
+  //         else {
+  //           this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
+  //           this.kinemat.batt.vY = 0;
+  //           this.special.inAir = false;
+  //           this.resetSpecialCount();
+  //         }
+  //       }
+  //       // Players hitbox
+  //       rect(this.kinemat.batt.x, this.kinemat.batt.y, 9*this.sclB, 13*this.sclB);
+  //       // rect(min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
+  //     }
+  //   }
+  // }
   
 }

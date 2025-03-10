@@ -143,7 +143,7 @@ class Media {
     return [this.lineLineCollide(x1, y1, x2, y2, rx, ry, rx+rw, ry), this.lineLineCollide(x1, y1, x2, y2, rx+rw, ry, rx+rw, ry+rh), this.lineLineCollide(x1, y1, x2, y2, rx+rw, ry+rh, rx, ry+rh), this.lineLineCollide(x1, y1, x2, y2, rx, ry+rh, rx, ry)];
   }
   
-  RectRectCollideCoords(px, py, x1, y1, w1, h1, x2, y2, w2, h2) {
+  rectRectCollideCoords(px, py, x1, y1, w1, h1, x2, y2, w2, h2) {
     // Find coordinates where moving rectangle touches the base rectangle
     let coordCollide = this.lineRectCollide(px+w1/2, py+h1/2, x1+w1/2, y1+h1/2, x2-w1/2, y2-h1/2, w2+w1, h2+h1);
     // Iterate to find the closest coordinate
@@ -155,6 +155,16 @@ class Media {
   
   rectRectCollide(r1x, r1y, r1w, r1h, r2x, r2y, r2w, r2h) {
     return r1x + r1w >= r2x && r1x <= r2x+r2w && r1y + r1h >= r2y && r1y <= r2y+r2h;
+  }
+  
+  nRectRectCollideCoords(px, py, x1, y1, w1, h1, x2, y2, w2, h2) {
+    // Find coordinates where moving rectangle touches the base rectangle
+    let coordCollide = this.lineRectCollide(px+w1/2, py+h1/2, x1+w1/2, y1+h1/2, x2+w1/2, y2+h1/2, w2-w1, h2-h1);
+    // Iterate to find the closest coordinate
+    for (let i = 0; i < coordCollide.length; i++) {
+      if (coordCollide[i][0]) return [true, coordCollide[i][1]-w1/2, coordCollide[i][2]-h1/2, i];
+    }
+    return [false];
   }
 
   nRectRectCollide(r1x, r1y, r1w, r1h, r2x, r2y, r2w, r2h) {  // opposite of rectRectCollide
