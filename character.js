@@ -22,7 +22,7 @@ class Character {
     this.charState = 0;  // What animation the character is currently doing
     // Platforms (test)
     this.RoomVar = new Room();
-    // this.RoomVar.addObstacle(0, 0, width, height, true);
+    this.RoomVar.addObstacle(0, 0, width, height, true);
     this.RoomVar.addObstacle(200, 400, 200, 30);
     this.roomCollide = false;
     this.lastCollision = false;
@@ -159,38 +159,49 @@ class Character {
       
     // Battle states below here
     }
-    else {   
+    else {
       // Kinematics
       if (abs(this.kinemat.batt.aX) > this.battSpeed && this.kinemat.batt.aX != 0) this.kinemat.batt.aX = this.battSpeed * (this.kinemat.batt.aX / abs(this.kinemat.batt.aX));  // Cap the friction/speed
       if (abs(this.kinemat.batt.vX) <= 0.00001) this.kinemat.batt.vX = 0;  // We cant see the difference in speed
-      this.kinemat.batt.vX += this.kinemat.batt.aX;  // Apply acceleration
-      this.kinemat.batt.vX *= this.kinemat.batt.f;  // Apply friction
+      this.kinemat.batt.vX += this.kinemat.batt.aX;  // Apply acceleration to X
+      this.kinemat.batt.vY += this.kinemat.batt.aY;  // Apply acceleration to Y
+      this.kinemat.batt.vX *= this.kinemat.batt.f;  // Apply friction to X
       // Animation
-      this.battAnimSpeed = 5;  // Reset battle animation speed
-      if (this.special.jump.bool) this.special.inAir = true;
-      // Battle Run
-      if (this.charState == 2) {
-        if (this.special.wall.time > millis())  this.charState = 1;
-        else {
-          // If the direction is right, then the acceleration is positive, negative otherwise
-          this.kinemat.batt.aX += this.world.dir.batt.curr == 0 ? this.battSpeed : -this.battSpeed;
-          this.specialMove();  // Run the jump function
-          this.battAnimSpeed = round(3 / (this.kinemat.batt.aX/7));  // Animation speed gets faster as well
-          if (this.world.dir.batt.curr == 0 && !this.special.inAir)  // Right
-            this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 4, 11, this.battAnimSpeed, this.changeAnimation);
-          else if (this.world.dir.batt.curr == 1 && !this.special.inAir)  // Left
-            this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 12, 19, this.battAnimSpeed, this.changeAnimation);
+      // this.battAnimSpeed = 5;  // Reset battle animation speed
+      // State
+      if (this.special.wall.time > millis())  this.charState = 1;  // If character hit wall too quickly
+      if (this.charState == 1) this.kinemat.batt.aX /= 1.2;  // Dont let velocity stay the same when not moving
+      else if (this.charState == 2) this.kinemat.batt.aX += this.world.dir.batt.curr == 0 ? this.battSpeed : -this.battSpeed;  // If facing towards the right, then the acceleration is positive, negative otherwise
+      this.specialMove();  // Run the special moves function
+      // Animation
+      this.battAnimSpeed = round(3 / (this.kinemat.batt.aX/7));  // Animation speed gets faster as well
+      
+      this.kinemat.batt.x += this.kinemat.batt.vX;
+      this.kinemat.batt.y += this.kinemat.batt.vY
+      // rect(min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
+      
+      // Collision
+      for (let i = 0; i < this.RoomVar.obstList.length; i ++) {
+        this.RoomVar.obstList[i].drawHitbox();
+        if (this.RoomVar.obstList[i].mustStayIn) this.roomCollide = this.MediaPlayer.nRectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, 9*this.sclB, 13*this.sclB, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
+        else this.roomCollide = this.MediaPlayer.rectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, 9*this.sclB, 13*this.sclB, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
+        if (this.roomCollide[0]) {
+          if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
+            this.kinemat.batt.x = this.roomCollide[3] == 1? this.roomCollide[1] + 0.00001 : this.roomCollide[1] - 0.00001;
+            this.kinemat.batt.vX *= -1;
+          }
+          else if (this.roomCollide[3] == 2) {
+            this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
+            this.kinemat.batt.vY *= -1;
+          }
+          else {
+            this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
+            this.kinemat.batt.vY = 0;
+            this.resetSpecialCount();
+          }
         }
-      } 
-      // Battle Idle
-      if (this.charState == 1) {
-        this.kinemat.batt.aX = 0;  // Dont let velocity grow
-        this.specialMove();  // Run the jump function
-        if (this.world.dir.batt.curr == 0 && !this.special.inAir)  // Right
-          this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 0, 1, this.battAnimSpeed * 2, this.changeAnimation);
-        else if (this.world.dir.batt.curr == 1 && !this.special.inAir)  // Left
-          this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 2, 3, this.battAnimSpeed * 2, this.changeAnimation);
-      } 
+      }
+      rect(this.kinemat.batt.x, this.kinemat.batt.y, 9*this.sclB, 13*this.sclB);
     }
     // Get the last diections
     this.world.dir.batt.last = this.world.dir.batt.curr;
@@ -201,12 +212,15 @@ class Character {
   specialMove() {
     // By the way, height of character is 13px * scale, and width is 9 * scale, make sure to replace these with width/height * scale, and not some random multiple
     // Jump
-    if (this.special.jump.bool && this.special.jump.count > 0) {  // If has enough jumps, jump
+    this.special.inAir = this.special.jump.bool? false : true;
+    if (this.special.jump.bool && this.special.jump.count > 0) {  // If enough jumps remain, jump
       this.kinemat.batt.vY = -this.kinemat.batt.j;  // Add an impulse to make character go up
       this.special.jump.count --;  // Subtract from jump count for double jumps
-      this.special.jump.bool = false;  // Without this, both jumps would activate almost instanly
+      this.special.jump.bool = false;  // Without this, both jumps would activate within 2 frames
     }
-    else this.special.jump.bool = false;  // Not jumping
+    else {
+      this.special.jump.bool = false;  // Not jumping
+    }
     // Fast Fall
     if (this.special.fall.bool && this.special.fall.count > 0) {
       this.kinemat.batt.vY = this.kinemat.batt.j*2;  // Add an impulse to make character go up
@@ -227,51 +241,51 @@ class Character {
       if (this.kinemat.batt.vY > this.kinemat.batt.j*1.5 && this.special.inAir)  this.kinemat.batt.vY = -this.kinemat.batt.vY/5;
       else {
         this.kinemat.batt.vY = 0;
-        this.kinemat.batt.y = height - 52;  // Set Y coords to ground level (make function)
+        this.kinemat.batt.y =
+          height - 52;  // Set Y coords to ground level (make function)
         this.special.inAir = false;  // Is on the ground, so no longer in air
         this.special.wall.bool = false;  // No longer on a wall
       }
     }
     // console.log(width/2 - this.kinemat.batt.x - 9/2*this.sclB < 0, this.world.dir.batt.curr);
     // Collides with wall
-    if (this.kinemat.batt.x + this.kinemat.batt.vX >= width - 36 || this.kinemat.batt.x + this.kinemat.batt.vX <= 0) {  // Make a function
-      // Distance between surfaces, may eventually need to use 2d distance when platforms get involved
-      this.kinemat.batt.x = this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? this.rectBatt.x2 : this.rectBatt.x1;
-      // Wall Slide
-      if (abs(this.kinemat.batt.vX) <= 20 && this.special.inAir) {
-        this.special.wall.bool = true;
-        this.resetSpecialCount();
-        this.special.wall.speed += this.battSpeed/10;
-        if (this.world.dir.batt.curr == 0)  // Right
-          this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.special.wall.speed, 9, 13, this.sclB, 31, 32, this.battAnimSpeed * 2, this.changeAnimation);
-        else if (this.world.dir.batt.curr == 1)  // Left
-          this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.special.wall.speed, 9, 13, this.sclB, 36, 37, this.battAnimSpeed * 2, this.changeAnimation);
-      }
-      else if (abs(this.kinemat.batt.vX) <= 10) { //&& this.world.dir.batt.curr == this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? 0: 1) {
-        // console.log(abs(width/2 - this.kinemat.batt.x));
-        this.kinemat.batt.x = this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? width - 9*this.sclB : 0;
-        this.kinemat.batt.vX = 0;
-        if (!(this.special.inAir || this.special.jump.bool)) this.special.wall.time = millis() + 100;
-      }
-      // Bump off wall
-      else {
-        this.special.wall.bool = false;
-        this.special.wall.time = millis() + abs(this.kinemat.batt.vX*15);
-        this.kinemat.batt.vX = -this.kinemat.batt.vX;
-        this.kinemat.batt.x = this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? width - 9*this.sclB : 0;
-      }
-    }
+    // if (this.kinemat.batt.x + this.kinemat.batt.vX >= width - 36 || this.kinemat.batt.x + this.kinemat.batt.vX <= 0) {  // Make a function
+    //   // Distance between surfaces, may eventually need to use 2d distance when platforms get involved
+    //   this.kinemat.batt.x = this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? this.rectBatt.x2 : this.rectBatt.x1;
+    //   // Wall Slide
+    //   if (abs(this.kinemat.batt.vX) <= 20 && this.special.inAir) {
+    //     this.special.wall.bool = true;
+    //     this.resetSpecialCount();
+    //     this.special.wall.speed += this.battSpeed/10;
+    //     if (this.world.dir.batt.curr == 0)  // Right
+    //       this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.special.wall.speed, 9, 13, this.sclB, 31, 32, this.battAnimSpeed * 2, this.changeAnimation);
+    //     else if (this.world.dir.batt.curr == 1)  // Left
+    //       this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y += this.special.wall.speed, 9, 13, this.sclB, 36, 37, this.battAnimSpeed * 2, this.changeAnimation);
+    //   }
+    //   else if (abs(this.kinemat.batt.vX) <= 10) { //&& this.world.dir.batt.curr == this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? 0: 1) {
+    //     // console.log(abs(width/2 - this.kinemat.batt.x));
+    //     this.kinemat.batt.x = this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? width - 9*this.sclB : 0;
+    //     this.kinemat.batt.vX = 0;
+    //     if (!(this.special.inAir || this.special.jump.bool)) this.special.wall.time = millis() + 100;
+    //   }
+    //   // Bump off wall
+    //   else {
+    //     this.special.wall.bool = false;
+    //     this.special.wall.time = millis() + abs(this.kinemat.batt.vX*15);
+    //     this.kinemat.batt.vX = -this.kinemat.batt.vX;
+    //     this.kinemat.batt.x = this.kinemat.batt.x - this.rectBatt.x1 > this.rectBatt.x2 - this.kinemat.batt.x ? width - 9*this.sclB : 0;
+    //   }
+    // }
     // Falling normally
-    else {
-      // console.log(round(this.kinemat.batt.x), width);
-      this.special.wall.speed = this.battSpeed;
-      if (this.world.dir.batt.curr == 0 && this.special.inAir)  // Right
-        this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y += this.kinemat.batt.vY, 9, 13, this.sclB, 20, 24, this.battAnimSpeed, this.changeAnimation);
-      else if (this.world.dir.batt.curr == 1 && this.special.inAir)  // Left
-        this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y += this.kinemat.batt.vY, 9, 13, this.sclB, 25, 29, this.battAnimSpeed, this.changeAnimation);
-      this.kinemat.batt.vY += this.kinemat.batt.aY;
-      // console.log(round(this.kinemat.batt.vX), this.kinemat.batt.vY);
-    }
+    // else {
+    //   // console.log(round(this.kinemat.batt.x), width);
+    //   this.special.wall.speed = this.battSpeed;
+      // if (this.world.dir.batt.curr == 0 && this.special.inAir)  // Right
+      //   this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y += this.kinemat.batt.vY, 9, 13, this.sclB, 20, 24, this.battAnimSpeed, this.changeAnimation);
+      // else if (this.world.dir.batt.curr == 1 && this.special.inAir)  // Left
+      //   this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y += this.kinemat.batt.vY, 9, 13, this.sclB, 25, 29, this.battAnimSpeed, this.changeAnimation);
+    //   // console.log(round(this.kinemat.batt.vX), this.kinemat.batt.vY);
+    // }
   }
   
   collisionOver(state, x1=0, y1=0, x2=width, y2=height) {
@@ -341,6 +355,15 @@ class Character {
   //       // rect(min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
   //     }
   //   }
-  // }
+  // }  
   
 }
+
+        // if (this.world.dir.batt.curr == 0 && !this.special.inAir)  // Right
+        //   this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 0, 1, this.battAnimSpeed * 2, this.changeAnimation);
+        // else if (this.world.dir.batt.curr == 1 && !this.special.inAir)  // Left
+        //   this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 2, 3, this.battAnimSpeed * 2, this.changeAnimation);
+        // if (this.world.dir.batt.curr == 0 && !this.special.inAir)  // Right
+        //   this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 4, 11, this.battAnimSpeed, this.changeAnimation);
+        // else if (this.world.dir.batt.curr == 1 && !this.special.inAir)  // Left
+        //   this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x += this.kinemat.batt.vX, this.kinemat.batt.y, 9, 13, this.sclB, 12, 19, this.battAnimSpeed, this.changeAnimation);

@@ -26,7 +26,7 @@ function setup() {
 
 function draw() {  // Main Game Loop
   // frameRate(round(random(59))+1);  // Fake Lagging (Funny)
-  frameRate(15);  // Keep commented out, only use for testing
+  // frameRate(15);  // Keep commented out, only use for testing
   if (Tesla.world.over.curr) {
     background(150);
     fill(0);  // Text color
