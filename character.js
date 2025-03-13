@@ -183,21 +183,46 @@ class Character {
       // Collision
       for (let i = 0; i < this.RoomVar.obstList.length; i ++) {
         this.RoomVar.obstList[i].drawHitbox();
-        if (this.RoomVar.obstList[i].mustStayIn) this.roomCollide = this.MediaPlayer.nRectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, 9*this.sclB, 13*this.sclB, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
-        else this.roomCollide = this.MediaPlayer.rectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, 9*this.sclB, 13*this.sclB, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
-        if (this.roomCollide[0]) {
-          if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
-            this.kinemat.batt.x = this.roomCollide[3] == 1? this.roomCollide[1] + 0.00001 : this.roomCollide[1] - 0.00001;
-            this.kinemat.batt.vX *= -1;
+        // console.log(this.RoomVar.obstList[i]);
+        if (this.RoomVar.obstList[i].mstSty) {
+          this.roomCollide = this.MediaPlayer.nRectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, 9*this.sclB, 13*this.sclB, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
+          // console.log(this.roomCollide);
+          if (this.roomCollide[0]) {
+            if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
+              this.kinemat.batt.x = this.roomCollide[3] == 1? this.roomCollide[1] - 0.00001 : this.roomCollide[1] + 0.00001;
+              // this.kinemat.batt.vX *= -1;
+              
+            }
+            if (this.roomCollide[3] == 2) {
+              this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
+              this.resetSpecialCount();
+              this.special.inAir = false;  // Is on the ground, so no longer in air
+              this.special.wall.bool = false;  // No longer on a wall
+              // this.kinemat.batt.vY *= -1;
+            }
+            // else {
+            //   this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
+            //   this.kinemat.batt.vY = 0;
+            //   this.resetSpecialCount();
+            // }
           }
-          else if (this.roomCollide[3] == 2) {
-            this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
-            this.kinemat.batt.vY *= -1;
-          }
-          else {
-            this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
-            this.kinemat.batt.vY = 0;
-            this.resetSpecialCount();
+        }
+        else {
+          this.roomCollide = this.MediaPlayer.rectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, 9*this.sclB, 13*this.sclB, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
+          if (this.roomCollide[0]) {
+            if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
+              this.kinemat.batt.x = this.roomCollide[3] == 1? this.roomCollide[1] + 0.00001 : this.roomCollide[1] - 0.00001;
+              // this.kinemat.batt.vX *= -1;
+            }
+            else if (this.roomCollide[3] == 2) {
+              this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
+              // this.kinemat.batt.vY *= -1;
+            }
+            else {
+              this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
+              this.kinemat.batt.vY = 0;
+              this.resetSpecialCount();
+            }
           }
         }
       }
@@ -236,17 +261,17 @@ class Character {
     }
     else this.special.dash.bool = false;  // Without this, dash would activate inconsistently
     // On ground
-    if (this.kinemat.batt.y + this.kinemat.batt.vY > height - 52 || (this.kinemat.batt.y + this.battSpeed > height - 52 && this.special.wall.bool)) {  // Use a function to detect what we consider "ground" (create function first)
-      this.resetSpecialCount();
-      if (this.kinemat.batt.vY > this.kinemat.batt.j*1.5 && this.special.inAir)  this.kinemat.batt.vY = -this.kinemat.batt.vY/5;
-      else {
-        this.kinemat.batt.vY = 0;
-        this.kinemat.batt.y =
-          height - 52;  // Set Y coords to ground level (make function)
-        this.special.inAir = false;  // Is on the ground, so no longer in air
-        this.special.wall.bool = false;  // No longer on a wall
-      }
-    }
+    // if (this.kinemat.batt.y + this.kinemat.batt.vY > height - 52 || (this.kinemat.batt.y + this.battSpeed > height - 52 && this.special.wall.bool)) {  // Use a function to detect what we consider "ground" (create function first)
+    //   this.resetSpecialCount();
+    //   if (this.kinemat.batt.vY > this.kinemat.batt.j*1.5 && this.special.inAir)  this.kinemat.batt.vY = -this.kinemat.batt.vY/5;
+    //   else {
+    //     this.kinemat.batt.vY = 0;
+    //     this.kinemat.batt.y =
+    //       height - 52;  // Set Y coords to ground level (make function)
+    //     this.special.inAir = false;  // Is on the ground, so no longer in air
+    //     this.special.wall.bool = false;  // No longer on a wall
+    //   }
+    // }
     // console.log(width/2 - this.kinemat.batt.x - 9/2*this.sclB < 0, this.world.dir.batt.curr);
     // Collides with wall
     // if (this.kinemat.batt.x + this.kinemat.batt.vX >= width - 36 || this.kinemat.batt.x + this.kinemat.batt.vX <= 0) {  // Make a function
