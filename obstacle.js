@@ -22,6 +22,11 @@ class Obstacle {
   }
   
   drawHitbox() {
+    // fill(255);
+    // rect(this.x, this.y, this.wid, 3);
+    // rect(this.x, this.y, 3, this.hgt);
+    // rect(this.x, this.y+this.hgt-3, this.wid, 3);
+    // rect(this.x+this.wid-3, this.y, 3, this.hgt);
     fill(255, 0, 0, 25);
     rect(this.x, this.y, this.wid, this.hgt);
   }
