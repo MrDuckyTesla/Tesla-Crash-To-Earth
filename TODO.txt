@@ -2,6 +2,7 @@ TOP PRIORITIES
 
 #01:  add battle collisions that stop all movement, but let the character go in opposite directions, or bounce the player (maybe a little both)
 USE RECTANGLE FOR COLLISION OR LINES ^^^^^
+animation system might need a variable that determines if a full animation should be played
 #02:  platforms
 #03:  add big background that moves, then when within canvas size, character moves (switch between the 2 modes)
 #04:  redo ALL sprites, and add more characters. maybe even implement a customization system

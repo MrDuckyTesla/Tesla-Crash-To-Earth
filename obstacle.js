@@ -9,6 +9,7 @@ class Obstacle {
     this.isMve = isMovable;  // Move object whenever moving
     this.wlkThu = walkThrough;  // Walk through object
     this.dmgPlr = damagePlayer;  // Damages player, would be used in battle only
+    // Add a scale variable
     // Make array of all ojects and their dimensions to check if collide
   }
 
@@ -22,13 +23,21 @@ class Obstacle {
   }
   
   drawHitbox() {
-    // fill(255);
-    // rect(this.x, this.y, this.wid, 3);
-    // rect(this.x, this.y, 3, this.hgt);
-    // rect(this.x, this.y+this.hgt-3, this.wid, 3);
-    // rect(this.x+this.wid-3, this.y, 3, this.hgt);
-    fill(255, 0, 0, 25);
-    rect(this.x, this.y, this.wid, this.hgt);
+    fill(0, 0, 255);
+    if (this.mstSty) {
+      // rect(this.x, this.y, this.wid, 3);
+      // rect(this.x, this.y, 3, this.hgt);
+      // rect(this.x, this.y+this.hgt-3, this.wid, 3);
+      // rect(this.x+this.wid-3, this.y, 3, this.hgt);
+    }
+    else {
+      rect(this.x, this.y, this.wid, 3);
+      rect(this.x, this.y, 3, this.hgt);
+      rect(this.x, this.y+this.hgt-3, this.wid, 3);
+      rect(this.x+this.wid-3, this.y, 3, this.hgt);
+    }
+    // fill(255, 0, 0, 25);
+    // rect(this.x, this.y, this.wid, this.hgt);
   }
 
   // getBackHereOverworld() {
