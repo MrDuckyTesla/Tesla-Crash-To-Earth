@@ -7,7 +7,18 @@ function draw() {
 }
 
 
-
+// // function voxelize(img, angle) {
+// //   for (let i = 0; i < img.width; i ++) {
+// //     for (let j = 0; j < img.height; j ++) {
+// //       push();
+// //       rotateY(angle);
+// //       translate(i, j);
+// //       fill(img.get(i, j));
+// //       box(1);
+// //       pop();
+// //     }
+// //   }
+// // }
 
 
 

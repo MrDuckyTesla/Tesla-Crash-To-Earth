@@ -344,7 +344,6 @@ class Character {
       }
     }
     else this.special.wall.speed = this.battSpeed;
-    
   }
   
   collisionOver(state, x1=0, y1=0, x2=width, y2=height) {
