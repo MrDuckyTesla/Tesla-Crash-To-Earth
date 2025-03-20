@@ -1,6 +1,6 @@
 Start Date:  7/11/2024
-Last Updated:  11/21/2024
-Current Version 0.2.4
+Last Updated:  3/19/2025
+Current Version 0.3.5
 
 "Tesla: Crash to Earth" is (or will be) made by:
 
@@ -41,6 +41,13 @@ Software used (or will be used):
   GitHub (Repository):   https://github.com/MrDuckyTesla/Tesla-Crash-To-Earth
   
   Aseprite (Consider)
+
+TRY OUT
+https://github.com/electron/windows-installer
+https://www.jetbrains.com/webstorm/
+https://atom-editor.cc/
+https://www.sublimetext.com/
+https://code.visualstudio.com/
 
 License:
 

@@ -1,4 +1,4 @@
-let img, colors;
+let img, colors, Tesla;
 
  // fullscreen(true)
 
@@ -15,8 +15,8 @@ function preload() {
 function setup() {
   img = createImage(20, 20);
   createCanvas(600, 600);
-  textFont(font);  textSize(20);
-  noCursor();  noSmooth();
+  textFont(font); textSize(20);
+  noCursor(); noSmooth(); noStroke();
   colors = {col1: {r: 111, g: 111, b: 255}, col2: {r: 255, g: 111, b:111}};
   // Create Player Object 
   Tesla = new Player(width / 2 - 14 * 3, height / 2 - 14 * 3, width / 2 - 4 * 4, height - 13 * 4, teslaOverSS, teslaBattSS, colors.col1, colors.col2);
@@ -26,7 +26,7 @@ function setup() {
 
 function draw() {  // Main Game Loop
   // frameRate(round(random(59))+1);  // Fake Lagging (Funny)
-  // frameRate(30);  // Keep commented out, only use for testing
+  // frameRate(15);  // Keep commented out, only use for testing
   if (Tesla.world.over.curr) {
     background(150);
     fill(0);  // Text color
@@ -35,8 +35,8 @@ function draw() {  // Main Game Loop
     background(50);  // Use an image in future, or cool effects
     fill(255);  // Text color
   }
-  Tesla.show();
   text(round(frameRate()) + "fps", width - 40, 20);  // Show FPS counter
+  Tesla.show();
 }
 
 function keyReleased() {  // Cant even put this in player.js, big sad
