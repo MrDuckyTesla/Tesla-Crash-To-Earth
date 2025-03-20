@@ -1,15 +1,20 @@
 class Obstacle {
-  constructor(x, y, wid, hgt, mustStayIn=false, isMovable=false, walkThrough=false, damagePlayer=false) {
+  constructor(x, y, wid, hgt, scaleNum, colorList, special=false, specialNum=0) {
     this.MediaPlayer = new Media();  // Used for collision
     this.x = x;
     this.y = y;
     this.wid = wid;
     this.hgt = hgt;
-    this.mstSty = mustStayIn;  // Entities must stay in the box, opposite of normal
-    this.isMve = isMovable;  // Move object whenever moving
-    this.wlkThu = walkThrough;  // Walk through object
-    this.dmgPlr = damagePlayer;  // Damages player, would be used in battle only
-    // Add a scale variable
+    this.scl = scaleNum;
+    this.col = colorList;
+    this.spl = special;
+    this.num = specialNum;
+    // Special number meanings:
+    // 0: mustStayIn, Entities must stay in the box, opposite of normal
+    // 1: isMovable, Move object whenever moving
+    // 2: walkThrough, Walk through object
+    // 3: damagePlayer, Damage the player or entity
+    
     // Make array of all ojects and their dimensions to check if collide
   }
 
@@ -23,8 +28,8 @@ class Obstacle {
   }
   
   drawHitbox() {
-    fill(0, 0, 255);
-    if (this.mstSty) {
+    fill(this.col[0], this.col[1], this.col[2]);
+    if (this.spl && this.num == 0) {
       // rect(this.x, this.y, this.wid, 3);
       // rect(this.x, this.y, 3, this.hgt);
       // rect(this.x, this.y+this.hgt-3, this.wid, 3);

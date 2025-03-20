@@ -1,11 +1,13 @@
 class Room {  // A Room is full of Obstacles, NPCs, and such
-  constructor(player) {
+  constructor(player, scaleVal) {
+    this.Player = player;
+    this.scl = scaleVal;
     this.obstList = [];
     this.NPCList = [];
   }
   
-  addObstacle(x, y, wid, hgt, mstSty=false, isMov=false, wlkThu=false, dmgPlr=false) {
-    this.obstList.push(new Obstacle(x, y, wid, hgt, mstSty, isMov, wlkThu, dmgPlr));
+  addObstacle(x, y, wid, hgt, colorList, special=false, specialNum=0) {
+    this.obstList.push(new Obstacle(x, y, wid, hgt, this.scl, colorList, special, specialNum));
   }
   
   addObstacleClass(obstacle) {
