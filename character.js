@@ -38,7 +38,6 @@ class Character {
     this.kinemat.batt.pY = this.kinemat.batt.y;
     // Update present player coords
     this.move();
-    // this.collision();
     // Color :D (this took WAY too long)
     this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b, this.colors.c3.r, this.colors.c3.g, this.colors.c3.b], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
     this.MediaPlayer.changeColor(this.batImg, this.batList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b], [[105, 85, 34], [104]]);  // Battle
@@ -321,6 +320,7 @@ class Character {
   }
   
   specialMove() {
+    // Set variable that dictates when can character move through platforms
     this.special.fall.pBool = this.special.fall.bool && !this.special.inAir;
     // Jump
     if (this.special.jump.bool && this.special.jump.count > 0) {  // If enough jumps remain, jump
@@ -364,9 +364,6 @@ class Character {
       }
       // Dont let character run into wall
       else if (abs(this.kinemat.batt.vX) <= 10) {
-        // Dont let momentum move character
-        this.kinemat.batt.vX = 0;
-        this.kinemat.batt.aX = 0;
         // Set to idle state
         this.special.wall.bool = false;
         this.charState = 1;
