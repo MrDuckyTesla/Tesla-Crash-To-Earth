@@ -11,29 +11,32 @@ class Obstacle {
     this.num = specialNum;
     // Special number meanings:
     // 0: mustStayIn, Entities must stay in the box, opposite of normal
-    // 1: isMovable, Move object whenever moving
-    // 2: walkThrough, Walk through object
-    // 3: damagePlayer, Damage the player or entity
+    // 1: platform, Entities can move through object, but is solid on top
+    // 2: isMovable, Move object whenever moving
+    // 3: walkThrough, Walk through object
+    // 4: damagePlayer, Damage the player or entity
     
     // Make array of all ojects and their dimensions to check if collide
-  }
-
-  checkCollide(x, y, wid, hgt) {  // Platforms
-    // if (this.mstSty) this.roomCollide = this.MediaPlayer.nRectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
-    // else this.roomCollide = this.MediaPlayer.rectRectCollide(this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +9*this.sclB, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.sclB);
-    // if (this.roomCollide) {
-    //   // Only do things if rectangle detects collision
-    //   line(this.kinemat.batt.x+(9*this.sclB)/2,this.kinemat.batt.y+(13*this.sclB)/2, this.RoomVar.obstList[i].x+this.RoomVar.obstList[i].wid/2, this.RoomVar.obstList[i].y+this.RoomVar.obstList[i].hgt/2)
-    // }
   }
   
   drawHitbox() {
     fill(this.col[0], this.col[1], this.col[2]);
-    if (this.spl && this.num == 0) {
-      // rect(this.x, this.y, this.wid, 3);
-      // rect(this.x, this.y, 3, this.hgt);
-      // rect(this.x, this.y+this.hgt-3, this.wid, 3);
-      // rect(this.x+this.wid-3, this.y, 3, this.hgt);
+    if (this.spl ) {
+      switch (this.num) {
+        case 0:
+          // rect(this.x, this.y, this.wid, 3);
+          // rect(this.x, this.y, 3, this.hgt);
+          // rect(this.x, this.y+this.hgt-3, this.wid, 3);
+          // rect(this.x+this.wid-3, this.y, 3, this.hgt);
+          break;
+        case 1:
+          rect(this.x, this.y, 3, this.hgt);
+          rect(this.x, this.y+this.hgt-3, this.wid, 3);
+          rect(this.x+this.wid-3, this.y, 3, this.hgt);
+          fill(255, 0, 0);
+          rect(this.x, this.y, this.wid, 3);
+          break;
+      }
     }
     else {
       rect(this.x, this.y, this.wid, 3);
@@ -59,9 +62,5 @@ class Obstacle {
     //   this.oY = (28 * this.sclO + height);
     // }
   // }
-  
-//   showHitbox() {
-//     
-//   }
   
 }

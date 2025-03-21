@@ -10,7 +10,7 @@ class Character {
     // Movement varaibles
     this.overSpeed = 3;  this.SpeedCap = this.overSpeed*2;  this.battSpeed = 2.5;  // Characters Speed
     this.kinemat = {over: {x: oX, y: oY}, batt: {pX: bX, pY: bY, x: bX, y: bY, vX: 0, vY: 0, aX: 0, aY: 1, j: 17, f: 0.8}};
-    this.special = {sprint: false, inAir: false, jump: {bool: false, count: 2}, fall: {bool: false, count: 1}, dash: {bool: false, count: 1, time: 0}, wall: {bool: false, speed: this.battSpeed, time: 0}};
+    this.special = {sprint: false, inAir: false, jump: {bool: false, count: 2}, fall: {bool: false, pBool: false, count: 1}, dash: {bool: false, count: 1, time: 0}, wall: {bool: false, speed: this.battSpeed, time: 0}};
     // Lists of changeable pixels and their respective colors
     this.ovrList = this.MediaPlayer.preCompile(ovrImg, [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Greyscale colors of original image, separated by their layers
     this.batList = this.MediaPlayer.preCompile(batImg, [[105, 85, 34], [104]]);  // Greyscale colors of original image, separated by their layers
@@ -23,11 +23,12 @@ class Character {
     this.charState = 0;  // What animation the character is currently doing
     // Platforms (test)
     this.RoomVar = new Room(this, this.dimensions.batt.scl);
-    this.RoomVar.addObstacle(0, 0, width, height, [100, 100, 255], true, 0);
-    this.RoomVar.addObstacle(200, 400, 200, 30, [255, 150, 200]);
+    this.RoomVar.addObstacle(0, 0, width, height, [100, 100, 255], true, 0);  // Box that character is in
+    this.RoomVar.addObstacle(200, 200, 200, 30, [255, 150, 75], true, 1);  // Platform for player
+    this.RoomVar.addObstacle(200, 400, 200, 30, [255, 150, 200]);  // Object for player to interact with
     this.roomCollide = [false];
     this.roomWallTouchin = 2;
-    
+    this.dontChangeVY = false;
   }
   
   show() {
@@ -162,7 +163,8 @@ class Character {
     else {
       // Kinematics
       if (abs(this.kinemat.batt.aX) > this.battSpeed && this.kinemat.batt.aX != 0) this.kinemat.batt.aX = this.battSpeed * (this.kinemat.batt.aX / abs(this.kinemat.batt.aX));  // Cap the friction/speed
-      if (abs(this.kinemat.batt.vX) < 0.00001) this.kinemat.batt.vX = 0;  // We cant see the difference in speed
+      if (abs(this.kinemat.batt.vX) < 0.00001) this.kinemat.batt.vX = 0;  // We cant see the difference in velocity
+      if (abs(this.kinemat.batt.aX) < 0.00001) this.kinemat.batt.aX = 0;  // We cant see the difference in acceleration
       this.kinemat.batt.vX += this.kinemat.batt.aX;  // Apply acceleration to X
       this.kinemat.batt.vY += this.kinemat.batt.aY;  // Apply acceleration to Y
       this.kinemat.batt.vX *= this.kinemat.batt.f;  // Apply friction to X
@@ -221,25 +223,49 @@ class Character {
           // Set collision coordinates variable normally
           this.roomCollide = this.MediaPlayer.rectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
           // If colliding
+          if (!this.dontChangeVY || this.special.inAir) this.dontChangeVY = false;
           if (this.roomCollide[0]) {
-            // if collision is with walls
-            if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
-              // Change X coordinate
-              this.kinemat.batt.x = this.roomCollide[3] == 1? this.roomCollide[1] + 0.00001 : this.roomCollide[1] - 0.00001;  // Slightly offset to not stick
+            // If platform
+            if (this.RoomVar.obstList[i].spl && this.RoomVar.obstList[i].num == 1) {
+              // Make sure to not get confused with fast fall
+              this.dontChangeVY = this.roomCollide[3] == 0;
+              // If colliding with the top of a platform, not in air, and down arrow was pressed
+              if (this.roomCollide[3] == 0 && !this.special.inAir && this.special.fall.pBool) {
+                this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
+                this.kinemat.batt.vY = 0;
+                this.resetSpecialCount();
+                this.special.inAir = true;
+              }
+              else if (this.roomCollide[3] == 0 && this.kinemat.batt.vY > 0 && !this.special.fall.pBool) {
+                // Change Y coordinate
+                this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
+                this.kinemat.batt.vY = -this.kinemat.batt.vY/5;
+                this.resetSpecialCount();
+                this.special.inAir = false;
+              }
             }
-            // Else if collision is with bottom of object (acts like ceiling)
-            else if (this.roomCollide[3] == 2) {
-              // Change Y coordinate
-              this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
-              this.kinemat.batt.vY = -this.kinemat.batt.vY/5
-            }
-            // Else, collision is with top of object (acts like floor)
+            // Objects
             else {
-              // Change Y coordinate
-              this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
-              this.kinemat.batt.vY = -this.kinemat.batt.vY/5
-              this.resetSpecialCount();
-              this.special.inAir = false;
+              // if collision is with walls
+              if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
+                // Change X coordinate
+                this.kinemat.batt.x = this.roomCollide[3] == 1? this.roomCollide[1] + 0.00001 : this.roomCollide[1] - 0.00001;  // Slightly offset to not stick
+                this.kinemat.batt.vX *= abs(this.kinemat.batt.vX < 20)? -2 : -1;
+              }
+              // Else if collision is with bottom of object (acts like ceiling)
+              else if (this.roomCollide[3] == 2) {
+                // Change Y coordinate
+                this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
+                this.kinemat.batt.vY = -this.kinemat.batt.vY/5
+              }
+              // Else, collision is with top of object (acts like floor)
+              else {
+                // Change Y coordinate
+                this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
+                this.kinemat.batt.vY = -this.kinemat.batt.vY/5
+                this.resetSpecialCount();
+                this.special.inAir = false;
+              }
             }
           }
         }
@@ -294,7 +320,7 @@ class Character {
   }
   
   specialMove() {
-    // By the way, height of character is 13px * scale, and width is 9 * scale, make sure to replace these with width/height * scale, and not some random multiple
+    this.special.fall.pBool = this.special.fall.bool;
     // Jump
     if (this.special.jump.bool && this.special.jump.count > 0) {  // If enough jumps remain, jump
       this.kinemat.batt.vY = -this.kinemat.batt.j;  // Add an impulse to make character go up
@@ -305,7 +331,8 @@ class Character {
       this.special.jump.bool = false;  // Not jumping
     }
     // Fast Fall
-    if (this.special.fall.bool && this.special.fall.count > 0) {
+    if (this.special.fall.bool && this.dontChangeVY) this.special.fall.bool = false;
+    if (this.special.fall.bool && this.special.fall.count > 0 && !this.dontChangeVY) {
       this.kinemat.batt.vY = this.kinemat.batt.j*2;  // Add an impulse to make character go up
       this.special.fall.count --;  // Subtract from jump count for double jumps
       this.special.fall.bool = false;  // No longer "Fast Falling" just "falling with extra steps" now
@@ -325,14 +352,21 @@ class Character {
     if (this.special.wall.bool) {
       // If character is moving slow enough
       if (abs(this.kinemat.batt.vX) <= 20 && this.special.inAir) {
+        // Dont let momentum move character
         this.kinemat.batt.vX = 0;
+        this.kinemat.batt.aX = 0;
+        // No gravity needed here
         this.kinemat.batt.vY = 0;
-        this.special.wall.speed += this.battSpeed/10;
         this.kinemat.batt.y += this.special.wall.speed;
+        this.special.wall.speed += this.battSpeed/10;
         this.resetSpecialCount();
       }
       // Dont let character run into wall
       else if (abs(this.kinemat.batt.vX) <= 10) {
+        // Dont let momentum move character
+        this.kinemat.batt.vX = 0;
+        this.kinemat.batt.aX = 0;
+        // Set to idle state
         this.special.wall.bool = false;
         this.charState = 1;
       }
@@ -366,14 +400,6 @@ class Character {
       return this.world.dir.over.curr;  // Up
     }
     this.charState = state;
-  }
-  
-  collisionBattWall() {
-    // this.charState = 1;
-    if (this.world.dir.batt.curr == 0 || this.kinemat.batt.x + this.kinemat.batt.vX < 0) {
-      this.kinemat.batt.x = 0;
-      return 0;
-    }
   }
   
   resetSpecialCount() {
