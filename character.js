@@ -1,3 +1,4 @@
+
 class Character {
   constructor(oX, oY, bX, bY, ovrImg, batImg, col1, col2) {
     // Animation and media varaibles
@@ -231,7 +232,7 @@ class Character {
               this.dontChangeVY = this.roomCollide[3] == 0;
               // If colliding with the top of a platform, not in air, and down arrow was pressed
               if (this.roomCollide[3] == 0 && !this.special.inAir && this.special.fall.pBool) {
-                this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
+                this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset togo through platform
                 this.kinemat.batt.vY = 0;
                 this.resetSpecialCount();
                 this.special.inAir = true;
@@ -256,7 +257,7 @@ class Character {
               else if (this.roomCollide[3] == 2) {
                 // Change Y coordinate
                 this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
-                this.kinemat.batt.vY = -this.kinemat.batt.vY/5
+                this.kinemat.batt.vY = -this.kinemat.batt.vY/5;
               }
               // Else, collision is with top of object (acts like floor)
               else {
@@ -320,7 +321,7 @@ class Character {
   }
   
   specialMove() {
-    this.special.fall.pBool = this.special.fall.bool;
+    this.special.fall.pBool = this.special.fall.bool && !this.special.inAir;
     // Jump
     if (this.special.jump.bool && this.special.jump.count > 0) {  // If enough jumps remain, jump
       this.kinemat.batt.vY = -this.kinemat.batt.j;  // Add an impulse to make character go up
