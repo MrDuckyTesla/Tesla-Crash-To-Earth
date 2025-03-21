@@ -1,19 +1,17 @@
 TOP PRIORITIES
 
-#01:  platforms
-#02:  add big background that moves, then when within canvas size, character moves (switch between the 2 modes)
-#03:  redo ALL sprites, and add more characters. maybe even implement a customization system
-#04:  add npc following overworld
-#05:  add enemy overworld
-#06:  add overworld interacting
-#07:  add overworld and battle dialogue
-#08:  add overworld sword
-#09:  optimize code using switch statements, canvas imaging thing, and others:  https://www.w3schools.com/js/js_performance.asp
-#10:  add menu
-#11:  add enemy battle ai
-#12:  add save files (probably need electron or node.js (included in electron))
-#13:  Tweak overworld sword animation
-#14:  Add battle animations (use procedural animation)
+#01:  add big background that moves, then when within canvas size, character moves (switch between the 2 modes)
+#02:  redo ALL sprites, and add more characters. maybe even implement a customization system
+#03:  add npc following overworld
+#04:  add enemy overworld
+#05:  add overworld interacting
+#06:  add overworld and battle dialogue
+#07:  add overworld sword
+#08:  optimize code using switch statements, canvas imaging thing, and others:  https://www.w3schools.com/js/js_performance.asp
+#09:  add menu
+#10:  add enemy battle ai
+#11:  add save files (probably need electron or node.js (included in electron))
+#12:  Add battle animations (using procedural animation)
 
 Other things to implement on a later date
 
@@ -22,7 +20,7 @@ Other things to implement on a later date
   Procedural music/attacks?
   Making music sync with attacks by training neural network to reconize beats and sync
   Render Pixelization on side or before game is drawn?
-  Use hashs to store images and skip CORS policy
+  Use hashs to store images and skip CORS policy. maybe just use electron
   In overworld, keep attack animation going in single direction without a way to stop
   Open world? make an enemy ai that will secretly fight in background
   Have secret room/way to fight editor or kwack as joke
@@ -33,29 +31,13 @@ Other things to implement on a later date
   Make sword get more red the more you kill, maybe more blue the more pacifist you are
   Add unlocking abilities (both pacifist and genocide routes have these)
   Add unlocking attacks (only genocide)
-  Make dash frameRate baes like everything else
   maybe make visor shading more visible
-  Find way to calculate exact moment when colliding with something, only when going at extreme speeds
   Only change color of current frame?
   make everything not frame based, make up lost frames
-  Maybe look at this? https://www.jeffreythompson.org/collision-detection/
   make player get darker red during genocide
   local coop before networking
   add private variables
-  Exponential slide (faster over time)
   battle character should be bounced off wall if going too fast, also should act like overworld character if going slow towards wall and on ground
   battle character should hit ground before getting launched upwards
-  battle character should bonk head on ceiling
-  Make sure sprites are using right fooot first every animation
+  Make sure sprites are using right foot first every animation
   animation system might need a variable that determines if a full animation should be played
-
-Maybe add libraries? 
-(depends on if its just quality of life (add), or if it will do work for me (want satisfaction of doing it myself))
-
-  https://github.com/bmoren/p5.collide2D?scrlybrkr=1c45e0f7
-  https://github.com/Morfologia-digital/p5.scaler
-  https://github.com/molab-itp/p5mirror
-  https://github.com/error-four-o-four/p5.qol.js
-  https://mcintyre.io/numero
-  https://github.com/RandomGamingDev/MatrixJs
-
