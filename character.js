@@ -353,9 +353,6 @@ class Character {
     if (this.special.wall.bool) {
       // If character is moving slow enough
       if (abs(this.kinemat.batt.vX) <= 20 && this.special.inAir) {
-        // Dont let momentum move character
-        this.kinemat.batt.vX = 0;
-        this.kinemat.batt.aX = 0;
         // No gravity needed here
         this.kinemat.batt.vY = 0;
         this.kinemat.batt.y += this.special.wall.speed;
@@ -364,6 +361,11 @@ class Character {
       }
       // Dont let character run into wall
       else if (abs(this.kinemat.batt.vX) <= 10) {
+        if (this.charState == 1) {
+          // Dont let momentum move character
+          this.kinemat.batt.vX = 0;
+          this.kinemat.batt.aX = 0;
+        }
         // Set to idle state
         this.special.wall.bool = false;
         this.charState = 1;
