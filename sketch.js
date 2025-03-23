@@ -1,4 +1,4 @@
-let img, colors, Tesla;
+let img, colors, Tesla, teslaOverSS, teslaBattSS;
 
  // fullscreen(true)
 
@@ -14,12 +14,12 @@ function preload() {
 
 function setup() {
   img = createImage(20, 20);
-  createCanvas(600, 600);
+  createCanvas(800, 800);
   textFont(font); textSize(20);
   noCursor(); noSmooth(); noStroke();
   colors = {col1: {r: 111, g: 111, b: 255}, col2: {r: 255, g: 111, b:111}};
   // Create Player Object 
-  Tesla = new Player(width / 2 - 14 * 3, height / 2 - 14 * 3, width / 2 - 4 * 4, height - 13 * 4, teslaOverSS, teslaBattSS, colors.col1, colors.col2);
+  Tesla = new Player(width/2-14*3, height/2-14*3, width/2-4*4, height-3*4-140, [3, 3], teslaOverSS, teslaBattSS, colors.col1, colors.col2);
   // Tesla.world.over.curr = round(random()) == 1;  // Fun :D
   Tesla.world.over.curr = true;  //  Dictates if in battle or not
 }
@@ -32,7 +32,7 @@ function draw() {  // Main Game Loop
     fill(0);  // Text color
   }
   else {
-    background(50);  // Use an image in future, or cool effects
+    background(25);  // Use an image in future, or cool effects
     fill(255);  // Text color
   }
   text(round(frameRate()) + "fps", width - 40, 20);  // Show FPS counter
