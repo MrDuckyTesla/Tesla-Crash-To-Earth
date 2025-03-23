@@ -22,14 +22,16 @@ class Character {
     this.rectBatt = {x1: 0, x2: width - this.dimensions.batt.calcW, y1: 0, y2: height - 14*this.dimensions.batt.scl};
     this.frameMultiplier = 1;  // Make code consistant at lower frameRates
     this.charState = 0;  // What animation the character is currently doing
-    // Platforms (test)
+    // Collision variables
+    this.roomCollide = [false]; this.dontChangeVY = false;
+    this.roomWallTouchin = 2;
+    // Objects
     this.RoomVar = new Room(this, this.dimensions.batt.scl);
     this.RoomVar.addObstacle(0, 0, width, height, [100, 100, 255], true, 0);  // Box that character is in
     this.RoomVar.addObstacle(200, 200, 200, 30, [255, 150, 75], true, 1);  // Platform for player
-    this.RoomVar.addObstacle(200, 400, 200, 30, [255, 150, 200]);  // Object for player to interact with
-    this.roomCollide = [false];
-    this.roomWallTouchin = 2;
-    this.dontChangeVY = false;
+    this.RoomVar.addObstacle(200, 300, 200, 30, [0, 255, 200], true, 2);  // Object for player to interact with
+    this.RoomVar.addObstacle(200, 400, 200, 30, [255, 150, 200]);  // Non-interactable object
+    this.scaleMove = this.dimensions.batt.scl/4;
   }
   
   show() {
@@ -59,95 +61,11 @@ class Character {
       }
       // Keep code consistant at lower frameRates
       this.overSpeed *= this.frameMultiplier;
-      this.overAnimSpeed /= this.frameMultiplier; 
-      if (this.charState == 3) {  // Overworld Walk
-        if (this.collisionOver(this.charState) != this.world.dir.over.curr) {
-          switch (this.world.dir.over.curr) {
-            case 0:  // Right
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x += this.overSpeed, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, 16, 19, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 1:  // Right - Down
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x += this.overSpeed, this.kinemat.over.y += this.overSpeed, 28, 28, this.dimensions.over.scl, 20, 23, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 2:  // Down
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y += this.overSpeed, 28, 28, this.dimensions.over.scl, 24, 27, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 3:  // Down - Left
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x -= this.overSpeed, this.kinemat.over.y += this.overSpeed, 28, 28, this.dimensions.over.scl, 28, 31, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 4:  // Left
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x -= this.overSpeed, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, 32, 35, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 5:  // Left - Up
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x -= this.overSpeed, this.kinemat.over.y -= this.overSpeed, 28, 28, this.dimensions.over.scl, 36, 39, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 6:  // Up
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y -= this.overSpeed, 28, 28, this.dimensions.over.scl, 40, 43, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 7:  // Up - Right
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x += this.overSpeed, this.kinemat.over.y -= this.overSpeed, 28, 28, this.dimensions.over.scl, 44, 47, this.overAnimSpeed, this.changeAnimation);
-              break;
-          }
-        }
-      }
-      if (this.charState == 2) {  // Sword Swing (walking)
-        if (this.collisionOver(this.charState) != this.world.dir.over.curr) {
-          switch (this.world.dir.over.curr) {
-            case 0:  // Right
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x += this.overSpeed/2, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, 48, 51, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 1:  // Right - Down
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x += this.overSpeed/2, this.kinemat.over.y += this.overSpeed/2, 28, 28, this.dimensions.over.scl, 52, 55, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 2:  // Down
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y += this.overSpeed/2, 28, 28, this.dimensions.over.scl, 56, 59, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 3:  // Down - Left
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x -= this.overSpeed/2, this.kinemat.over.y += this.overSpeed/2, 28, 28, this.dimensions.over.scl, 60, 63, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 4:  // Left
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x -= this.overSpeed/2, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, 64, 67, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 5:  // Left - Up
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x -= this.overSpeed/2, this.kinemat.over.y -= this.overSpeed/2, 28, 28, this.dimensions.over.scl, 68, 71, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 6:  // Up
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y -= this.overSpeed/2, 28, 28, this.dimensions.over.scl, 72, 75, this.overAnimSpeed, this.changeAnimation);
-              break;
-            case 7:  // Up - Right
-              this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x += this.overSpeed/2, this.kinemat.over.y -= this.overSpeed/2, 28, 28, this.dimensions.over.scl, 76, 79, this.overAnimSpeed, this.changeAnimation);
-              break;
-          }
-        }
-      }
-      if (this.charState == 1) {  // Overworld Idle
-        switch (this.world.dir.over.curr) {
-          case 0:  // Right
-            this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, 0, 1, this.overAnimSpeed, this.changeAnimation);
-            break;
-          case 1:  // Right - Down
-            this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28,this.dimensions.over.scl, 2, 3, this.overAnimSpeed, this.changeAnimation);
-            break;
-          case 2:  // Down
-            this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, 4, 5, this.overAnimSpeed, this.changeAnimation);
-            break;
-          case 3:  // Down - Left
-            this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, 6, 7, this.overAnimSpeed, this.changeAnimation);
-            break;
-          case 4:  // Left
-            this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, 8, 9, this.overAnimSpeed, this.changeAnimation);
-            break;
-          case 5:  // Left - Up
-            this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, 10, 11, this.overAnimSpeed, this.changeAnimation);
-            break;
-          case 6:  // Up
-            this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, 12, 13, this.overAnimSpeed, this.changeAnimation);
-            break;
-          case 7:  // Up - Right
-            this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, 14, 15, this.overAnimSpeed, this.changeAnimation);
-            break;
-        }
-      }
+      this.overAnimSpeed /= this.frameMultiplier;
+      // Overworld states start here
+      if (this.charState == 3) this.animateMoveOver(this.overSpeed, 16, 4);  // Overworld Walk
+      if (this.charState == 2) this.animateMoveOver(this.overSpeed/2, 48, 4);  // Sword Swing (walking)
+      if (this.charState == 1) this.animateMoveOver(0, 0, 2, true);  // Overworld Idle
       // Add new overworld states here
       
       this.overSpeed /= this.frameMultiplier;
@@ -158,114 +76,42 @@ class Character {
         this.overAnimSpeed *= 2;
       }
       
-    // Battle states below here
     }
+    // Battle states start here
     else {
-      // Kinematics
-      if (abs(this.kinemat.batt.aX) > this.battSpeed && this.kinemat.batt.aX != 0) this.kinemat.batt.aX = this.battSpeed * (this.kinemat.batt.aX / abs(this.kinemat.batt.aX));  // Cap the friction/speed
-      if (abs(this.kinemat.batt.vX) < 0.00001) this.kinemat.batt.vX = 0;  // We cant see the difference in velocity
-      if (abs(this.kinemat.batt.aX) < 0.00001) this.kinemat.batt.aX = 0;  // We cant see the difference in acceleration
-      this.kinemat.batt.vX += this.kinemat.batt.aX;  // Apply acceleration to X
-      this.kinemat.batt.vY += this.kinemat.batt.aY;  // Apply acceleration to Y
-      this.kinemat.batt.vX *= this.kinemat.batt.f;  // Apply friction to X
-      // State
-      if (this.special.wall.time > millis())  this.charState = 1;  // If character hit wall too quickly
-      if (this.charState == 1) this.kinemat.batt.aX /= 1.2;  // Dont let velocity stay the same when not moving
-      else if (this.charState == 2) this.kinemat.batt.aX += this.world.dir.batt.curr == 0 ? this.battSpeed : -this.battSpeed;  // If facing towards the right, then the acceleration is positive, negative otherwise
-      // Kinematics
+      this.updateCharCheck();
       this.specialMove();  // Run the special moves function
       this.kinemat.batt.x += this.kinemat.batt.vX;
-      this.kinemat.batt.y += this.kinemat.batt.vY
+      this.kinemat.batt.y += this.kinemat.batt.vY;
       
       // Collision code
       this.special.inAir = this.special.jump.bool? false : true;
       // Iterate through all objects in list
       for (let i = 0; i < this.RoomVar.obstList.length; i ++) {
         // Display object
-        this.RoomVar.obstList[i].drawHitbox();
+        this.RoomVar.obstList[i].drawObst();
         // If you must stay in the object (like a box or a cage)
         if (this.RoomVar.obstList[i].spl && this.RoomVar.obstList[i].num == 0) {
-          // Set collision coordinates variable to this mode
-          this.roomCollide = this.MediaPlayer.nRectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
-          // Iterate extra times in case of edge cases (like when the player runs into a wall while on ground)
-          for (let j = 0; j < 2; j ++) {
-            // If colliding
-            if (this.roomCollide[0]) {
-              // If collision is with walls
-              if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
-                // Change X coordinate
-                this.kinemat.batt.x = this.roomCollide[3] == 1? this.roomCollide[1] - 0.00001 : this.roomCollide[1] + 0.00001;  // Slightly offset to not stick
-                // Set variables for wall sliding
-                this.roomWallTouchin = this.roomCollide[3];
-                this.special.wall.bool = true;
-              }
-              // Else if collision is with floor of object
-              else if (this.roomCollide[3] == 2) {
-                // Change Y coordinate
-                this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
-                this.kinemat.batt.vY = -this.kinemat.batt.vY/5
-                this.resetSpecialCount();
-                this.special.inAir = false;  // Is on the ground, so no longer in air
-              }
-              // Else, collision is with top of object (acts like ceiling)
-              else {
-                // Change Y coordinate
-                this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
-                this.kinemat.batt.vY = -this.kinemat.batt.vY/5
-              }
-              // Look for collisions again (edge cases remember?)
-              this.roomCollide = this.MediaPlayer.nRectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
-            }
-          }
+          this.collideBox(i);
         }
         // Else collision is normal
         else {
           // Set collision coordinates variable normally
           this.roomCollide = this.MediaPlayer.rectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
-          // If colliding
           if (!this.dontChangeVY || this.special.inAir) this.dontChangeVY = false;
+          // If colliding
           if (this.roomCollide[0]) {
             // If platform
             if (this.RoomVar.obstList[i].spl && this.RoomVar.obstList[i].num == 1) {
-              // Make sure to not get confused with fast fall
-              this.dontChangeVY = this.roomCollide[3] == 0;
-              // If colliding with the top of a platform, not in air, and down arrow was pressed
-              if (this.roomCollide[3] == 0 && !this.special.inAir && this.special.fall.pBool) {
-                this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset togo through platform
-                this.kinemat.batt.vY = 0;
-                this.resetSpecialCount();
-                this.special.inAir = true;
-              }
-              else if (this.roomCollide[3] == 0 && this.kinemat.batt.vY > 0 && !this.special.fall.pBool) {
-                // Change Y coordinate
-                this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
-                this.kinemat.batt.vY = -this.kinemat.batt.vY/5;
-                this.resetSpecialCount();
-                this.special.inAir = false;
-              }
+              this.collidePlatform();
             }
-            // Objects
+            // Else if movable
+            else if (this.RoomVar.obstList[i].spl && this.RoomVar.obstList[i].num == 2) {
+              // this.collideMove(i);
+            }
+            // Else normal objects
             else {
-              // if collision is with walls
-              if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
-                // Change X coordinate
-                this.kinemat.batt.x = this.roomCollide[3] == 1? this.roomCollide[1] + 0.00001 : this.roomCollide[1] - 0.00001;  // Slightly offset to not stick
-                this.kinemat.batt.vX *= abs(this.kinemat.batt.vX < 20)? -2 : -1;
-              }
-              // Else if collision is with bottom of object (acts like ceiling)
-              else if (this.roomCollide[3] == 2) {
-                // Change Y coordinate
-                this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
-                this.kinemat.batt.vY = -this.kinemat.batt.vY/5;
-              }
-              // Else, collision is with top of object (acts like floor)
-              else {
-                // Change Y coordinate
-                this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
-                this.kinemat.batt.vY = -this.kinemat.batt.vY/5
-                this.resetSpecialCount();
-                this.special.inAir = false;
-              }
+              this.collideNormal();
             }
           }
         }
@@ -324,7 +170,7 @@ class Character {
     this.special.fall.pBool = this.special.fall.bool && !this.special.inAir;
     // Jump
     if (this.special.jump.bool && this.special.jump.count > 0) {  // If enough jumps remain, jump
-      this.kinemat.batt.vY = -this.kinemat.batt.j;  // Add an impulse to make character go up
+      this.kinemat.batt.vY = -this.kinemat.batt.j*this.scaleMove;  // Add an impulse to make character go up
       this.special.jump.count --;  // Subtract from jump count for double jumps
       this.special.jump.bool = false;  // Without this, both jumps would activate within 2 frames
     }
@@ -334,13 +180,13 @@ class Character {
     // Fast Fall
     if (this.special.fall.bool && this.dontChangeVY) this.special.fall.bool = false;
     if (this.special.fall.bool && this.special.fall.count > 0 && !this.dontChangeVY) {
-      this.kinemat.batt.vY = this.kinemat.batt.j*2;  // Add an impulse to make character go up
+      this.kinemat.batt.vY = this.kinemat.batt.j*2*this.scaleMove;  // Add an impulse to make character go up
       this.special.fall.count --;  // Subtract from jump count for double jumps
       this.special.fall.bool = false;  // No longer "Fast Falling" just "falling with extra steps" now
     }
     // Dash
     if (this.special.dash.bool && this.special.dash.count > 0 && this.special.dash.time < millis()) {
-      this.kinemat.batt.vX += this.world.dir.batt.curr == 0 ? this.kinemat.batt.j*2 : -this.kinemat.batt.j*2;  // Add impulse in X direction to dash
+      this.kinemat.batt.vX += this.world.dir.batt.curr == 0 ? this.kinemat.batt.j*2*this.scaleMove : -this.kinemat.batt.j*2*this.scaleMove;  // Add impulse in X direction to dash
       this.special.dash.count --;  // Subtract from dash count so only one dash mid air
       this.special.dash.bool = false;  // No longer "dashing"
       this.special.dash.time = millis() + 500;
@@ -352,15 +198,15 @@ class Character {
     }
     if (this.special.wall.bool) {
       // If character is moving slow enough
-      if (abs(this.kinemat.batt.vX) <= 20 && this.special.inAir) {
+      if (abs(this.kinemat.batt.vX) <= 20*this.scaleMove && this.special.inAir) {
         // No gravity needed here
         this.kinemat.batt.vY = 0;
-        this.kinemat.batt.y += this.special.wall.speed;
-        this.special.wall.speed += this.battSpeed/10;
+        this.kinemat.batt.y += this.special.wall.speed*this.scaleMove;
+        this.special.wall.speed += (this.battSpeed*this.scaleMove)/10;
         this.resetSpecialCount();
       }
       // Dont let character run into wall
-      else if (abs(this.kinemat.batt.vX) <= 10) {
+      else if (abs(this.kinemat.batt.vX) <= 10*this.scaleMove) {
         if (this.charState == 1) {
           // Dont let momentum move character
           this.kinemat.batt.vX = 0;
@@ -373,12 +219,130 @@ class Character {
       // Bump off wall
       else {
         this.special.wall.bool = false;
-        this.special.wall.time = millis() + abs(this.kinemat.batt.vX*15);
+        this.special.wall.time = millis() + abs(this.kinemat.batt.vX*15/this.scaleMove);
         this.kinemat.batt.vX *= -1;
       }
     }
     else this.special.wall.speed = this.battSpeed;
     
+  }
+  
+  updateCharCheck() {
+    // Kinematics
+    if (abs(this.kinemat.batt.aX) > this.battSpeed * this.scaleMove && this.kinemat.batt.aX != 0) this.kinemat.batt.aX = this.battSpeed * (this.kinemat.batt.aX / abs(this.kinemat.batt.aX)) * this.scaleMove;  // Cap the friction/speed
+    if (abs(this.kinemat.batt.vX) < 0.00001) this.kinemat.batt.vX = 0;  // We cant see the difference in velocity
+    if (abs(this.kinemat.batt.aX) < 0.00001) this.kinemat.batt.aX = 0;  // We cant see the difference in acceleration
+    this.kinemat.batt.vX += this.kinemat.batt.aX;  // Apply acceleration to X
+    this.kinemat.batt.vY += this.kinemat.batt.aY*this.scaleMove;  // Apply acceleration to Y
+    this.kinemat.batt.vX *= this.kinemat.batt.f;  // Apply friction to X
+    // State
+    if (this.special.wall.time > millis()) {
+      this.charState = 1;  // If character hit wall too quickly
+      this.special.jump.bool = false;  // Dont let jump
+    }  
+    if (this.charState == 1) this.kinemat.batt.aX /= 1.2/this.scaleMove;  // Dont let velocity stay the same when not moving
+    else if (this.charState == 2) this.kinemat.batt.aX += this.world.dir.batt.curr == 0 ? this.battSpeed * this.scaleMove : -this.battSpeed *this.scaleMove;  // If facing towards the right, then the acceleration is positive, negative otherwise
+  }
+  
+  collidePlatform() {
+    // Make sure to not get confused with fast fall
+    this.dontChangeVY = this.roomCollide[3] == 0;
+    // If colliding with the top of a platform, not in air, and down arrow was pressed
+    if (this.roomCollide[3] == 0 && !this.special.inAir && this.special.fall.pBool) {
+      this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset togo through platform
+      this.kinemat.batt.vY = 0;
+      this.resetSpecialCount();
+      this.special.inAir = true;
+    }
+    else if (this.roomCollide[3] == 0 && this.kinemat.batt.vY > 0 && !this.special.fall.pBool) {
+      // Change Y coordinate
+      this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
+      this.kinemat.batt.vY = -this.kinemat.batt.vY/5;
+      this.resetSpecialCount();
+      this.special.inAir = false;
+    }
+  }
+  
+  collideNormal() {
+    // if collision is with walls
+    if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
+      // Change X coordinate
+      this.kinemat.batt.x = this.roomCollide[3] == 1? this.roomCollide[1] + 0.00001 : this.roomCollide[1] - 0.00001;  // Slightly offset to not stick
+      this.kinemat.batt.vX *= abs(this.kinemat.batt.vX < 20)? -2*this.scaleMove : -1*this.scaleMove;
+    }
+    // Else if collision is with bottom of object (acts like ceiling)
+    else if (this.roomCollide[3] == 2) {
+      // Change Y coordinate
+      this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
+      this.kinemat.batt.vY = -this.kinemat.batt.vY/5;
+    }
+    // Else, collision is with top of object (acts like floor)
+    else {
+      // Change Y coordinate
+      this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
+      this.kinemat.batt.vY = -this.kinemat.batt.vY/5
+      this.resetSpecialCount();
+      this.special.inAir = false;
+    }
+  }
+  
+  collideMoveO(i) {
+    for (let j = 0; j < this.RoomVar.obstList.length; j ++) {
+      let temp = this.MediaPlayer.rectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
+      
+    }
+    // if collision is with walls
+    if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
+      // this.RoomVar.obstList[i].x = this.roomCollide[3] == 1? this.kinemat.batt.x - 0.00001 - this.RoomVar.obstList[i].wid: this.kinemat.batt.x + 0.00001 + this.dimensions.batt.calcW;  // Slightly offset to not stick
+    }
+    // Else if collision is with bottom of object
+    else if (this.roomCollide[3] == 2) {
+      // this.RoomVar.obstList[i].y = this.kinemat.batt.y - 0.00001 - this.dimensions.batt.calcH;
+    }
+    // Else, collision is with top of object
+    else {
+      // this.RoomVar.obstList[i].y = this.kinemat.batt.y + 0.00001 + this.RoomVar.obstList[i].hgt;
+    }
+    this.collideNormal();
+  }
+  
+  collideMoveB(i) {
+    
+  }
+  
+  collideBox(i) {
+    // Set collision coordinates variable for box
+    this.roomCollide = this.MediaPlayer.nRectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
+    // Iterate extra times in case of edge cases (like when the player runs into a wall while on ground)
+    for (let j = 0; j < 2; j ++) {
+      // If colliding
+      if (this.roomCollide[0]) {
+        // If collision is with walls
+        if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
+          // Change X coordinate
+          this.kinemat.batt.x = this.roomCollide[3] == 1? this.roomCollide[1] - 0.00001 : this.roomCollide[1] + 0.00001;  // Slightly offset to not stick
+          // Set variables for wall sliding
+          this.roomWallTouchin = this.roomCollide[3];
+          this.special.wall.bool = true;
+        }
+        // Else if collision is with floor of object
+        else if (this.roomCollide[3] == 2) {
+          // Change Y coordinate
+          this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
+          this.kinemat.batt.vY = -this.kinemat.batt.vY/5
+          this.resetSpecialCount();
+          this.special.inAir = false;  // Is on the ground, so no longer in air
+        }
+        // Else, collision is with top of object (acts like ceiling)
+        else {
+          // Change Y coordinate
+          this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
+          this.kinemat.batt.vY = -this.kinemat.batt.vY/5
+        }
+        // Look for collisions again (edge cases remember?)
+        this.roomCollide = this.MediaPlayer.nRectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
+      }
+    }
   }
   
   collisionOver(state, x1=0, y1=0, x2=width, y2=height) {
@@ -400,6 +364,16 @@ class Character {
       return this.world.dir.over.curr;  // Up
     }
     this.charState = state;
+  }
+  
+  animateMoveOver(speed, start, frames, ignore=false) {
+    if (this.collisionOver(this.charState) != this.world.dir.over.curr || ignore) {
+      let startReal = start + this.world.dir.over.curr * frames;
+      if (this.world.dir.over.curr % 2 == 1) speed *= sin(45);
+      if (this.world.dir.over.curr % 4 != 2) this.kinemat.over.x += this.world.dir.over.curr % 7 < 2? speed : -speed;
+      if (this.world.dir.over.curr % 4 - 1 != -1) this.kinemat.over.y += this.world.dir.over.curr < 4? speed : -speed;
+        this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnimation);
+    }
   }
   
   resetSpecialCount() {

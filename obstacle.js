@@ -12,16 +12,21 @@ class Obstacle {
     // Special number meanings:
     // 0: mustStayIn, Entities must stay in the box, opposite of normal
     // 1: platform, Entities can move through object, but is solid on top
-    // 2: isMovable, Move object whenever moving
-    // 3: walkThrough, Walk through object
-    // 4: damagePlayer, Damage the player or entity
-    
-    // Make array of all ojects and their dimensions to check if collide
+    // 2: isMovableO, Move object whenever walking into, overworld
+    // 3: isMovableB, Move object whenever walking into, battle
+    // 5: damagePlayer, Damage the player or entity
+    if (special) {
+      this.collideBool = false;
+      this.pX = x;
+      this.pY = y;
+      this.vX = 0;
+      this.vY = 0;
+    }
   }
   
-  drawHitbox() {
+  drawObst() {
     fill(this.col[0], this.col[1], this.col[2]);
-    if (this.spl ) {
+    if (this.spl) {
       switch (this.num) {
         case 0:
           // rect(this.x, this.y, this.wid, 3);
@@ -36,16 +41,25 @@ class Obstacle {
           fill(255, 0, 0);
           rect(this.x, this.y, this.wid, 3);
           break;
+        case 2:
+          this.normalDraw();
+          break;
       }
     }
     else {
-      rect(this.x, this.y, this.wid, 3);
-      rect(this.x, this.y, 3, this.hgt);
-      rect(this.x, this.y+this.hgt-3, this.wid, 3);
-      rect(this.x+this.wid-3, this.y, 3, this.hgt);
+      this.normalDraw();
     }
-    // fill(255, 0, 0, 25);
-    // rect(this.x, this.y, this.wid, this.hgt);
+  }
+  drawHitbox() {
+    fill(255, 0, 0, 25);
+    rect(this.x, this.y, this.wid, this.hgt);
+  }
+  
+  normalDraw() {
+    rect(this.x, this.y, this.wid, 3);
+    rect(this.x, this.y, 3, this.hgt);
+    rect(this.x, this.y+this.hgt-3, this.wid, 3);
+    rect(this.x+this.wid-3, this.y, 3, this.hgt);
   }
 
   // getBackHereOverworld() {
