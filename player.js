@@ -1,6 +1,6 @@
 class Player extends Character {
-  constructor(oX, oY, bX, bY, overSpeed, battSpeed, ovrImg, batImg) {
-    super(oX, oY, bX, bY, overSpeed, battSpeed, ovrImg, batImg);
+  constructor(oX, oY, bX, bY, scl, overSpeed, battSpeed, ovrImg, batImg) {
+    super(oX, oY, bX, bY, scl, overSpeed, battSpeed, ovrImg, batImg);
     this.click = {jump: true, fall: true, dash: true};
     // this.clickJump = true;  this.clickFall = true;  this.clickDash = true;
   }

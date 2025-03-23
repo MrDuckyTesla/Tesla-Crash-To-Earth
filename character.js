@@ -1,6 +1,6 @@
 
 class Character {
-  constructor(oX, oY, bX, bY, ovrImg, batImg, col1, col2) {
+  constructor(oX, oY, bX, bY, scl, ovrImg, batImg, col1, col2) {
     // Animation and media varaibles
     this.MediaPlayer = new Media();  // Animates and colors Spritesheets 
     this.overAnimSpeed = 12;  this.AnimSpeedCap = 6;  // Animation speed in overworld
@@ -16,10 +16,9 @@ class Character {
     this.ovrList = this.MediaPlayer.preCompile(ovrImg, [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Greyscale colors of original image, separated by their layers
     this.batList = this.MediaPlayer.preCompile(batImg, [[105, 85, 34], [104]]);  // Greyscale colors of original image, separated by their layers
     // this.dimensions.over.scl = 3;  this.dimensions.batt.scl = 4;  // Scale of Character (Size)
-    this.dimensions = {over: {wid: 28, hgt: 28, scl: 3, calc: 28*3}, batt: {wid: 9, hgt: 13, scl: 4, calcW: 9*4, calcH: 13*4}};
+    this.dimensions = {over: {wid: 28, hgt: 28, scl: scl[0], calc: 28*scl[0]}, batt: {wid: 9, hgt: 13, scl: scl[1], calcW: 9*scl[1], calcH: 13*scl[1]}};
     // World Variables
     this.world = {dir: {over: {curr: 0, last: 0}, batt: {curr: 0, last: 0}}, over: {curr: true, last: true}};
-    this.rectBatt = {x1: 0, x2: width - this.dimensions.batt.calcW, y1: 0, y2: height - 14*this.dimensions.batt.scl};
     this.frameMultiplier = 1;  // Make code consistant at lower frameRates
     this.charState = 0;  // What animation the character is currently doing
     // Collision variables
@@ -27,10 +26,10 @@ class Character {
     this.roomWallTouchin = 2;
     // Objects
     this.RoomVar = new Room(this, this.dimensions.batt.scl);
-    this.RoomVar.addObstacle(0, 0, width, height, [100, 100, 255], true, 0);  // Box that character is in
-    this.RoomVar.addObstacle(200, 200, 200, 30, [255, 150, 75], true, 1);  // Platform for player
-    this.RoomVar.addObstacle(200, 300, 200, 30, [0, 255, 200], true, 2);  // Object for player to interact with
-    this.RoomVar.addObstacle(200, 400, 200, 30, [255, 150, 200]);  // Non-interactable object
+    this.RoomVar.addObstacle(100, 100, 600, 600, [200, 200, 200], true, 0);  // Box that character is in
+    this.RoomVar.addObstacle(300, 300, 200, 30, [100, 100, 255], true, 1);  // Platform for player
+    // this.RoomVar.addObstacle(300, 400, 200, 30, [0, 255, 200], true, 2);  // Object for player to interact with
+    this.RoomVar.addObstacle(300, 500, 200, 30, [200, 100, 100]);  // Non-interactable object
     this.scaleMove = this.dimensions.batt.scl/4;
   }
   
@@ -62,6 +61,8 @@ class Character {
       // Keep code consistant at lower frameRates
       this.overSpeed *= this.frameMultiplier;
       this.overAnimSpeed /= this.frameMultiplier;
+      // Prevent animation pausing
+      if (this.overAnimSpeed <= 0.00001) this.overAnimSpeed = 0.00001;
       // Overworld states start here
       if (this.charState == 3) this.animateMoveOver(this.overSpeed, 16, 4);  // Overworld Walk
       if (this.charState == 2) this.animateMoveOver(this.overSpeed/2, 48, 4);  // Sword Swing (walking)
@@ -107,7 +108,7 @@ class Character {
             }
             // Else if movable
             else if (this.RoomVar.obstList[i].spl && this.RoomVar.obstList[i].num == 2) {
-              // this.collideMove(i);
+              this.collideMoveO(i);
             }
             // Else normal objects
             else {
@@ -287,23 +288,24 @@ class Character {
   }
   
   collideMoveO(i) {
-    for (let j = 0; j < this.RoomVar.obstList.length; j ++) {
-      let temp = this.MediaPlayer.rectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
-      
-    }
-    // if collision is with walls
-    if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
-      // this.RoomVar.obstList[i].x = this.roomCollide[3] == 1? this.kinemat.batt.x - 0.00001 - this.RoomVar.obstList[i].wid: this.kinemat.batt.x + 0.00001 + this.dimensions.batt.calcW;  // Slightly offset to not stick
-    }
-    // Else if collision is with bottom of object
-    else if (this.roomCollide[3] == 2) {
-      // this.RoomVar.obstList[i].y = this.kinemat.batt.y - 0.00001 - this.dimensions.batt.calcH;
-    }
-    // Else, collision is with top of object
-    else {
-      // this.RoomVar.obstList[i].y = this.kinemat.batt.y + 0.00001 + this.RoomVar.obstList[i].hgt;
-    }
-    this.collideNormal();
+    // this.collideNormal();
+    // for (let j = 0; j < this.RoomVar.obstList.length; j ++) {
+    //   let temp = this.MediaPlayer.rectRectCollideCoords(this.RoomVar.obstList[i].pX, this.RoomVar.obstList[i].pY, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcW);
+    //   // if collision is with walls
+    //   if (temp[3] == 1 || temp[3] == 3) {
+    //     this.RoomVar.obstList[i].x = temp[3] == 1? this.kinemat.batt.x - 0.00001 - this.RoomVar.obstList[i].wid: this.kinemat.batt.x + 0.00001 + this.dimensions.batt.calcW;  // Slightly offset to not stick
+    //   }
+    //   // Else if collision is with bottom of object
+    //   else if (temp[3] == 2) {
+    //     this.RoomVar.obstList[i].y = this.kinemat.batt.y - 0.00001 - this.RoomVar.obstList[i].hgt;
+    //   }
+    //   // Else, collision is with top of object
+    //   else {
+    //     this.RoomVar.obstList[i].y = this.kinemat.batt.y + 0.00001 + this.dimensions.batt.calcH;
+    //   }
+    // }
+    // this.RoomVar.obstList[i].pX = this.RoomVar.obstList[i].x;
+    // this.RoomVar.obstList[i].pY = this.RoomVar.obstList[i].y;
   }
   
   collideMoveB(i) {
@@ -372,7 +374,7 @@ class Character {
       if (this.world.dir.over.curr % 2 == 1) speed *= sin(45);
       if (this.world.dir.over.curr % 4 != 2) this.kinemat.over.x += this.world.dir.over.curr % 7 < 2? speed : -speed;
       if (this.world.dir.over.curr % 4 - 1 != -1) this.kinemat.over.y += this.world.dir.over.curr < 4? speed : -speed;
-        this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnimation);
+      this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnimation);
     }
   }
   
