@@ -9,7 +9,20 @@ class Media {
     this.currFrame = 0;  // Current Image Frame
   }
   
-  animate(img, x, y, wid, hgt, scl, frmSrt, frmEnd, frm, anmChg) {
+  animate(img, x, y, wid, hgt, scl, frmSrt, frmEnd, frm, anmChg, resetIndex=false) {
+    if (resetIndex) this.index = frmSrt;
+    if (!anmChg)  {  // If changing animation
+      this.index = frmSrt + (this.index-frmSrt)%(frmEnd-frmSrt+1);
+      if (this.index < frmSrt) this.index = frmEnd;
+    }
+    // console.log(frameCount % frm == 0);
+    // Check if enough frames passed
+    if (frameCount % frm == 0) this.index = frmSrt + (this.index-frmSrt+1)%(frmEnd-frmSrt+1) // Change the index
+    // Then draw the image
+    image(img, x, y, wid * scl, hgt * scl, this.index * wid, 0, wid, hgt);
+  }
+  
+  animateOld(img, x, y, wid, hgt, scl, frmSrt, frmEnd, frm, anmChg) {  // Keep this in case the new one goes horribly wrong
     if (!anmChg)  this.currFrame = frameCount % frm;  // Check if its a different animation, if so reset the animation frame count
     else this.currFrame = 0;  // Else, reset variable
     if ((frameCount - this.currFrame) % frm == 0) {  // Check if enough frames passed
@@ -37,7 +50,7 @@ class Media {
     return colorList;  // Return list
   }
   
-  changeColor(img, colorList, tintList, layerList) {
+  changeColor(img, colorList, tintList) {
     img.loadPixels();  // Load pixels for changing
     for (let i = 0; i < colorList.length; i += 3) {  // Apply formula:  NR = (3 * (G + r) - (g + b)) / 4
       img.pixels[colorList[i]+0] = (3*(colorList[i+2]+tintList[0+3*colorList[i+1]])-(tintList[1+3*colorList[i+1]]+tintList[2+3*colorList[i+1]]))/4

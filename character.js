@@ -18,9 +18,8 @@ class Character {
     // this.dimensions.over.scl = 3;  this.dimensions.batt.scl = 4;  // Scale of Character (Size)
     this.dimensions = {over: {wid: 28, hgt: 28, scl: scl[0], calc: 28*scl[0]}, batt: {wid: 9, hgt: 13, scl: scl[1], calcW: 9*scl[1], calcH: 13*scl[1]}};
     // World Variables
-    this.world = {dir: {over: {curr: 0, last: 0}, batt: {curr: 0, last: 0}}, over: {curr: true, last: true}};
+    this.world = {dir: {over: {curr: 0, last: 0}, batt: {curr: 0, last: 0}}, over: {curr: true, last: true}, state: {over: 0, overL: 0, batt: 0}};
     this.frameMultiplier = 1;  // Make code consistant at lower frameRates
-    this.charState = 0;  // What animation the character is currently doing
     // Collision variables
     this.roomCollide = [false]; this.dontChangeVY = false;
     this.roomWallTouchin = 2;
@@ -31,17 +30,15 @@ class Character {
     // this.RoomVar.addObstacle(300, 400, 200, 30, [0, 255, 200], true, 2);  // Object for player to interact with
     this.RoomVar.addObstacle(300, 500, 200, 30, [200, 100, 100]);  // Non-interactable object
     this.scaleMove = this.dimensions.batt.scl/4;
+    this.animateTill = [false, 0, 0, 0, 0];
   }
   
   show() {
-    // Update past player coords
-    this.kinemat.batt.pX = this.kinemat.batt.x;
-    this.kinemat.batt.pY = this.kinemat.batt.y;
     // Update present player coords
     this.move();
     // Color :D (this took WAY too long)
-    this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b, this.colors.c3.r, this.colors.c3.g, this.colors.c3.b], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
-    this.MediaPlayer.changeColor(this.batImg, this.batList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b], [[105, 85, 34], [104]]);  // Battle
+    this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b, this.colors.c3.r, this.colors.c3.g, this.colors.c3.b]);  // Overworld
+    this.MediaPlayer.changeColor(this.batImg, this.batList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b]);  // Battle
     // Random Colors:
     // Seizure warning if you uncomment the next 2 lines
     // this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255)], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
@@ -49,10 +46,24 @@ class Character {
   }  
   
   move() {
-    // Add switch statements
-    this.frameMultiplier = round(60 / frameRate());  // If lower framerate, keep gameplay consistant
+    this.frameMultiplier = frameRate() < 1? 1: round(60 / frameRate());  // If lower framerate, keep gameplay consistant
+    if (this.animateTill[0]) {
+      if (this.MediaPlayer.index == this.animateTill[3]) {
+        this.animateTill[0] = false;
+        this.animateTill[4] = frameCount;
+      }
+      else {
+        this.world.state.over = this.animateTill[1];
+        this.world.dir.over.curr = this.world.dir.over.last;
+        // ADDRESS WHENEVER MOVING IN DIFFERENT DIRECTION, INDEX GOES UP
+      }
+    }
     this.changeAnimation = this.world.over.curr? this.world.dir.over.last == this.world.dir.over.curr : this.world.dir.batt.last == this.world.dir.batt.curr;  // Check if new direction
     if (this.world.over.last != this.world.over.curr) this.changeAnimation = false;
+    // Update past player coords
+    this.kinemat.batt.pX = this.kinemat.batt.x;
+    this.kinemat.batt.pY = this.kinemat.batt.y;
+    // If in overworld
     if (this.world.over.curr) {
       if (this.special.sprint) {  // If sprinting, double all speeds
         this.overSpeed *= 2;
@@ -61,12 +72,12 @@ class Character {
       // Keep code consistant at lower frameRates
       this.overSpeed *= this.frameMultiplier;
       this.overAnimSpeed /= this.frameMultiplier;
-      // Prevent animation pausing
-      if (this.overAnimSpeed <= 0.00001) this.overAnimSpeed = 0.00001;
       // Overworld states start here
-      if (this.charState == 3) this.animateMoveOver(this.overSpeed, 16, 4);  // Overworld Walk
-      if (this.charState == 2) this.animateMoveOver(this.overSpeed/2, 48, 4);  // Sword Swing (walking)
-      if (this.charState == 1) this.animateMoveOver(0, 0, 2, true);  // Overworld Idle
+      // this.world.state.over = 1;
+      
+      if (this.world.state.over == 3) this.animateMoveOver(this.overSpeed, 16, 4);  // Overworld Walk
+      if (this.world.state.over == 2) this.animateMoveOver(this.overSpeed/2, 48, 4, false, true);  // Sword Swing (walking)
+      if (this.world.state.over == 1) this.animateMoveOver(0, 0, 2, true);  // Overworld Idle
       // Add new overworld states here
       
       this.overSpeed /= this.frameMultiplier;
@@ -139,7 +150,7 @@ class Character {
       // If not in air
       else {
         // If idle
-        if (this.charState == 1) {
+        if (this.world.state.batt == 1) {
           if (this.world.dir.batt.curr == 0 && !this.special.inAir)  // Right
             this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 0, 1, this.battAnimSpeed * 2, this.changeAnimation);
           else if (this.world.dir.batt.curr == 1 && !this.special.inAir)  // Left
@@ -164,6 +175,7 @@ class Character {
     this.world.dir.batt.last = this.world.dir.batt.curr;
     this.world.dir.over.last = this.world.dir.over.curr;
     this.world.over.last = this.world.over.curr;
+    this.world.state.overL = this.world.state.over;
   }
   
   specialMove() {
@@ -208,14 +220,14 @@ class Character {
       }
       // Dont let character run into wall
       else if (abs(this.kinemat.batt.vX) <= 10*this.scaleMove) {
-        if (this.charState == 1) {
+        if (this.world.state.batt == 1) {
           // Dont let momentum move character
           this.kinemat.batt.vX = 0;
           this.kinemat.batt.aX = 0;
         }
         // Set to idle state
         this.special.wall.bool = false;
-        this.charState = 1;
+        this.world.state.batt = 1;
       }
       // Bump off wall
       else {
@@ -238,11 +250,11 @@ class Character {
     this.kinemat.batt.vX *= this.kinemat.batt.f;  // Apply friction to X
     // State
     if (this.special.wall.time > millis()) {
-      this.charState = 1;  // If character hit wall too quickly
+      this.world.state.batt = 1;  // If character hit wall too quickly
       this.special.jump.bool = false;  // Dont let jump
     }  
-    if (this.charState == 1) this.kinemat.batt.aX /= 1.2/this.scaleMove;  // Dont let velocity stay the same when not moving
-    else if (this.charState == 2) this.kinemat.batt.aX += this.world.dir.batt.curr == 0 ? this.battSpeed * this.scaleMove : -this.battSpeed *this.scaleMove;  // If facing towards the right, then the acceleration is positive, negative otherwise
+    if (this.world.state.batt == 1) this.kinemat.batt.aX /= 1.2/this.scaleMove;  // Dont let velocity stay the same when not moving
+    else if (this.world.state.batt == 2) this.kinemat.batt.aX += this.world.dir.batt.curr == 0 ? this.battSpeed * this.scaleMove : -this.battSpeed *this.scaleMove;  // If facing towards the right, then the acceleration is positive, negative otherwise
   }
   
   collidePlatform() {
@@ -348,7 +360,7 @@ class Character {
   }
   
   collisionOver(state, x1=0, y1=0, x2=width, y2=height) {
-    this.charState = 1;   
+    this.world.state.over = 1;
     if ((this.world.dir.over.curr == 0 || this.world.dir.over.curr == 1 || this.world.dir.over.curr == 7) && this.kinemat.over.x + this.overSpeed > x2 - this.dimensions.over.calc) {
       this.kinemat.over.x = x2 - this.dimensions.over.calc;
       return this.world.dir.over.curr;  // Right
@@ -365,18 +377,33 @@ class Character {
       this.kinemat.over.y = y1;
       return this.world.dir.over.curr;  // Up
     }
-    this.charState = state;
+    this.world.state.over = state;
   }
   
-  animateMoveOver(speed, start, frames, ignore=false) {
-    if (this.collisionOver(this.charState) != this.world.dir.over.curr || ignore) {
-      let startReal = start + this.world.dir.over.curr * frames;
+  animateMoveOver(speed, start, frames, ignore=false, fullAnim=false) {
+    // console.log(this.world.dir.over.curr*frames, this.MediaPlayer.index)
+    let startReal = start + this.world.dir.over.curr * frames;
+    if (fullAnim && this.animateTill[4] != frameCount) this.animateTill = [true, this.world.state.over, this.world.dir.over.curr, startReal+frames-1];
+    if (this.collisionOver(this.world.state.over) != this.world.dir.over.curr || ignore) {
       if (this.world.dir.over.curr % 2 == 1) speed *= sin(45);
       if (this.world.dir.over.curr % 4 != 2) this.kinemat.over.x += this.world.dir.over.curr % 7 < 2? speed : -speed;
       if (this.world.dir.over.curr % 4 - 1 != -1) this.kinemat.over.y += this.world.dir.over.curr < 4? speed : -speed;
-      this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnimation);
+      this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnimation, this.world.state.overL != this.world.state.over);
     }
+    else this.animateTill[0] = false;
   }
+  
+  // animateMoveOver(speed, start, frames, ignore=false, fullAnim=false) {
+  //   let startReal = start + this.world.dir.over.curr * frames;
+  //   if (fullAnim && this.animateTill[4] != frameCount) this.animateTill = [true, this.world.state.over, this.world.dir.over.curr, startReal+frames-1];
+  //   if (this.collisionOver(this.world.state.over) != this.world.dir.over.curr || ignore) {
+  //     if (this.world.dir.over.curr % 2 == 1) speed *= sin(45);
+  //     if (this.world.dir.over.curr % 4 != 2) this.kinemat.over.x += this.world.dir.over.curr % 7 < 2? speed : -speed;
+  //     if (this.world.dir.over.curr % 4 - 1 != -1) this.kinemat.over.y += this.world.dir.over.curr < 4? speed : -speed;
+  //     this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnimation, fullAnim);
+  //   }
+  //   else this.animateTill[0] = false;
+  // }
   
   resetSpecialCount() {
     this.special.jump.count = 2;  // Reset jump count
