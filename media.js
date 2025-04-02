@@ -6,10 +6,32 @@
 class Media {
   constructor() {
     this.index = 0;  // Current Image Index
-    this.currFrame = 0;  // Current Image Frame
+    this.frameIndex = 0;  // Count of frames
+    this.indexCount = 0;  // How long its been since last index
   }
   
   animate(img, x, y, wid, hgt, scl, frmSrt, frmEnd, frm, anmChg, resetIndex=false) {
+    // I wanted the animations to stay constant and use new animation
+    let temp = frmEnd-frmSrt+1;
+    if (resetIndex) {  // reset all variables
+      this.index = frmSrt;
+      this.frameIndex = 0;
+    }
+    else this.frameIndex++;
+    // Update frame index
+    this.indexCount = this.frameIndex % frm;
+    if (!anmChg)  {  // If not changing animation
+      this.index = frmSrt + (this.index-frmSrt)%temp;
+      if (this.index < frmSrt) this.index = frmEnd;
+    }
+    // Check if enough frames passed
+    if (this.indexCount == 0 && !resetIndex) this.index = frmSrt + (this.index-frmSrt+1)%temp; // Change the index
+    // Then draw the image
+    image(img, x, y, wid * scl, hgt * scl, this.index * wid, 0, wid, hgt);
+  }
+  
+  animateNew(img, x, y, wid, hgt, scl, frmSrt, frmEnd, frm, anmChg, resetIndex=false) {
+    // I wanted the animations to flow and have the same index when changing
     if (resetIndex) this.index = frmSrt;
     if (!anmChg)  {  // If changing animation
       this.index = frmSrt + (this.index-frmSrt)%(frmEnd-frmSrt+1);
