@@ -48,14 +48,10 @@ class Character {
   move() {
     this.frameMultiplier = frameRate() < 1? 1: round(60 / frameRate());  // If lower framerate, keep gameplay consistant
     if (this.animateTill[0]) {
-      if (this.MediaPlayer.index == this.animateTill[3]) {
-        this.animateTill[0] = false;
-        this.animateTill[4] = frameCount;
-      }
+      if ((this.MediaPlayer.indexCount+1) % this.overAnimSpeed == 0 && this.MediaPlayer.index == this.animateTill[3]) this.animateTill[0] = false;
       else {
         this.world.state.over = this.animateTill[1];
         this.world.dir.over.curr = this.world.dir.over.last;
-        // ADDRESS WHENEVER MOVING IN DIFFERENT DIRECTION, INDEX GOES UP
       }
     }
     this.changeAnimation = this.world.over.curr? this.world.dir.over.last == this.world.dir.over.curr : this.world.dir.batt.last == this.world.dir.batt.curr;  // Check if new direction
@@ -72,9 +68,7 @@ class Character {
       // Keep code consistant at lower frameRates
       this.overSpeed *= this.frameMultiplier;
       this.overAnimSpeed /= this.frameMultiplier;
-      // Overworld states start here
-      // this.world.state.over = 1;
-      
+      // Overworld states start here     
       if (this.world.state.over == 3) this.animateMoveOver(this.overSpeed, 16, 4);  // Overworld Walk
       if (this.world.state.over == 2) this.animateMoveOver(this.overSpeed/2, 48, 4, false, true);  // Sword Swing (walking)
       if (this.world.state.over == 1) this.animateMoveOver(0, 0, 2, true);  // Overworld Idle
@@ -383,7 +377,7 @@ class Character {
   animateMoveOver(speed, start, frames, ignore=false, fullAnim=false) {
     // console.log(this.world.dir.over.curr*frames, this.MediaPlayer.index)
     let startReal = start + this.world.dir.over.curr * frames;
-    if (fullAnim && this.animateTill[4] != frameCount) this.animateTill = [true, this.world.state.over, this.world.dir.over.curr, startReal+frames-1];
+    if (fullAnim && this.animateTill[4] != frameCount) this.animateTill = [true, this.world.state.over, this.world.dir.over.curr, startReal+frames-1, frames];
     if (this.collisionOver(this.world.state.over) != this.world.dir.over.curr || ignore) {
       if (this.world.dir.over.curr % 2 == 1) speed *= sin(45);
       if (this.world.dir.over.curr % 4 != 2) this.kinemat.over.x += this.world.dir.over.curr % 7 < 2? speed : -speed;
@@ -392,18 +386,6 @@ class Character {
     }
     else this.animateTill[0] = false;
   }
-  
-  // animateMoveOver(speed, start, frames, ignore=false, fullAnim=false) {
-  //   let startReal = start + this.world.dir.over.curr * frames;
-  //   if (fullAnim && this.animateTill[4] != frameCount) this.animateTill = [true, this.world.state.over, this.world.dir.over.curr, startReal+frames-1];
-  //   if (this.collisionOver(this.world.state.over) != this.world.dir.over.curr || ignore) {
-  //     if (this.world.dir.over.curr % 2 == 1) speed *= sin(45);
-  //     if (this.world.dir.over.curr % 4 != 2) this.kinemat.over.x += this.world.dir.over.curr % 7 < 2? speed : -speed;
-  //     if (this.world.dir.over.curr % 4 - 1 != -1) this.kinemat.over.y += this.world.dir.over.curr < 4? speed : -speed;
-  //     this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnimation, fullAnim);
-  //   }
-  //   else this.animateTill[0] = false;
-  // }
   
   resetSpecialCount() {
     this.special.jump.count = 2;  // Reset jump count
