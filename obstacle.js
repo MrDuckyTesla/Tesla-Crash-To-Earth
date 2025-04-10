@@ -35,8 +35,9 @@ class Obstacle {
           rect(this.x+this.wid, this.y-this.scl, this.scl, this.hgt+this.scl);
           break;
         case 1:
-          this.normalDraw();
           fill(this.col[0]/2, this.col[1]/2, this.col[2]/2);
+          this.normalDraw();
+          fill(this.col[0], this.col[1], this.col[2]);
           rect(this.x, this.y, this.wid, this.scl);
           break;
         case 2:

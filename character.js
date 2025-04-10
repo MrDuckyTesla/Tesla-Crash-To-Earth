@@ -31,6 +31,8 @@ class Character {
     this.RoomVar.addObstacle(300, 500, 200, 30, [200, 100, 100]);  // Non-interactable object
     this.scaleMove = this.dimensions.batt.scl/4;
     this.animateTill = [false, 0, 0, 0, 0];
+    this.moveX = 0;
+    this.moveY = 0;
   }
   
   show() {
@@ -47,18 +49,9 @@ class Character {
   
   move() {
     this.frameMultiplier = frameRate() < 1? 1: round(60 / frameRate());  // If lower framerate, keep gameplay consistant
-    if (this.animateTill[0]) {
-      if ((this.MediaPlayer.indexCount+1) % this.overAnimSpeed == 0 && this.MediaPlayer.index == this.animateTill[3]) this.animateTill[0] = false;
-      else {
-        this.world.state.over = this.animateTill[1];
-        this.world.dir.over.curr = this.world.dir.over.last;
-      }
-    }
-    this.changeAnimation = this.world.over.curr? this.world.dir.over.last == this.world.dir.over.curr : this.world.dir.batt.last == this.world.dir.batt.curr;  // Check if new direction
+    // Check if we need to change the animation due to direction
     if (this.world.over.last != this.world.over.curr) this.changeAnimation = false;
-    // Update past player coords
-    this.kinemat.batt.pX = this.kinemat.batt.x;
-    this.kinemat.batt.pY = this.kinemat.batt.y;
+    else this.changeAnimation = this.world.over.curr? this.world.dir.over.last == this.world.dir.over.curr : this.world.dir.batt.last == this.world.dir.batt.curr;
     // If in overworld
     if (this.world.over.curr) {
       if (this.special.sprint) {  // If sprinting, double all speeds
@@ -68,12 +61,21 @@ class Character {
       // Keep code consistant at lower frameRates
       this.overSpeed *= this.frameMultiplier;
       this.overAnimSpeed /= this.frameMultiplier;
+      // If we are staying in an animation
+      if (this.animateTill[0]) {
+        // If the animation has ended, end the animation
+        if ((this.MediaPlayer.indexCount+1) % this.overAnimSpeed == 0 && this.MediaPlayer.index == this.animateTill[3]) this.animateTill[0] = false;
+        //Else, keep the character state and direction the same
+        else {
+          this.world.state.over = this.animateTill[1];
+          this.world.dir.over.curr = this.world.dir.over.last;
+        }
+      }
       // Overworld states start here     
       if (this.world.state.over == 3) this.animateMoveOver(this.overSpeed, 16, 4);  // Overworld Walk
       if (this.world.state.over == 2) this.animateMoveOver(this.overSpeed/2, 48, 4, false, true);  // Sword Swing (walking)
       if (this.world.state.over == 1) this.animateMoveOver(0, 0, 2, true);  // Overworld Idle
-      // Add new overworld states here
-      
+      // Reset speed of character
       this.overSpeed /= this.frameMultiplier;
       this.overAnimSpeed *= this.frameMultiplier;
       // Reset speeds if not spriting
@@ -89,7 +91,6 @@ class Character {
       this.specialMove();  // Run the special moves function
       this.kinemat.batt.x += this.kinemat.batt.vX;
       this.kinemat.batt.y += this.kinemat.batt.vY;
-      
       // Collision code
       this.special.inAir = this.special.jump.bool? false : true;
       // Iterate through all objects in list
@@ -97,9 +98,7 @@ class Character {
         // Display object
         this.RoomVar.obstList[i].drawObst();
         // If you must stay in the object (like a box or a cage)
-        if (this.RoomVar.obstList[i].spl && this.RoomVar.obstList[i].num == 0) {
-          this.collideBox(i);
-        }
+        if (this.RoomVar.obstList[i].spl && this.RoomVar.obstList[i].num == 0) this.collideBox(i);
         // Else collision is normal
         else {
           // Set collision coordinates variable normally
@@ -107,56 +106,38 @@ class Character {
           if (!this.dontChangeVY || this.special.inAir) this.dontChangeVY = false;
           // If colliding
           if (this.roomCollide[0]) {
-            // If platform
-            if (this.RoomVar.obstList[i].spl && this.RoomVar.obstList[i].num == 1) {
-              this.collidePlatform();
-            }
-            // Else if movable
-            else if (this.RoomVar.obstList[i].spl && this.RoomVar.obstList[i].num == 2) {
-              this.collideMoveO(i);
-            }
-            // Else normal objects
-            else {
-              this.collideNormal();
-            }
+            // If platform, else if movable, else normal objects
+            if (this.RoomVar.obstList[i].spl && this.RoomVar.obstList[i].num == 1) this.collidePlatform();
+            else if (this.RoomVar.obstList[i].spl && this.RoomVar.obstList[i].num == 2) this.collideMoveO(i);
+            else this.collideNormal();
           }
         }
       }
-      // Display character sprite
-      this.battAnimSpeed = 5;
-      // If in air
-      if (this.special.inAir) {
-        // If wall sliding
-        if (this.special.wall.bool) {
-          if (this.world.dir.batt.curr == 0)  // Right
-            this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 31, 32, this.battAnimSpeed * 2, this.changeAnimation);
-          else if (this.world.dir.batt.curr == 1)  // Left
-            this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 36, 37, this.battAnimSpeed * 2, this.changeAnimation);
+      // Display correct character sprite
+      this.battAnimSpeed = 5;  // Reset animation speed
+      if (this.special.inAir) {  // If in air
+        if (this.special.wall.bool) {  // If wall sliding
+          // If facing right else facing left
+          if (this.world.dir.batt.curr == 0) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 31, 32, this.battAnimSpeed * 2, this.changeAnimation);
+          else if (this.world.dir.batt.curr == 1) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 36, 37, this.battAnimSpeed * 2, this.changeAnimation);
         }
-        // Else falling
-        else {
-          if (this.world.dir.batt.curr == 0)  // Right
-            this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 20, 24, this.battAnimSpeed, this.changeAnimation);
-          else if (this.world.dir.batt.curr == 1)  // Left
-            this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 25, 29, this.battAnimSpeed, this.changeAnimation);
+        else {  // Else falling
+          // If facing right else facing left
+          if (this.world.dir.batt.curr == 0) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 20, 24, this.battAnimSpeed, this.changeAnimation);
+          else if (this.world.dir.batt.curr == 1) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 25, 29, this.battAnimSpeed, this.changeAnimation);
         }
       }
-      // If not in air
-      else {
-        // If idle
-        if (this.world.state.batt == 1) {
-          if (this.world.dir.batt.curr == 0 && !this.special.inAir)  // Right
-            this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 0, 1, this.battAnimSpeed * 2, this.changeAnimation);
-          else if (this.world.dir.batt.curr == 1 && !this.special.inAir)  // Left
-            this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 2, 3, this.battAnimSpeed * 2, this.changeAnimation);
+      else {  // Else not in air
+        if (this.world.state.batt == 1) {  // If idle
+          // If facing right else facing left
+          if (this.world.dir.batt.curr == 0 && !this.special.inAir) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 0, 1, this.battAnimSpeed * 2, this.changeAnimation);
+          else if (this.world.dir.batt.curr == 1 && !this.special.inAir) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 2, 3, this.battAnimSpeed * 2, this.changeAnimation);
         }
-        // Else not idle
-        else {
+        else {  // Else not idle
           this.battAnimSpeed = round(3 / (this.kinemat.batt.aX/7));  // Animation speed gets faster as well
-          if (this.world.dir.batt.curr == 0 && !this.special.inAir)  // Right
-            this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 4, 11, this.battAnimSpeed, this.changeAnimation);
-          else if (this.world.dir.batt.curr == 1 && !this.special.inAir)  // Left
-            this.MediaPlayer.animate(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 12, 19, this.battAnimSpeed, this.changeAnimation);
+          // If facing right else facing left
+          if (this.world.dir.batt.curr == 0 && !this.special.inAir) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 4, 11, this.battAnimSpeed, this.changeAnimation);
+          else if (this.world.dir.batt.curr == 1 && !this.special.inAir) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 12, 19, this.battAnimSpeed, this.changeAnimation);
         }
       }
       
@@ -200,9 +181,7 @@ class Character {
     }
     else this.special.dash.bool = false;  // Without this, dash would activate inconsistently
     // Wall Slide
-    if (this.roomWallTouchin == 3 && this.world.dir.batt.curr == 0 || this.roomWallTouchin == this.world.dir.batt.curr) {
-      this.special.wall.bool = false;
-    }
+    if (this.roomWallTouchin == 3 && this.world.dir.batt.curr == 0 || this.roomWallTouchin == this.world.dir.batt.curr) this.special.wall.bool = false;
     if (this.special.wall.bool) {
       // If character is moving slow enough
       if (abs(this.kinemat.batt.vX) <= 20*this.scaleMove && this.special.inAir) {
@@ -235,6 +214,9 @@ class Character {
   }
   
   updateCharCheck() {
+    // Update past player coords
+    this.kinemat.batt.pX = this.kinemat.batt.x;
+    this.kinemat.batt.pY = this.kinemat.batt.y;
     // Kinematics
     if (abs(this.kinemat.batt.aX) > this.battSpeed * this.scaleMove && this.kinemat.batt.aX != 0) this.kinemat.batt.aX = this.battSpeed * (this.kinemat.batt.aX / abs(this.kinemat.batt.aX)) * this.scaleMove;  // Cap the friction/speed
     if (abs(this.kinemat.batt.vX) < 0.00001) this.kinemat.batt.vX = 0;  // We cant see the difference in velocity
@@ -294,6 +276,7 @@ class Character {
   }
   
   collideMoveO(i) {
+    // Ill need to do collision with character and object, then wall and object, then character and object again
     // this.collideNormal();
     // for (let j = 0; j < this.RoomVar.obstList.length; j ++) {
     //   let temp = this.MediaPlayer.rectRectCollideCoords(this.RoomVar.obstList[i].pX, this.RoomVar.obstList[i].pY, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcW);
@@ -323,27 +306,23 @@ class Character {
     this.roomCollide = this.MediaPlayer.nRectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
     // Iterate extra times in case of edge cases (like when the player runs into a wall while on ground)
     for (let j = 0; j < 2; j ++) {
-      // If colliding
-      if (this.roomCollide[0]) {
+      if (this.roomCollide[0]) {  // If colliding
         // If collision is with walls
-        if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {
-          // Change X coordinate
+        if (this.roomCollide[3] == 1 || this.roomCollide[3] == 3) {  // Change X coordinate
           this.kinemat.batt.x = this.roomCollide[3] == 1? this.roomCollide[1] - 0.00001 : this.roomCollide[1] + 0.00001;  // Slightly offset to not stick
           // Set variables for wall sliding
           this.roomWallTouchin = this.roomCollide[3];
           this.special.wall.bool = true;
         }
         // Else if collision is with floor of object
-        else if (this.roomCollide[3] == 2) {
-          // Change Y coordinate
+        else if (this.roomCollide[3] == 2) {  // Change Y coordinate
           this.kinemat.batt.y = this.roomCollide[2] - 0.00001;  // Slightly offset to not stick
           this.kinemat.batt.vY = -this.kinemat.batt.vY/5
           this.resetSpecialCount();
           this.special.inAir = false;  // Is on the ground, so no longer in air
         }
         // Else, collision is with top of object (acts like ceiling)
-        else {
-          // Change Y coordinate
+        else {  // Change Y coordinate
           this.kinemat.batt.y = this.roomCollide[2] + 0.00001;  // Slightly offset to not stick
           this.kinemat.batt.vY = -this.kinemat.batt.vY/5
         }
@@ -377,11 +356,12 @@ class Character {
   animateMoveOver(speed, start, frames, ignore=false, fullAnim=false) {
     // console.log(this.world.dir.over.curr*frames, this.MediaPlayer.index)
     let startReal = start + this.world.dir.over.curr * frames;
+    this.moveX = 0; this.moveY = 0;
     if (fullAnim && this.animateTill[4] != frameCount) this.animateTill = [true, this.world.state.over, this.world.dir.over.curr, startReal+frames-1, frames];
     if (this.collisionOver(this.world.state.over) != this.world.dir.over.curr || ignore) {
       if (this.world.dir.over.curr % 2 == 1) speed *= sin(45);
-      if (this.world.dir.over.curr % 4 != 2) this.kinemat.over.x += this.world.dir.over.curr % 7 < 2? speed : -speed;
-      if (this.world.dir.over.curr % 4 - 1 != -1) this.kinemat.over.y += this.world.dir.over.curr < 4? speed : -speed;
+      if (this.world.dir.over.curr % 4 != 2) this.moveX = this.world.dir.over.curr % 7 < 2? speed : -speed;
+      if (this.world.dir.over.curr % 4 - 1 != -1) this.moveY = this.world.dir.over.curr < 4? speed : -speed;
       this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnimation, this.world.state.overL != this.world.state.over);
     }
     else this.animateTill[0] = false;

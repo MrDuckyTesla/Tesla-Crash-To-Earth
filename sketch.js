@@ -1,13 +1,16 @@
-let img, colors, Tesla, teslaOverSS, teslaBattSS;
+let img, colors, Tesla, Temp;
 
+let teslaOverSS, teslaBattSS, backgroundImg;
  // fullscreen(true)
 
 function preload() {
-  // // Load Sounds/music
+  // Load Sounds/music
   // exampleSound = loadSound();
-  // Load Spritesheets, (count the new amount of pixels) pixels :0
+  // Load Spritesheets
   teslaOverSS = loadImage("Assets/Sprites/Tesla/Tesla_Overworld.png");
   teslaBattSS = loadImage("Assets/Sprites/Tesla/Tesla_Battle.png");
+  // Load background
+  backgroundImg = loadImage("Assets/Sprites/Background/background1.png");
   // Load Fonts
   font = loadFont("Assets/Fonts/TeslaCrashToFont.ttf");
 }
@@ -19,8 +22,9 @@ function setup() {
   noCursor(); noSmooth(); noStroke();
   colors = {col1: {r: 111, g: 111, b: 255}, col2: {r: 255, g: 111, b:111}};
   // Create Player Object 
-  Tesla = new Player(width/2-14*3, height/2-14*3, width/2-4*4, height-3*4-140, [3, 3], teslaOverSS, teslaBattSS, colors.col1, colors.col2);
-  // Tesla.world.over.curr = round(random()) == 1;  // Fun :D
+  Tesla = new Player(width/2-14*3, height/2-14*3, width/2-4*4, height-3*4-140, [3, 3], teslaOverSS, teslaBattSS, colors.col1, colors.col2, backgroundImg, 2328, 1504);
+  // Create Other Character Objects
+  
   Tesla.world.over.curr = true;  //  Dictates if in battle or not
 }
 
@@ -29,14 +33,15 @@ function draw() {  // Main Game Loop
   // frameRate(15);  // Keep commented out, only use for testing
   if (Tesla.world.over.curr) {
     background(150);
+    // image(backgroundImg, backX, backY);
     fill(0);  // Text color
   }
   else {
     background(25);  // Use an image in future, or cool effects
     fill(255);  // Text color
   }
-  text(round(frameRate()) + "fps", width - 40, 20);  // Show FPS counter
   Tesla.show();
+  text(round(frameRate()) + "fps", width - 40, 20);  // Show FPS counter
 }
 
 function keyReleased() {  // Cant even put this in player.js, big sad
