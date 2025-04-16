@@ -1,6 +1,6 @@
 class NonPlayerCharacter extends Character {
   constructor(Player, oX, oY, bX, bY, scl, ovrImg, batImg, col1, col2, showB=true) {
-    super(oX, oY, Player.RoomVar.backX, Player.RoomVar.backY, Player.RoomVar.backWid, Player.RoomVar.backHgt, bX, bY, scl, ovrImg, batImg, col1, col2);
+    super(oX, oY, Player.RoomVar.backX, Player.RoomVar.backY, bX, bY, Player.RoomVar.backWid, Player.RoomVar.backHgt, scl, ovrImg, batImg, col1, col2);
     // We can check if the character is off screen, and if so, dont show them
     this.showB = showB;
   }
@@ -11,7 +11,7 @@ class NonPlayerCharacter extends Character {
       this.special.sprint = Player.special.sprint;
       super.actualX = Player.RoomVar.backX;
       super.actualY = Player.RoomVar.backY;
-      this.move();
+      super.show();
     }
   }
   
@@ -36,11 +36,19 @@ class NonPlayerCharacter extends Character {
     }
   }
   
-  follow(character) {
+  follow(Character) {
     
   }
   
-  dialogue() {
+  walkTowards(Character) {
+    
+  }
+  
+  walkAroundRandomly(radius) {
+    
+  }
+  
+  dialogue(txt) {
     
   }
   

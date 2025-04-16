@@ -9,7 +9,6 @@ class Room {  // A Room is full of Obstacles, NPCs, and such
   addBackgroundVars(backWid, backHgt, backgroundImg) {
     // This needs to be called before moveBackground()
     this.backWid = backWid; this.backHgt = backHgt;
-    // this.widScr = widScr; this.hgtScr = hgtScr;
     this.backX = width/2-backWid/2;
     this.backY = height/2-backHgt/2;
     this.backgroundImg = backgroundImg;

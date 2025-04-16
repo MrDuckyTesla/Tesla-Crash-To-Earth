@@ -39,16 +39,15 @@ class Character {
   }
   
   show() {
-    // Update coords and animate character
-    this.move();
     // this.displayHitBox();  // HitBox
-    // Color :D (this took WAY too long)
+    // Color Character
     this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b, this.colors.c3.r, this.colors.c3.g, this.colors.c3.b]);  // Overworld
     this.MediaPlayer.changeColor(this.batImg, this.batList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b]);  // Battle
-    // Random Colors:
     // Seizure warning if you uncomment the next 2 lines
     // this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255)], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
     // this.MediaPlayer.changeColor(this.batImg, this.batList, [random(255), random(255), random(255), random(255), random(255), random(255)], [[105, 85, 34], [104]]);  // Battle (fun)
+    // Update coords and animate character
+    this.move();
   }  
   
   move() {
@@ -327,11 +326,8 @@ class Character {
       }
     }
   }
-    // this.actualX = aX;
-    // this.actualY = aY;
-    // this.wid = wid;
-    // this.hgt = hgt;
-  collisionOver(state, x1=0, y1=0, x2=width, y2=height) {
+
+  collisionOver(state, x1=0, y1=0, x2=this.wid, y2=this.hgt) {
     this.world.state.over = 1;
     if ((this.world.dir.over.curr == 0 || this.world.dir.over.curr == 1 || this.world.dir.over.curr == 7) && this.kinemat.over.x + this.overSpeed > x2 - this.dimensions.over.calc) {
       this.kinemat.over.x = x2 - this.dimensions.over.calc;
