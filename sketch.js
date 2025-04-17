@@ -43,7 +43,6 @@ function draw() {  // Main Game Loop
   }
   // Show characters
   Temp.show(Tesla);
-  // console.log(Temp.actualX, Temp.actualY)
   Tesla.show();
   // Display text
   text(round(frameRate()) + "fps", width - 40, 20);  // Show FPS counter
