@@ -1,17 +1,16 @@
 TOP PRIORITIES
 
-#01:  add big background that moves, then when within canvas size, character moves (switch between the 2 modes)
+#01:  Add independant animation system
 #02:  redo ALL sprites, and add more characters. maybe even implement a customization system
 #03:  add npc following overworld
 #04:  add enemy overworld
 #05:  add overworld interacting
 #06:  add overworld and battle dialogue
-#07:  add overworld sword
-#08:  optimize code using switch statements, canvas imaging thing, and others:  https://www.w3schools.com/js/js_performance.asp
-#09:  add menu
-#10:  add enemy battle ai
-#11:  add save files (probably need electron or node.js (included in electron))
-#12:  Add battle animations (using procedural animation)
+#07:  optimize code using switch statements, canvas imaging thing, and others:  https://www.w3schools.com/js/js_performance.asp
+#08:  add menu
+#09:  add enemy battle ai
+#10:  add save files (probably need electron or node.js (included in electron))
+#11:  Add battle animations (using procedural animation)
 
 Other things to implement on a later date
 
@@ -37,7 +36,13 @@ Other things to implement on a later date
   make player get darker red during genocide
   local coop before networking
   add private variables
-  battle character should be bounced off wall if going too fast, also should act like overworld character if going slow towards wall and on ground
-  battle character should hit ground before getting launched upwards
   Make sure sprites are using right foot first every animation
-  animation system might need a variable that determines if a full animation should be played
+  Make rotating battle box, may have to use sin and cos shenanigans
+  make walls have slip or wall climb variables
+  Make objects that move the player only
+  Make objects that move on their own
+  Make objects that act as launch pads
+  Make objects that dissapear after a certain amount of time
+  Maybe add to x or y in overworld when switching state of moving background (current system is off by a few pixels, low priority as is unnoticeable)
+  TRY to get image.width and image.height working, could get rid of multiple variables
+  add funny dialogue if the player spam skips npc dialogue

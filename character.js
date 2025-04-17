@@ -1,6 +1,6 @@
 
 class Character {
-  constructor(oX, oY, bX, bY, scl, ovrImg, batImg, col1, col2) {
+  constructor(oX, oY, aX, aY, bX, bY, wid, hgt, scl, ovrImg, batImg, col1, col2) {
     // Animation and media varaibles
     this.MediaPlayer = new Media();  // Animates and colors Spritesheets 
     this.overAnimSpeed = 12;  this.AnimSpeedCap = 6;  // Animation speed in overworld
@@ -12,6 +12,11 @@ class Character {
     this.overSpeed = 3;  this.SpeedCap = this.overSpeed*2;  this.battSpeed = 2.5;  // Characters Speed
     this.kinemat = {over: {x: oX, y: oY}, batt: {pX: bX, pY: bY, x: bX, y: bY, vX: 0, vY: 0, aX: 0, aY: 1, j: 17, f: 0.8}};
     this.special = {sprint: false, inAir: false, jump: {bool: false, count: 2}, fall: {bool: false, pBool: false, count: 1}, dash: {bool: false, count: 1, time: 0}, wall: {bool: false, speed: this.battSpeed, time: 0}};
+    this.moveX = 0; this.moveY = 0;  // How much the overworld character will move by
+    this.actualX = aX;
+    this.actualY = aY;
+    this.wid = wid;
+    this.hgt = hgt;
     // Lists of changeable pixels and their respective colors
     this.ovrList = this.MediaPlayer.preCompile(ovrImg, [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Greyscale colors of original image, separated by their layers
     this.batList = this.MediaPlayer.preCompile(batImg, [[105, 85, 34], [104]]);  // Greyscale colors of original image, separated by their layers
@@ -31,20 +36,18 @@ class Character {
     this.RoomVar.addObstacle(300, 500, 200, 30, [200, 100, 100]);  // Non-interactable object
     this.scaleMove = this.dimensions.batt.scl/4;
     this.animateTill = [false, 0, 0, 0, 0];
-    this.moveX = 0;
-    this.moveY = 0;
   }
   
   show() {
-    // Update present player coords
-    this.move();
-    // Color :D (this took WAY too long)
+    // this.displayHitBox();  // HitBox
+    // Color Character
     this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b, this.colors.c3.r, this.colors.c3.g, this.colors.c3.b]);  // Overworld
     this.MediaPlayer.changeColor(this.batImg, this.batList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b]);  // Battle
-    // Random Colors:
     // Seizure warning if you uncomment the next 2 lines
     // this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255)], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
     // this.MediaPlayer.changeColor(this.batImg, this.batList, [random(255), random(255), random(255), random(255), random(255), random(255)], [[105, 85, 34], [104]]);  // Battle (fun)
+    // Update coords and animate character
+    this.move();
   }  
   
   move() {
@@ -140,11 +143,6 @@ class Character {
           else if (this.world.dir.batt.curr == 1 && !this.special.inAir) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 12, 19, this.battAnimSpeed, this.changeAnimation);
         }
       }
-      
-      // Display player hitbox
-      // rect(this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH);
-      // True hitbox (accounts for past location)
-      // rect(min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +this.dimensions.batt.calcW, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.dimensions.batt.scl);
     }
     // Get the last diections
     this.world.dir.batt.last = this.world.dir.batt.curr;
@@ -275,8 +273,9 @@ class Character {
     }
   }
   
-  collideMoveO(i) {
+  collideMove(i) {
     // Ill need to do collision with character and object, then wall and object, then character and object again
+    // Should work on overworld and battle. also have physics based object moving (intended for battle)
     // this.collideNormal();
     // for (let j = 0; j < this.RoomVar.obstList.length; j ++) {
     //   let temp = this.MediaPlayer.rectRectCollideCoords(this.RoomVar.obstList[i].pX, this.RoomVar.obstList[i].pY, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcW);
@@ -295,10 +294,6 @@ class Character {
     // }
     // this.RoomVar.obstList[i].pX = this.RoomVar.obstList[i].x;
     // this.RoomVar.obstList[i].pY = this.RoomVar.obstList[i].y;
-  }
-  
-  collideMoveB(i) {
-    
   }
   
   collideBox(i) {
@@ -331,8 +326,8 @@ class Character {
       }
     }
   }
-  
-  collisionOver(state, x1=0, y1=0, x2=width, y2=height) {
+
+  collisionOver(state, x1=0, y1=0, x2=this.wid, y2=this.hgt) {
     this.world.state.over = 1;
     if ((this.world.dir.over.curr == 0 || this.world.dir.over.curr == 1 || this.world.dir.over.curr == 7) && this.kinemat.over.x + this.overSpeed > x2 - this.dimensions.over.calc) {
       this.kinemat.over.x = x2 - this.dimensions.over.calc;
@@ -362,7 +357,7 @@ class Character {
       if (this.world.dir.over.curr % 2 == 1) speed *= sin(45);
       if (this.world.dir.over.curr % 4 != 2) this.moveX = this.world.dir.over.curr % 7 < 2? speed : -speed;
       if (this.world.dir.over.curr % 4 - 1 != -1) this.moveY = this.world.dir.over.curr < 4? speed : -speed;
-      this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x, this.kinemat.over.y, 28, 28, this.dimensions.over.scl, startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnimation, this.world.state.overL != this.world.state.over);
+      this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x+this.actualX, this.kinemat.over.y+this.actualY, 28, 28, this.dimensions.over.scl, startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnimation, this.world.state.overL != this.world.state.over);
     }
     else this.animateTill[0] = false;
   }
@@ -372,5 +367,17 @@ class Character {
     this.special.fall.count = 1;  // Reset fall count
     this.special.dash.count = 1;  // Reset dash count
   } 
+  
+  displayHitBox(trueHit=false) {
+    if (!this.world.over.curr) {
+      // Display player hitbox
+      if (trueHit) rect(this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH);
+      // True hitbox (accounts for past location)
+      else rect(min(this.kinemat.batt.pX, this.kinemat.batt.x), min(this.kinemat.batt.pY, this.kinemat.batt.y), abs(this.kinemat.batt.x - this.kinemat.batt.pX) +this.dimensions.batt.calcW, abs(this.kinemat.batt.y - this.kinemat.batt.pY)+13* this.dimensions.batt.scl);
+    }
+    // Display player hitbox
+    else rect(this.kinemat.over.x, this.kinemat.over.y, this.dimensions.over.calc, this.dimensions.over.calc);
+    
+  }
   
 }

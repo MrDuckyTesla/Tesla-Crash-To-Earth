@@ -1,20 +1,12 @@
 class Player extends Character {
-  constructor(oX, oY, bX, bY, scl, overSpeed, battSpeed, ovrImg, batImg, backgroundImg, backWid, backHgt) {
-    super(oX, oY, bX, bY, scl, overSpeed, battSpeed, ovrImg, batImg);
+  constructor(oX, oY, bX, bY, scl, overSpeed, battSpeed, ovrImg, batImg, backgroundImg) {
+    super(oX, oY, 0, 0, bX, bY, width, height, scl, overSpeed, battSpeed, ovrImg, batImg);
     this.click = {jump: true, fall: true, dash: true};
     this.OverSpeed = overSpeed;
     this.BattSpeed = battSpeed;
-    this.backWid = backWid;
-    this.backHgt = backHgt;
-    this.backX = 400-backWid/2;
-    this.backY = 400-backHgt/2;
-    this.backgroundImg = backgroundImg;
-    this.backBoolX = true;
-    this.backBoolY = true;
   }
   
   move() {
-    this.moveBackground();  // Move background before to keep character on top
     super.move();  // Move and animate character
     if (this.world.over.curr) {  // If in overworld
       if (keyIsDown(88))  this.world.state.over = 2;
@@ -79,41 +71,5 @@ class Player extends Character {
   
   attack() {  // Maybe add to move()?
     
-  }
-  
-  moveBackground() {
-    if (this.world.over.curr) {
-      if (this.backBoolX) {  // If background is moving X
-        this.backX -= this.moveX;
-        if (this.backX <= width - this.backWid || this.backX >= 0) {
-          this.backX = this.backX <= width - this.backWid? width - this.backWid : 0;
-          this.backBoolX = false;
-        }
-      }
-      else {  // Else moving character X
-        this.kinemat.over.x += this.moveX;
-        let temp = width/2 - this.dimensions.over.calc/2;
-        if ((this.kinemat.over.x >= temp && this.backX >= 0) || (this.kinemat.over.x <= temp && this.backX <= width - this.backWid)) {
-          this.kinemat.over.x = temp;
-          this.backBoolX = true;
-        }
-      }
-      if (this.backBoolY) {  // If background is moving Y
-        this.backY -= this.moveY;
-        if (this.backY <= height - this.backHgt || this.backY >= 0) {
-          this.backY = this.backY <= height - this.backHgt? height - this.backHgt : 0;
-          this.backBoolY = false;
-        }
-      }
-      else {  // Else moving character Y
-        this.kinemat.over.y += this.moveY;
-        let temp = height/2 - this.dimensions.over.calc/2;
-        if ((this.kinemat.over.y >= temp && this.backY >= 0) || (this.kinemat.over.y <= temp && this.backY <= height - this.backHgt)) {
-          this.kinemat.over.y = temp;
-          this.backBoolY = true;
-        }
-      }
-      image(this.backgroundImg, this.backX, this.backY);
-    }
   }
 }
