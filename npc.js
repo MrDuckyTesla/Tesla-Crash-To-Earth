@@ -34,6 +34,20 @@ class NonPlayerCharacter extends Character {
       else if (false) this.world.dir.over.curr = 4;  // Walk Left
       else if (false) this.world.dir.over.curr = 6;  // Walk Up
     }
+    else {  // Battle
+      if(frameCount % 150 > 100) this.special.jump.bool = true;  // Jump
+      else if (frameCount % 150 > 50) this.special.fall.bool = true;  // Fast fall
+      else if (frameCount % 150 > 0) this.special.dash.bool = true;  // Dash
+      if (frameCount % 150 >= 75) {  // Walking right
+        this.world.dir.batt.curr = 0;
+        this.world.state.batt = 2;  
+      }
+      else if (frameCount % 150 < 40) {  // Walking left
+        this.world.dir.batt.curr = 1;
+        this.world.state.batt = 2;
+      }
+      else this.world.state.batt = 1;  // Idle
+    }
   }
   
   follow(Character) {

@@ -1,6 +1,6 @@
 Start Date:  7/11/2024
-Last Updated:  4/16/2025
-Current Version 0.4.2
+Last Updated:  4/17/2025
+Current Version 0.4.3
 
 "Tesla: Crash to Earth" is (or will be) made by:
 
