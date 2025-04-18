@@ -11,6 +11,7 @@ TOP PRIORITIES
 #09:  add enemy battle ai
 #10:  add save files (probably need electron or node.js (included in electron))
 #11:  Add battle animations (using procedural animation)
+#12:  UPGRADE TO P5JS 2.0
 
 Other things to implement on a later date
 
