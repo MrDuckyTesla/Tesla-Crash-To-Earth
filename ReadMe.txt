@@ -1,8 +1,12 @@
 Start Date:  7/11/2024
-Last Updated:  4/17/2025
+Last Updated:  4/28/2025
 Current Version 0.4.3
 
+
+*****************************************************************************
 DEVELOPMENT IS PAUSED UNTIL I GRADUATE FROM HIGH SCHOOL AND FINISH AP TESTING
+*****************************************************************************
+
 
 "Tesla: Crash to Earth" is (or will be) made by:
 
@@ -33,16 +37,15 @@ Battle:
 
 Software used (or will be used):  
 
-  p5.js (Programming):   https://p5js.org/
-  MS Paint (Sprites):    https://www.microsoft.com/en-us/windows/paint
-  Piskel (Animating):    https://www.piskelapp.com/
-  FL Studio (Music):     https://www.image-line.com/
-  SFXR (Sound Effects):  https://www.drpetter.se/project_sfxr.html
-  BeepBox (Music):       https://www.beepbox.co/
-  Electron (Run Game):   https://www.electronjs.org/
-  GitHub (Repository):   https://github.com/MrDuckyTesla/Tesla-Crash-To-Earth
-  
-  Aseprite (Consider)
+  p5.js (Programming):         https://p5js.org/
+  MS Paint win10 (Sprites):    https://www.microsoft.com/en-us/windows/paint
+  Piskel (Animating):          https://www.piskelapp.com/
+  FL Studio (Music):           https://www.image-line.com/
+  SFXR (Sound Effects):        https://www.drpetter.se/project_sfxr.html
+  BeepBox (Music):             https://www.beepbox.co/
+  Electron (Executable):       https://www.electronjs.org/
+  GitHub (Repository):         https://github.com/
+  Aseprite (Sprites):          https://www.aseprite.org/
 
 
 License:

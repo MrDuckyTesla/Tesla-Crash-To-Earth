@@ -13,10 +13,7 @@ class Character {
     this.kinemat = {over: {x: oX, y: oY}, batt: {pX: bX, pY: bY, x: bX, y: bY, vX: 0, vY: 0, aX: 0, aY: 1, j: 17, f: 0.8}};
     this.special = {sprint: false, inAir: false, jump: {bool: false, count: 2}, fall: {bool: false, pBool: false, count: 1}, dash: {bool: false, count: 1, time: 0}, wall: {bool: false, speed: this.battSpeed, time: 0}};
     this.moveX = 0; this.moveY = 0;  // How much the overworld character will move by
-    this.actualX = aX;
-    this.actualY = aY;
-    this.wid = wid;
-    this.hgt = hgt;
+    this.actualX = aX; this.actualY = aY;
     // Lists of changeable pixels and their respective colors
     this.ovrList = this.MediaPlayer.preCompile(ovrImg, [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Greyscale colors of original image, separated by their layers
     this.batList = this.MediaPlayer.preCompile(batImg, [[105, 85, 34], [104]]);  // Greyscale colors of original image, separated by their layers
@@ -24,6 +21,7 @@ class Character {
     this.dimensions = {over: {wid: 28, hgt: 28, scl: scl[0], calc: 28*scl[0]}, batt: {wid: 9, hgt: 13, scl: scl[1], calcW: 9*scl[1], calcH: 13*scl[1]}};
     // World Variables
     this.world = {dir: {over: {curr: 0, last: 0}, batt: {curr: 0, last: 0}}, over: {curr: true, last: true}, state: {over: 0, overL: 0, batt: 0}};
+    this.wid = wid; this.hgt = hgt;
     this.frameMultiplier = 1;  // Make code consistant at lower frameRates
     // Collision variables
     this.roomCollide = [false]; this.dontChangeVY = false;

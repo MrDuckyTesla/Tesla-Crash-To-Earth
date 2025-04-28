@@ -1,7 +1,7 @@
 TOP PRIORITIES
 
 #01:  Add independant animation system
-#02:  redo ALL sprites, and add more characters. maybe even implement a customization system
+#02:  redo ALL sprites
 #03:  add npc following overworld
 #04:  add enemy overworld
 #05:  add overworld interacting
@@ -47,3 +47,8 @@ Other things to implement on a later date
   Maybe add to x or y in overworld when switching state of moving background (current system is off by a few pixels, low priority as is unnoticeable)
   TRY to get image.width and image.height working, could get rid of multiple variables
   add funny dialogue if the player spam skips npc dialogue
+  Note that there is a oversight with line rect collision where if the line is perfectly in the corner of the rectangle that it doent work
+  Make all collision happen in Room class
+  Add mobile controls
+  Fix battle scaling to be more accurate. espically when larger than 5
+  implement a customization system and add more characters
