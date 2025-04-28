@@ -11,6 +11,8 @@ function preload() {
   backgroundImg = loadImage("Assets/Sprites/Background/background1.png");
   // Load Fonts
   font = loadFont("Assets/Fonts/TeslaCrashToFont.ttf");
+  // Load levels
+  // levels = loadStrings()
 }
 
 function setup() {
@@ -42,7 +44,7 @@ function draw() {  // Main Game Loop
     // fill(255);  // Text color
   }
   // Show characters
-  Temp.show(Tesla);
+  Temp.show();
   Tesla.show();
   // Display text
   text(round(frameRate()) + "fps", width - 40, 20);  // Show FPS counter
