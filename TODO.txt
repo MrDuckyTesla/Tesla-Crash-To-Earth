@@ -52,3 +52,5 @@ Other things to implement on a later date
   Add mobile controls
   Fix battle scaling to be more accurate. espically when larger than 5
   implement a customization system and add more characters
+  pause player inputs for dialogue and such
+  add python game as easter egg
