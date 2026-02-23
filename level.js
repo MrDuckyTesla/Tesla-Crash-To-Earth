@@ -1,7 +1,11 @@
 class Level {  // Level has multiple Rooms
-  constructor(num) {
+  constructor(Player, num) {
     this.levelList = [];
     this.num = num;
+  }
+  
+  addRoom() {
+    
   }
   
 }

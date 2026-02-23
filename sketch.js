@@ -1,7 +1,7 @@
 let img, colors, Tesla, Temp, teslaOverSS, teslaBattSS, backgroundImg;
  // fullscreen(true)
 
-function preload() {
+function preload() { // We should have a function to only load when necessary
   // Load Sounds/music
   // exampleSound = loadSound();
   // Load Spritesheets
@@ -50,7 +50,7 @@ function draw() {  // Main Game Loop
   text(round(frameRate()) + "fps", width - 40, 20);  // Show FPS counter
 }
 
-function keyReleased() {  // Cant even put this in player.js, big sad
+function keyReleased() {  // Cant even put this in player.js, ts pmo
   if (key === " " || key === "ArrowUp" || key === "w") Tesla.click.jump = true;  // Jump
   else if (key === "ArrowDown" || key === "s") Tesla.click.fall = true;  // Fast Fall
   else if (key === "Shift") Tesla.click.dash = true;  // Dash

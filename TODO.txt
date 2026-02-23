@@ -1,17 +1,18 @@
 TOP PRIORITIES
 
-#01:  Add independant animation system
-#02:  redo ALL sprites
-#03:  add npc following overworld
+#01:  Refactor by moving some character code into room code, make the code modular
+#02:  Add independant animation system/animation class
+#03:  add npc following overworld (this includes pathfinding, so maybe later)
 #04:  add enemy overworld
 #05:  add overworld interacting
 #06:  add overworld and battle dialogue
-#07:  optimize code using switch statements, canvas imaging thing, and others:  https://www.w3schools.com/js/js_performance.asp
+#07:  optimize code with this: https://www.w3schools.com/js/js_performance.asp
 #08:  add menu
 #09:  add enemy battle ai
-#10:  add save files (probably need electron or node.js (included in electron))
-#11:  Add battle animations (using procedural animation)
-#12:  UPGRADE TO P5JS 2.0
+#10:  add save files
+#11:  fix tesla sprites than add NPC/enemy sprites
+#12:  Add battle animations (using procedural animation)
+#13:  UPGRADE TO P5JS 2.0
 
 Other things to implement on a later date
 
@@ -21,7 +22,6 @@ Other things to implement on a later date
   Making music sync with attacks by training neural network to reconize beats and sync
   Render Pixelization on side or before game is drawn?
   Use hashs to store images and skip CORS policy. maybe just use electron
-  In overworld, keep attack animation going in single direction without a way to stop
   Open world? make an enemy ai that will secretly fight in background
   Have secret room/way to fight editor or kwack as joke
   Air dash that can be aimed and rotated
@@ -54,3 +54,9 @@ Other things to implement on a later date
   implement a customization system and add more characters
   pause player inputs for dialogue and such
   add python game as easter egg
+  add "human like" walking for non robot NPCs, so basically randomize the path a little
+  make obstacles have their own sprites
+  optimize code using switch statements and canvas imaging thing
+  use perlin noise to generate grass tiles
+  attack simulator? (for boss fights)
+  maybe spread out computationally expensive functions over multiple frames
