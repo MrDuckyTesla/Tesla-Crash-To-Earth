@@ -1,6 +1,6 @@
 class Obstacle {
   constructor(x, y, wid, hgt, scaleNum, colorList, special=false, specialNum=0) {
-    this.MediaPlayer = new Media();  // Used for collision
+    this.GameEngine = new Engine();  // Used for collision
     this.x = x;
     this.y = y;
     this.wid = wid;

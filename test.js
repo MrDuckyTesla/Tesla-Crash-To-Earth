@@ -1,14 +1,124 @@
+let x = -200;
+
 function setup() {
   createCanvas(400, 400);
+  noSmooth();
 }
 
 function draw() {
   background(220);
+  if (x > width/2+50) x = -250;
+  else x+=2;
+  animateLegsRun(width/2-x, height/2, 25, 15, 20, 10, 2, 40, 5, 10, 5, 1.35, [111, 111, 255, 255], [255, 111, 111, 255], false, true);
+  // animateLegsRun(width/2-x, height/2-50, 30, 30, 20);
+  line(0, height/2+50, width, height/2+50);
 }
 
 
+function lineRadius(centerX, centerY, endX, endY, radius, forceRadius=true) {  // Returns coords to keep a line within a radius
+  if (forceRadius || dist(centerX, centerY, endX, endY) > radius) {  // If the line is outside the radius
+    endX -= centerX; endY -= centerY;  // Make sure the x and y can never be 0
+    let temp = endX, num = 1;  // Make a copy of x
+    if (endX < 0)  num = -1;  // Make line not go back 180 degrees
+    return [num*radius*cos(atan(endY/endX)) + centerX, num*radius*sin(atan(endY/temp)) + centerY];
+  }
+  else
+    return [endX, endY];
+}
 
+function getLimbCoords(centerX, centerY, length1, length2, endX, endY, bendRight=false) {
+  let d = dist(centerX, centerY, endX, endY), crd = lineRadius(centerX, centerY, endX, endY, length1 + length2, true);
+  if (d > length1 + length2)
+    return [crd[0], crd[1], crd[0], crd[1]];  
+  // Work on later, make line show for all scenarios 
+  // else if (d < length1 - length2)
+  //   return [crd[0], crd[1], crd[0], crd[1]];
+  // else if (d < length2 - length1) 
+  //   return [crd[0], crd[1], crd[0], crd[1]];
+  else {
+    endX -= centerX; endY -= centerY;  // Make sure the x and y can never be 0
+    let theta = acos((d**2 + length1**2 - length2**2)/(2*d*length1)), num = 1;
+    if (bendRight)  theta *= -1;  // Make theta bend right if true
+    if (endX < 0)  num = -1;  // Make line not go back 180 degrees
+    let x = num*length1*cos(theta+atan(endY/endX)) + centerX, y = num*length1*sin(theta+atan(endY/endX)) + centerY;
+    crd = lineRadius(x, y, endX + centerX, endY + centerY, length2, true);
+    return [x, y, crd[0], crd[1]];
+  }
+}
 
+function animateLegsRun(centerX, centerY, radiusX, radiusY, length, offsetX=0, offsetY=0, res=40, thickness=5, speed=10, jump=5, lengthQuotent=1.35, color1=[0, 0, 0, 255], color2=[255, 255, 255, 255], faceRight=false, showShadow=false, showHitbox=false) {
+  let num = 1, y1 = radiusY*sin(frameCount/speed+PI) + centerY + lengthQuotent*length, y2 = radiusY*sin(frameCount/speed) + centerY + lengthQuotent*length;
+  if (!faceRight) num = -1;
+  let x1 = num*radiusX*cos(frameCount/speed+PI) + centerX, x2 = num*radiusX*cos(frameCount/speed) + centerX, img;
+  centerY += jump*cos(frameCount/(speed/2)+PI);
+  let coords1 = getLimbCoords(centerX, centerY, length, length, x1+offsetX, y1+offsetY, faceRight);
+  let coords2 = getLimbCoords(centerX, centerY, length, length, x2+offsetX, y2+offsetY, faceRight);
+  
+  if (showShadow || showHitbox) {
+    fill(255, 0, 0);
+    if (showShadow)  ellipse(centerX+offsetX, centerY+length*lengthQuotent+offsetY, 2*radiusX, 2*radiusY);
+    if (showHitbox)  rect(centerX - radiusX - thickness/2, centerY - thickness/2, 2*radiusX + thickness/2, 2*length + thickness);
+  }
+
+  img = lineImage(centerX, centerY, coords2[0], coords2[1], res, thickness, width, color1);
+  img.copy(lineImage(coords2[0], coords2[1], coords2[2], coords2[3], res, thickness, width, color1), 0, 0, res, res, 0, 0, res, res);
+  img.copy(lineImage(centerX, centerY, coords1[0], coords1[1], res, thickness, width, color2), 0, 0, res, res, 0, 0, res, res);
+  img.copy(lineImage(coords1[0], coords1[1], coords1[2], coords1[3], res, thickness, width, color2), 0, 0, res, res, 0, 0, res, res);
+  image(img, 0, 0, 400, 400);
+}
+
+function lineImage(x1, y1, x2, y2, res, thicc, sizeDisplay, clr=[0, 0, 0, 255]) {  //creates an image of a pixedlated line
+    let img = createImage(res, res), row = 0, sclW = sizeDisplay/res, thicWid = thicc+sclW/2, c1, c2, minX, minY, cline;
+    img.loadPixels();  // Load pixels
+    let len = img.pixels.length;  // Dont recalculate every iteration
+    for (let i = 0; i < len; i += 4) {  // Iterate through pixel list
+      if (i / 4 % res == 0 && i != 0) row += 1;  // If we reach the next row of pixels, add to the Y
+      // calculate center X and Y coordinate of each Pixel
+      c1 = i / 4 % res * sclW + sclW/2;
+      c2 = row * sclW + sclW/2;
+      // Check if within bounding box
+      minX = min(x1, x2)-thicWid; minY = min(y1, y2)-thicWid;
+      if (pointRectCollide(c1, c2, minX, minY, max(x1, x2)+thicWid-minX, max(y1, y2)+thicWid-minY)) {
+        // Check for closest point on line
+        cline = closestPointLine(c1, c2, x1, y1, x2, y2);
+        // Check if pixel is within the thickness of the line
+        if (dist(cline[0], cline[1], c1, c2) <= thicc) {
+          // Change colors
+          img.pixels[i] = clr[0];
+          img.pixels[i+1] = clr[1];
+          img.pixels[i+2] = clr[2];
+          img.pixels[i+3] = clr[3];
+        }
+        else img.pixels[i+3] = 0;
+      }
+    }
+    img.updatePixels();  // Update image
+    return img;
+  }
+
+function closestPointLine(px, py, x1, y1, x2, y2) {
+  let m1, m2, b1, b2, iX, iY;
+  // Find slopes
+  m1 = (y2 - y1) / (x2 - x1);
+  m2 = -1/m1;
+  // Find y intercepts
+  b1 = y1 - m1 * x1;
+  b2 = py - m2 * px;
+  // Find X and Y coords while also dealing with evil slopes
+  if (y2 - y1 == 0) iX = px;
+  else iX = x1 - x2 == 0? x1 : (b1 - b2) / (m2 - m1);
+  iY = x2 - x1 == 0? py : m1 * iX + b1;
+  // Check if point is within line
+  if (iX > max(x1, x2)) iX = max(x1,x2);
+  else if (iX < min(x1, x2)) iX = min(x1,x2);
+  if (iY > max(y1, y2)) iY = max(y1,y2);
+  else if (iY < min(y1, y2)) iY = min(y1,y2);
+  return [iX,iY];
+}
+
+function pointRectCollide(px, py, rx, ry, rw, rh) {
+    return px >= rx && px <= rx + rw && py >= ry && py <= ry + rh;
+}
 
 
 
@@ -526,59 +636,7 @@ function draw() {
 // // //   // }
 // // // }
 
-// // // function lineRadius(centerX, centerY, endX, endY, radius, forceRadius=true) {  // Returns coords to keep a line within a radius
-// // //   if (forceRadius || dist(centerX, centerY, endX, endY) > radius) {  // If the line is outside the radius
-// // //     endX -= centerX; endY -= centerY;  // Make sure the x and y can never be 0
-// // //     let temp = endX, num = 1;  // Make a copy of x
-// // //     if (endX < 0)  num = -1;  // Make line not go back 180 degrees
-// // //     return [num*radius*cos(atan(endY/endX)) + centerX, num*radius*sin(atan(endY/temp)) + centerY];
-// // //   }
-// // //   else
-// // //     return [endX, endY];
-// // // }
 
-// // // function getLimbCoords(centerX, centerY, length1, length2, endX, endY, bendRight=false) {
-// // //   let d = dist(centerX, centerY, endX, endY), crd = lineRadius(centerX, centerY, endX, endY, length1 + length2, true);
-// // //   if (d > length1 + length2)
-// // //     return [crd[0], crd[1], crd[0], crd[1]];  
-// // //   // Work on later, make line show for all scenarios 
-// // //   // else if (d < length1 - length2)
-// // //   //   return [crd[0], crd[1], crd[0], crd[1]];
-// // //   // else if (d < length2 - length1) 
-// // //   //   return [crd[0], crd[1], crd[0], crd[1]];
-// // //   else {
-// // //     endX -= centerX; endY -= centerY;  // Make sure the x and y can never be 0
-// // //     let theta = acos((d**2 + length1**2 - length2**2)/(2*d*length1)), num = 1;
-// // //     if (bendRight)  theta *= -1;  // Make theta bend right if true
-// // //     if (endX < 0)  num = -1;  // Make line not go back 180 degrees
-// // //     let x = num*length1*cos(theta+atan(endY/endX)) + centerX, y = num*length1*sin(theta+atan(endY/endX)) + centerY;
-// // //     crd = lineRadius(x, y, endX + centerX, endY + centerY, length2, true);
-// // //     return [x, y, crd[0], crd[1]];
-// // //   }
-// // // }
-
-// // // function animateLegsRun(centerX, centerY, radiusX, radiusY, length, color1=[0, 0, 0], color2=[255, 255, 255], thickness=5, speed=10, lengthQuotent=1.35, faceRight=false, showShadow=false, showHitbox=false) {
-// // //   let num = 1, y1 = radiusY*sin(frameCount/speed+PI) + centerY + lengthQuotent*length, y2 = radiusY*sin(frameCount/speed) + centerY + lengthQuotent*length;
-// // //   if (!faceRight) num = -1;
-// // //   let x1 = num*radiusX*cos(frameCount/speed+PI) + centerX, x2 = num*radiusX*cos(frameCount/speed) + centerX;
-// // //   let coords1 = getLimbCoords(centerX, centerY, length, length, x1, y1, faceRight);
-// // //   let coords2 = getLimbCoords(centerX, centerY, length, length, x2, y2, faceRight);
-  
-// // //   if (showShadow || showHitbox) {
-// // //     noStroke();
-// // //     fill(255, 0, 0);
-// // //   }
-// // //   if (showShadow)  ellipse(centerX, centerY+length*lengthQuotent, 2*radiusX, 2*radiusY);
-// // //   if (showHitbox)  rect(centerX - radiusX - thickness/2, centerY - thickness/2, 2*radiusX + thickness/2, 2*length + thickness);
-  
-// // //   strokeWeight(thickness);
-// // //   stroke(color1[0], color1[1], color1[2]);
-// // //   line(centerX, centerY, coords2[0], coords2[1]);
-// // //   line(coords2[0], coords2[1], coords2[2], coords2[3]);
-// // //   stroke(color2[0], color2[1], color2[2]);
-// // //   line(centerX, centerY, coords1[0], coords1[1]);
-// // //   line(coords1[0], coords1[1], coords1[2], coords1[3]);
-// // // }
 
 // // // function pixelate(res, x=0, y=0, w=width, h=height) {
 // // //     let img = get();  // Get canvas

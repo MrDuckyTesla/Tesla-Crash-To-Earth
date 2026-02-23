@@ -1,9 +1,14 @@
-class Room {  // A Room is full of Obstacles, NPCs, and such
+class Room extends Engine {  // A Room is full of Obstacles, NPCs, and such
   constructor(player, scaleVal) {
+    super();
     this.Player = player;
     this.scl = scaleVal;
     this.obstList = [];
     this.NPCList = [];
+  }
+  
+  updateRoom() {
+    
   }
   
   addBackgroundVars(backWid, backHgt, backgroundImg) {

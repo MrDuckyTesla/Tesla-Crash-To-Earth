@@ -2,7 +2,7 @@
 class Character {
   constructor(oX, oY, aX, aY, bX, bY, wid, hgt, scl, ovrImg, batImg, col1, col2) {
     // Animation and media varaibles
-    this.MediaPlayer = new Media();  // Animates and colors Spritesheets 
+    this.GameEngine = new Engine();  // Animates and colors Spritesheets 
     this.overAnimSpeed = 12;  this.AnimSpeedCap = 6;  // Animation speed in overworld
     this.battAnimSpeed = 5;  // Animation speed limit in battle
     this.changeAnimation = false; 
@@ -15,8 +15,8 @@ class Character {
     this.moveX = 0; this.moveY = 0;  // How much the overworld character will move by
     this.actualX = aX; this.actualY = aY;
     // Lists of changeable pixels and their respective colors
-    this.ovrList = this.MediaPlayer.preCompile(ovrImg, [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Greyscale colors of original image, separated by their layers
-    this.batList = this.MediaPlayer.preCompile(batImg, [[105, 85, 34], [104]]);  // Greyscale colors of original image, separated by their layers
+    this.ovrList = this.GameEngine.preCompile(ovrImg, [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Greyscale colors of original image, separated by their layers
+    this.batList = this.GameEngine.preCompile(batImg, [[105, 85, 34], [104]]);  // Greyscale colors of original image, separated by their layers
     // this.dimensions.over.scl = 3;  this.dimensions.batt.scl = 4;  // Scale of Character (Size)
     this.dimensions = {over: {wid: 28, hgt: 28, scl: scl[0], calc: 28*scl[0]}, batt: {wid: 9, hgt: 13, scl: scl[1], calcW: 9*scl[1], calcH: 13*scl[1]}};
     // World Variables
@@ -39,11 +39,11 @@ class Character {
   show() {
     // this.displayHitBox();  // HitBox
     // Color Character
-    this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b, this.colors.c3.r, this.colors.c3.g, this.colors.c3.b]);  // Overworld
-    this.MediaPlayer.changeColor(this.batImg, this.batList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b]);  // Battle
+    this.GameEngine.changeColor(this.ovrImg, this.ovrList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b, this.colors.c3.r, this.colors.c3.g, this.colors.c3.b]);  // Overworld
+    this.GameEngine.changeColor(this.batImg, this.batList, [this.colors.c1.r, this.colors.c1.g, this.colors.c1.b, this.colors.c2.r, this.colors.c2.g, this.colors.c2.b]);  // Battle
     // Seizure warning if you uncomment the next 2 lines
-    // this.MediaPlayer.changeColor(this.ovrImg, this.ovrList, [random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255)], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
-    // this.MediaPlayer.changeColor(this.batImg, this.batList, [random(255), random(255), random(255), random(255), random(255), random(255)], [[105, 85, 34], [104]]);  // Battle (fun)
+    // this.GameEngine.changeColor(this.ovrImg, this.ovrList, [random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255), random(255)], [[180, 157, 130, 31], [187, 171], [190, 163, 140]]);  // Overworld
+    // this.GameEngine.changeColor(this.batImg, this.batList, [random(255), random(255), random(255), random(255), random(255), random(255)], [[105, 85, 34], [104]]);  // Battle (fun)
     // Update coords and animate character
     this.move();
   }  
@@ -65,7 +65,7 @@ class Character {
       // If we are staying in an animation
       if (this.animateTill[0]) {
         // If the animation has ended, end the animation
-        if ((this.MediaPlayer.indexCount+1) % this.overAnimSpeed == 0 && this.MediaPlayer.index == this.animateTill[3]) this.animateTill[0] = false;
+        if ((this.GameEngine.indexCount+1) % this.overAnimSpeed == 0 && this.GameEngine.index == this.animateTill[3]) this.animateTill[0] = false;
         //Else, keep the character state and direction the same
         else {
           this.world.state.over = this.animateTill[1];
@@ -95,7 +95,8 @@ class Character {
       // Collision code
       this.special.inAir = this.special.jump.bool? false : true;
       // Iterate through all objects in list
-      for (let i = 0; i < this.RoomVar.obstList.length; i ++) {
+      let len = this.RoomVar.obstList.length;  // Dont recalculate every iteration
+      for (let i = 0; i < len; i ++) {
         // Display object
         this.RoomVar.obstList[i].drawObst();
         // If you must stay in the object (like a box or a cage)
@@ -103,7 +104,7 @@ class Character {
         // Else collision is normal
         else {
           // Set collision coordinates variable normally
-          this.roomCollide = this.MediaPlayer.rectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
+          this.roomCollide = this.GameEngine.rectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
           if (!this.dontChangeVY || this.special.inAir) this.dontChangeVY = false;
           // If colliding
           if (this.roomCollide[0]) {
@@ -119,26 +120,26 @@ class Character {
       if (this.special.inAir) {  // If in air
         if (this.special.wall.bool) {  // If wall sliding
           // If facing right else facing left
-          if (this.world.dir.batt.curr == 0) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 31, 32, this.battAnimSpeed * 2, this.changeAnimation);
-          else if (this.world.dir.batt.curr == 1) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 36, 37, this.battAnimSpeed * 2, this.changeAnimation);
+          if (this.world.dir.batt.curr == 0) this.GameEngine.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 31, 32, this.battAnimSpeed * 2, this.changeAnimation);
+          else if (this.world.dir.batt.curr == 1) this.GameEngine.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 36, 37, this.battAnimSpeed * 2, this.changeAnimation);
         }
         else {  // Else falling
           // If facing right else facing left
-          if (this.world.dir.batt.curr == 0) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 20, 24, this.battAnimSpeed, this.changeAnimation);
-          else if (this.world.dir.batt.curr == 1) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 25, 29, this.battAnimSpeed, this.changeAnimation);
+          if (this.world.dir.batt.curr == 0) this.GameEngine.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 20, 24, this.battAnimSpeed, this.changeAnimation);
+          else if (this.world.dir.batt.curr == 1) this.GameEngine.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 25, 29, this.battAnimSpeed, this.changeAnimation);
         }
       }
       else {  // Else not in air
         if (this.world.state.batt == 1) {  // If idle
           // If facing right else facing left
-          if (this.world.dir.batt.curr == 0 && !this.special.inAir) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 0, 1, this.battAnimSpeed * 2, this.changeAnimation);
-          else if (this.world.dir.batt.curr == 1 && !this.special.inAir) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 2, 3, this.battAnimSpeed * 2, this.changeAnimation);
+          if (this.world.dir.batt.curr == 0 && !this.special.inAir) this.GameEngine.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 0, 1, this.battAnimSpeed * 2, this.changeAnimation);
+          else if (this.world.dir.batt.curr == 1 && !this.special.inAir) this.GameEngine.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 2, 3, this.battAnimSpeed * 2, this.changeAnimation);
         }
         else {  // Else not idle
           this.battAnimSpeed = round(3 / (this.kinemat.batt.aX/7));  // Animation speed gets faster as well
           // If facing right else facing left
-          if (this.world.dir.batt.curr == 0 && !this.special.inAir) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 4, 11, this.battAnimSpeed, this.changeAnimation);
-          else if (this.world.dir.batt.curr == 1 && !this.special.inAir) this.MediaPlayer.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 12, 19, this.battAnimSpeed, this.changeAnimation);
+          if (this.world.dir.batt.curr == 0 && !this.special.inAir) this.GameEngine.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 4, 11, this.battAnimSpeed, this.changeAnimation);
+          else if (this.world.dir.batt.curr == 1 && !this.special.inAir) this.GameEngine.animateOld(this.batImg, this.kinemat.batt.x, this.kinemat.batt.y, 9, 13, this.dimensions.batt.scl, 12, 19, this.battAnimSpeed, this.changeAnimation);
         }
       }
     }
@@ -171,6 +172,7 @@ class Character {
     // Dash
     if (this.special.dash.bool && this.special.dash.count > 0 && this.special.dash.time < millis()) {
       this.kinemat.batt.vX += this.world.dir.batt.curr == 0 ? this.kinemat.batt.j*2*this.scaleMove : -this.kinemat.batt.j*2*this.scaleMove;  // Add impulse in X direction to dash
+      this.kinemat.batt.vY = 0;  // Reset falling speed
       this.special.dash.count --;  // Subtract from dash count so only one dash mid air
       this.special.dash.bool = false;  // No longer "dashing"
       this.special.dash.time = millis() + 500;
@@ -276,7 +278,7 @@ class Character {
     // Should work on overworld and battle. also have physics based object moving (intended for battle)
     // this.collideNormal();
     // for (let j = 0; j < this.RoomVar.obstList.length; j ++) {
-    //   let temp = this.MediaPlayer.rectRectCollideCoords(this.RoomVar.obstList[i].pX, this.RoomVar.obstList[i].pY, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcW);
+    //   let temp = this.GameEngine.rectRectCollideCoords(this.RoomVar.obstList[i].pX, this.RoomVar.obstList[i].pY, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcW);
     //   // if collision is with walls
     //   if (temp[3] == 1 || temp[3] == 3) {
     //     this.RoomVar.obstList[i].x = temp[3] == 1? this.kinemat.batt.x - 0.00001 - this.RoomVar.obstList[i].wid: this.kinemat.batt.x + 0.00001 + this.dimensions.batt.calcW;  // Slightly offset to not stick
@@ -296,7 +298,7 @@ class Character {
   
   collideBox(i) {
     // Set collision coordinates variable for box
-    this.roomCollide = this.MediaPlayer.nRectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
+    this.roomCollide = this.GameEngine.nRectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
     // Iterate extra times in case of edge cases (like when the player runs into a wall while on ground)
     for (let j = 0; j < 2; j ++) {
       if (this.roomCollide[0]) {  // If colliding
@@ -320,7 +322,7 @@ class Character {
           this.kinemat.batt.vY = -this.kinemat.batt.vY/5
         }
         // Look for collisions again (edge cases remember?)
-        this.roomCollide = this.MediaPlayer.nRectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
+        this.roomCollide = this.GameEngine.nRectRectCollideCoords(this.kinemat.batt.pX, this.kinemat.batt.pY, this.kinemat.batt.x, this.kinemat.batt.y, this.dimensions.batt.calcW, this.dimensions.batt.calcH, this.RoomVar.obstList[i].x, this.RoomVar.obstList[i].y, this.RoomVar.obstList[i].wid, this.RoomVar.obstList[i].hgt);
       }
     }
   }
@@ -347,7 +349,7 @@ class Character {
   }
   
   animateMoveOver(speed, start, frames, ignore=false, fullAnim=false) {
-    // console.log(this.world.dir.over.curr*frames, this.MediaPlayer.index)
+    // console.log(this.world.dir.over.curr*frames, this.GameEngine.index)
     let startReal = start + this.world.dir.over.curr * frames;
     this.moveX = 0; this.moveY = 0;
     if (fullAnim && this.animateTill[4] != frameCount) this.animateTill = [true, this.world.state.over, this.world.dir.over.curr, startReal+frames-1, frames];
@@ -355,7 +357,7 @@ class Character {
       if (this.world.dir.over.curr % 2 == 1) speed *= sin(45);
       if (this.world.dir.over.curr % 4 != 2) this.moveX = this.world.dir.over.curr % 7 < 2? speed : -speed;
       if (this.world.dir.over.curr % 4 - 1 != -1) this.moveY = this.world.dir.over.curr < 4? speed : -speed;
-      this.MediaPlayer.animate(this.ovrImg, this.kinemat.over.x+this.actualX, this.kinemat.over.y+this.actualY, 28, 28, this.dimensions.over.scl, startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnimation, this.world.state.overL != this.world.state.over);
+      this.GameEngine.animate(this.ovrImg, this.kinemat.over.x+this.actualX, this.kinemat.over.y+this.actualY, 28, 28, this.dimensions.over.scl, startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnimation, this.world.state.overL != this.world.state.over);
     }
     else this.animateTill[0] = false;
   }

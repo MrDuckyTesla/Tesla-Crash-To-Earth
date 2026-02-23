@@ -150,7 +150,7 @@ class Media {
     }
   }
   
-  lineLineCollide(x1, y1, x2, y2, x3, y3, x4, y4) {
+  lineLineCollide(x1, y1, x2, y2, x3, y3, x4, y4) {  // Collision for two lines, very important function
     if ((dist(x1, y1, x2, y2) == 0 || dist(x3, y3,  x4, y4) == 0) || (x1 - x2 == 0 && x3 - x4 == 0) || (y1 - y2 == 0 && y3 - y4 == 0)) return [false];
     let temp, m1, m2, b1, b2, iX, iY, d1, d2;
     // Find slopes
@@ -171,6 +171,90 @@ class Media {
     // Check if X and Y coordinates is within line segments
     if (dist(iX, iY, x2, y2) > d1 || dist(iX, iY, x1, y1) > d1 || dist(iX, iY, x3, y3) > d2 || dist(iX, iY, x4, y4) > d2) return [false];
     return [true, iX, iY];
+  }
+  
+  closestPointLine(px, py, x1, y1, x2, y2) {
+    let m1, m2, b1, b2, iX, iY;
+    // Find slopes
+    m1 = (y2 - y1) / (x2 - x1);
+    m2 = -1/m1;
+    // Find y intercepts
+    b1 = y1 - m1 * x1;
+    b2 = py - m2 * px;
+    // Find X and Y coords while also dealing with evil slopes
+    if (y2 - y1 == 0) iX = px;
+    else iX = x1 - x2 == 0? x1 : (b1 - b2) / (m2 - m1);
+    iY = x2 - x1 == 0? py : m1 * iX + b1;
+    // Check if point is within line
+    if (iX > max(x1, x2)) iX = max(x1,x2);
+    else if (iX < min(x1, x2)) iX = min(x1,x2);
+    if (iY > max(y1, y2)) iY = max(y1,y2);
+    else if (iY < min(y1, y2)) iY = min(y1,y2);
+    // Return coords
+    return [iX, iY];
+  }
+  
+  lineImage(x1, y1, x2, y2, res, thicc, sizeDisplay, clr=[0, 0, 0, 255]) {  //creates an image of a pixedlated line
+    let img = createImage(res, res), row = 0, sclW = width/res, thicWid = thicc+sclW/2, c1, c2, minX, minY, cline;
+    img.loadPixels();  // Load pixels
+    for (let i = 0; i < img.pixels.length; i += 4) {  // Iterate through pixel list
+      if (i / 4 % res == 0 && i != 0) row += 1;  // If we reach the next row of pixels, add to the Y
+      // calculate center X and Y coordinate of each Pixel
+      c1 = i / 4 % res * sclW + sclW/2;
+      c2 = row * sclW + sclW/2;
+      // Check if within bounding box
+      minX = min(x1, x2)-thicWid; minY = min(y1, y2)-thicWid;
+      if (this.pointRectCollide(c1, c2, minX, minY, max(x1, x2)+thicWid-minX, max(y1, y2)+thicWid-minY)) {
+        // Check for closest point on line
+        cline = this.closestPointLine(c1, c2, x1, y1, x2, y2);
+        // Check if pixel is within the thickness of the line
+        if (dist(cline[0], cline[1], c1, c2) <= thicc) {
+          // Change colors
+          img.pixels[i] = clr[0];
+          img.pixels[i+1] = clr[1];
+          img.pixels[i+2] = clr[2];
+          img.pixels[i+3] = clr[3];
+        }
+        else img.pixels[i+3] = 0;
+      }
+    }
+    img.updatePixels();  // Update image
+    return img;
+  }
+  
+  outline(img, clr1=[0, 0, 0, 0], clr2=[255, 255, 255, 255]) {
+    img.loadPixels();  // Load pixels
+    for (let i = 0; i < img.pixels.length; i += 4) {
+      if (img.pixels[i+3] != 0 && !this.compareColorList(img.pixels[i], img.pixels[i+1], img.pixels[i+2], img.pixels[i+3], clr2)) {  // Dont check if transparent pixel
+        // Check if there is a blank pixel to the left, right, above or below the normal pixel
+        if ((this.compareColorList(img.pixels[i-4], img.pixels[i-3], img.pixels[i-2], img.pixels[i-1], clr1) && i/4%img.width!=0)) {
+          img.pixels[i-4] = clr2[0];
+          img.pixels[i-3] = clr2[1];
+          img.pixels[i-2] = clr2[2];
+          img.pixels[i-1] = clr2[3];
+        }
+        if ((this.compareColorList(img.pixels[i+4], img.pixels[i+5], img.pixels[i+6], img.pixels[i+7], clr1) && (i+4)/4%img.width!=0)) {
+          img.pixels[i+4] = clr2[0];
+          img.pixels[i+5] = clr2[1];
+          img.pixels[i+6] = clr2[2];
+          img.pixels[i+7] = clr2[3];
+        }
+        if (this.compareColorList(img.pixels[i-img.width*4], img.pixels[i-img.width*4+1], img.pixels[i-img.width*4+2], img.pixels[i-img.width*4+3], clr1)) {
+          img.pixels[i-img.width*4] = clr2[0];
+          img.pixels[i-img.width*4+1] = clr2[1];
+          img.pixels[i-img.width*4+2] = clr2[2];
+          img.pixels[i-img.width*4+3] = clr2[3];
+        }
+        if (this.compareColorList(img.pixels[i+img.width*4], img.pixels[i+img.width*4+1], img.pixels[i+img.width*4+2], img.pixels[i+img.width*4+3], clr1)) {
+          img.pixels[i+img.width*4] = clr2[0];
+          img.pixels[i+img.width*4+1] = clr2[1];
+          img.pixels[i+img.width*4+2] = clr2[2];
+          img.pixels[i+img.width*4+3] = clr2[3]; 
+        }
+      }
+    }
+    img.updatePixels();  // Update image
+    return img;  // Return new image
   }
 
   lineRectCollide(x1, y1, x2, y2, rx, ry, rw, rh) {  // Used to find points of intersection of a line and rectangle
@@ -234,6 +318,25 @@ class Media {
   lRectRectCollide(rx1, ry1, rw1, rh1, rx2, ry2, rw2, rh2) {  // Used to find which sides two rectangles are touching
     // Rectangle is just four lines, so we return a list of line vs line collisions
     return [this.pLineCollide(rx1+rw1, ry1, rx1+rw1, ry1+rh1, rx2+rw2, ry2, rx2+rw2, ry2+rh2), this.pLineCollide(rx1+rw1, ry1+rh1, rx1, ry1+rh1, rx2+rw2, ry2+rh2, rx2, ry2+rh2), this.pLineCollide(rx1, ry1+rh1, rx1, ry1, rx2, ry2+rh2, rx2, ry2), this.pLineCollide(rx1, ry1, rx1+rw1, ry1, rx2, ry2, rx2+rw2, ry2)];
+  }
+  
+  compareColorList(r, g, b, a, col) {
+    // Checks if two colors are not different
+    return r == col[0] && g == col[1] && b == col[2] && a == col[3];
+  }
+
+  compareColorColor(col1, col2) {
+    // Checks if two colors are the same
+    return col1[0] == col2[0] && col1[1] == col2[1] && col1[2] == col2[2] && col1[3] == col2[3]
+  }
+
+  compareListList(list1, list2) {
+    // Checks if two lists are identical
+    if (list1.length != list2.length) return false;
+    for (let i = 0; i < list1.length; i ++) {
+      if (list1[i] != list2[i]) return false;
+    }
+    return true;
   }
   
   sharpen(img, backgroundColor, replacementColor) {  // Change in order to allow less colors, and more replacement colors
