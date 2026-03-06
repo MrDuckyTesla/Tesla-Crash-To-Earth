@@ -21,7 +21,7 @@ public class Path {
 	
 	public void addPoints(ArrayList<Point> list) {for (int i = 0; i < list.size(); i++) {path.add(list.get(i));}}
 	public void addPoints(Point[] list) {for (int i = 0; i < list.length; i++) {path.add(list[i]);}}
-	public void addPoints(Path path) {addPoints(path.getArrayList());}
+	public void addPoints(Path path) {addPoints(path.getPath());}
 	public void addPoints(float[][] list) {for (int i = 0; i < list.length; i++) {addPoint(list[i][0], list[i][1]);}}
 	public void addPoints(float[] list) {for (int i = 0; i < list.length; i+=2) {addPoint(list[i], list[i+1]);}}
 	
@@ -46,7 +46,7 @@ public class Path {
 	public Point getPoint(int index) {return path.get(index);}
 	public float[] getPointArray(int index) {return path.get(index).getXY();}
 	
-	public ArrayList<Point> getArrayList() {return path;}
+	public ArrayList<Point> getPath() {return path;}
 	
 	public Point[] getPointArray() {
 		Point[] list = new Point[this.path.size()];
@@ -62,9 +62,9 @@ public class Path {
 	
 	public float[] getFlatArray() {
 		float[] list = new float[this.path.size()*2];
-		for (int i = 0; i < list.length; i+=2) {
+		for (int i = 0; i < list.length; i++) {
 			list[i] = this.path.get(i).getX();
-			list[i+1] = this.path.get(i+1).getY();
+			list[i+1] = this.path.get(i).getY();
 		} return list;
 	}
 	

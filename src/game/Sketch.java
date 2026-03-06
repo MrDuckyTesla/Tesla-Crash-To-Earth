@@ -57,7 +57,7 @@ public class Sketch extends PApplet {
 		// PATHFINDIING
 		
 		for (int i = 0; i < obstacles.length; i++) {
-			obstacles[i].display(this);
+			obstacles[i].display(this, new int[] {(int)(Math.random()*256), (int)(Math.random()*256), (int)(Math.random()*256)});
 		}
 		
 		ArrayList<Point> criticalPoints = Engine.pathfind(50, 700, min(mouseX, width-100), min(mouseY, height-100), 100, 100, obstacles, 0, 0, width, height);
@@ -71,7 +71,8 @@ public class Sketch extends PApplet {
 		circle(50, 700, 50);
 		
 		// obj test
-//		CObstacle test = new CObstacle(new Obstacle[] {new Obstacle(300, 300, 400, 400),  new Obstacle(200, 200, 600, 600), new Obstacle(100, 146, 800, 600)});
+//		CObstacle test = new CObstacle(new Obstacle[] {new Obstacle(300, 200, 400, 400),  new Obstacle(200, 300, 400, 400)});
+//		CObstacle test = new CObstacle(new Obstacle[] {new Obstacle(200, 200, 400, 400),  new Obstacle(300, 300, 400, 400)});
 //		test.cleanArray();
 //		test.display(this);
 //		System.out.println(test.getArrayList());		

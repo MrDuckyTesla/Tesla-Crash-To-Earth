@@ -30,11 +30,8 @@ public class Obstacle extends Point {
 	public boolean isBLInside(Obstacle other) {return Engine.pointRectCollide(x, y+h, other.getX(), other.getY(), other.getW(), other.getH());}
 	public boolean isInside(Obstacle other) {return this.isTLInside(other) && this.isTRInside(other) && this.isBRInside(other) && this.isBLInside(other);} // Checks if this has all four corners inside other
 	
-	public Point getTLCorner() {return new Point(x, y);}
-	public Point getTRCorner() {return new Point(x+w, y);}
-	public Point getBRCorner() {return new Point(x+w, y+h);}
-	public Point getBLCorner() {return new Point(x, y+h);}
-	public Point[] getCorners() {return new Point[] {getTLCorner(), getTRCorner(), getBRCorner(), getBLCorner()};}
+	public Point getCorner(boolean topSide, boolean rightSide) {return new Point(rightSide? x+w : x, topSide? y : y+h);}
+	public Point[] getCorners() {return new Point[] {getCorner(true, false), getCorner(true, true), getCorner(false, true), getCorner(false, false)};}
 	
 	public float getArea() {return this.w * this.h;}
 	public float getPerimeter() {return 2*this.w + 2*this.h;}
@@ -52,7 +49,8 @@ public class Obstacle extends Point {
 	public float getH() {return this.h;}
 	public float[] getXYWH() {return new float[] {x, y, w, h};}
 	
-	public boolean equals(Obstacle other) {return this.x == other.getX() && this.y == other.getY() && this.w == other.getW() && this.h == other.getH();}
+	@Override
+	public boolean equals(Object other) {return this.x == ((Point) other).getX() && this.y == ((Point) other).getY() && this.w == ((Obstacle) other).getW() && this.h == ((Obstacle) other).getH();}
 	
 	@Override
 	public String toString() {return "("+x+", "+y + ", "+w+", "+h+")";}

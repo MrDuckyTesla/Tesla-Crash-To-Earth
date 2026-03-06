@@ -94,8 +94,10 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 		return new ArrayList<Path>();
 	}
 	
-	private static Obstacle[] preCompileGroups() {
-		return new Obstacle[] {};
+	private static CObstacle[] preCompileGroups() {
+		
+		
+		return new CObstacle[] {};
 	}
 	
 	private static ArrayList<Point> findCritPoints(float tx, float ty, float cx, float cy, float cw, float ch, Obstacle[] objects, float bx, float by, float bw, float bh) {
@@ -118,22 +120,24 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 //				criticalPoints.add(ObjHitbox.getTLCorner());
 //				criticalPoints.add(ObjHitbox.getBRCorner());
 //				criticalPoints.add(ObjHitbox.getBLCorner());
+				
+				// getCorner(boolean topSide, boolean rightSide)
 				switch((int) farList[3]) {  // Get the critical points and push it to the list
 					case 0:  // Top of object
-						criticalPoints.add(ObjHitbox.getTRCorner());
-						criticalPoints.add(ObjHitbox.getTLCorner());
+						criticalPoints.add(ObjHitbox.getCorner(true, true));
+						criticalPoints.add(ObjHitbox.getCorner(true, false));
 						break;
 					case 1:  // Right side of object
-						criticalPoints.add(ObjHitbox.getTRCorner());
-						criticalPoints.add(ObjHitbox.getBRCorner());
+						criticalPoints.add(ObjHitbox.getCorner(true, true));
+						criticalPoints.add(ObjHitbox.getCorner(false, true));
 						break;
 					case 2:  // Bottom of object
-						criticalPoints.add(ObjHitbox.getBRCorner());
-						criticalPoints.add(ObjHitbox.getBLCorner());
+						criticalPoints.add(ObjHitbox.getCorner(false, true));
+						criticalPoints.add(ObjHitbox.getCorner(false, false));
 						break;
 					case 3:  // Left side of object
-						criticalPoints.add(ObjHitbox.getTLCorner());
-						criticalPoints.add(ObjHitbox.getBLCorner());
+						criticalPoints.add(ObjHitbox.getCorner(true, false));
+						criticalPoints.add(ObjHitbox.getCorner(false, false));
 						break;
 				}
 			}
@@ -451,6 +455,9 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	public static PImage outline(PApplet app, PImage image) {return Engine.outline(app, image, new int[] {0, 0, 0, 0}, new int[] {255, 255, 255, 255});}
 	public static PImage outlineThin(PApplet app, PImage image, int[] color1) {return Engine.outline(app, image, color1, new int[] {255, 255, 255, 255});}
 	public static PImage outlineThin(PApplet app, PImage image) {return Engine.outline(app, image, new int[] {0, 0, 0, 0}, new int[] {255, 255, 255, 255});}
+	
+	// Random util functions
+	public static <T> ArrayList<T> removeAll(T val, ArrayList<T> arr) {for (int i = 0; i < arr.size(); i++) {if (arr.get(i).equals(val)) {arr.remove(i); i--;}} return arr;}
 	
 }
 

@@ -77,7 +77,8 @@ public class CObstacle {  // Complex Obstacle (basically multiple rectangles sti
 	
 	public void display(PApplet app) {
 		for (int i = cobstacle.size()-1; i >= 0; i--) {
-			cobstacle.get(i).display(app, new int[] {(int)(Math.random()*256), (int)(Math.random()*256), (int)(Math.random()*256)});
+			cobstacle.get(i).display(app);
+//			cobstacle.get(i).display(app, new int[] {(int)(Math.random()*256), (int)(Math.random()*256), (int)(Math.random()*256)});
 		}
 	}
 	
@@ -88,6 +89,32 @@ public class CObstacle {  // Complex Obstacle (basically multiple rectangles sti
 	
 	public float getPerimeter() {return -1;}
 	
+	public Path getPath() {
+		Path p = new Path();
+		
+		for (int i = 0; i < cobstacle.size(); i++) {
+			p.addPoints(cobstacle.get(i).getCorners());
+		}
+		for (int i = 0; i < p.getPath().size(); i++) {
+			for (int j = 0; j < p.getPath().size(); j++) {
+				if (i != j && p.getPath().get(i).equals(p.getPath().get(j))) {
+					p = new Path(Engine.removeAll(p.getPath().get(i), p.getPath()));
+				}
+			}
+		}
+		return p;
+	}
+	
+	public Point getCorner(boolean topSide, boolean rightSide, boolean respectX) { // Finds a certain extreme corner
+		Point p = cobstacle.get(0).getCorner(topSide, rightSide);  // Current best point
+		for (int i = 1; i < cobstacle.size(); i++) {  // Iterate through
+			Point q = cobstacle.get(i).getCorner(topSide, rightSide);  // Comparison point
+			float pc1 = respectX? p.getX() : p.getY(), qc1 = respectX? q.getX() : q.getY(), pc2 = !respectX? p.getX() : p.getY(), qc2 = !respectX? q.getX() : q.getY();  // ternary operations to find correct variables
+			// Basically ill keep this here as a reason how i got the below expression as its dense, i realized the following: (T ^ nX) v (nR ^ X)  < ?, (nT ^ R) v (T ^ nX)  ? >, with n = !, ^ = &&, and v = ||
+			if (((respectX? !rightSide : topSide)? qc1 < pc1 : qc1 > pc1) || (((topSide? !respectX : rightSide)? qc2 > pc2 : qc2 < pc2) && qc1 == pc1)) {p = q;}  // Update p if true
+		} return p;  // Found best p!
+	}
+
 	public Obstacle[] getObstacleArray() {
 		Obstacle[] list = new Obstacle[this.cobstacle.size()];
 		for (int i = 0; i < list.length; i++) {list[i] = this.cobstacle.get(i);}
@@ -102,11 +129,11 @@ public class CObstacle {  // Complex Obstacle (basically multiple rectangles sti
 	
 	public float[] getFlatArray() {
 		float[] list = new float[this.cobstacle.size()*4];
-		for (int i = 0; i < list.length; i+=4) {
+		for (int i = 0; i < list.length; i++) {
 			list[i] = this.cobstacle.get(i).getX();
-			list[i+1] = this.cobstacle.get(i+1).getY();
-			list[i+2] = this.cobstacle.get(i+2).getW();
-			list[i+3] = this.cobstacle.get(i+3).getH();
+			list[i+1] = this.cobstacle.get(i).getY();
+			list[i+2] = this.cobstacle.get(i).getW();
+			list[i+3] = this.cobstacle.get(i).getH();
 		} return list;
 	}
 	

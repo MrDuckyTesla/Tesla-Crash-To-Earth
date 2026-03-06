@@ -2,7 +2,7 @@ package game;
 
 import processing.core.PImage;
 
-public class Character {
+public abstract class Character {
 	
 	// Constructor Variables
 	private float overWorldX;
@@ -15,6 +15,8 @@ public class Character {
 	private PImage battleImage;
 	private int[] bodyColor;
 	private int[] visorColor;
+	
+	// THIS CLASS WILL BE ABSTRACT AND ONLY CONTAIN NESSESSICARY VARIABLES AND FUNCTIONS THAT APPLY TO ALL CHARACTERS
 	
 	public Character(float overWorldX, float overWorldY, float battleX, float battleY, int width, int height, PImage overWorldImage, PImage battleImage, int[] bodyColor, int[] visorColor) {
 		this.overWorldX = overWorldX;
