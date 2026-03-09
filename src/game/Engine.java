@@ -6,6 +6,8 @@ import processing.core.PImage;
 
 public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING EXPANDED TO MORE OF A GAME ENGINE" - Old Nico
 	
+	private static boolean[] keys = new boolean[256];
+	
 	public static ArrayList<Integer> PreCompile(PApplet app, PImage image, int[][] layerList) {  // PreCompile to avoid lag
 		ArrayList<Integer> colorList = new ArrayList<>();  // List of colors and indexes to return
 		image.loadPixels();  // Load pixels for scanning
@@ -71,9 +73,13 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 		app.image(image, x, y, w, h, (int) (x / res), (int) (y / res), (int) (x / res + w / res), (int) (y / res + h / res));
 	}
 	
+	//TODO IMPLEMENT PATHFINDING
+	// =======================================================================================================================================================================================================
+	
 	public static ArrayList<Point> pathfind(float tx, float ty, float cx, float cy, float cw, float ch, Obstacle[] objects, float bx, float by, float bw, float bh) {
 		ArrayList<Point> criticalPoints = Engine.findCritPoints(tx, ty, cx, cy, cw, ch, objects, bx, by, bw, bh);
 		if (criticalPoints.size() == 0) {return criticalPoints;}
+		
 //		float[] coordsC = criticalPoints.remove(0).getXY();
 //		float[] indexIJ = criticalPoints.remove(0).getXY();
 //		ArrayList<Path> paths = Engine.exploreObjects(tx, ty, coordsC[0], coordsC[1], cw, ch, objects, bx, by, bw, bh, indexIJ, new ArrayList<Path>());
@@ -81,6 +87,8 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 		return criticalPoints;
 	}
 	
+	
+	@SuppressWarnings("unused")
 	private static ArrayList<Path> exploreObjects(float tx, float ty, float cx, float cy, float cw, float ch, Obstacle[] objects, float bx, float by, float bw, float bh, float[] indexIJ, ArrayList<Path> paths) {
 		for (int i = 0; i < 2; i++) {
 			float[] collision = new float[] {};
@@ -94,6 +102,7 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 		return new ArrayList<Path>();
 	}
 	
+	@SuppressWarnings("unused")
 	private static CObstacle[] preCompileGroups() {
 		
 		
@@ -178,6 +187,8 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 //			} if (ignorePoint || !Engine.pointRectCollide(criticalPoints.get(i).getX(), criticalPoints.get(i).getY(),  bx+cw/2, by+ch/2, bw-cw, bh-ch)) {criticalPoints.remove(i); i--;}
 //		} return criticalPoints;  // Return critical points with the closest point in the front
 //	}
+	
+	// =======================================================================================================================================================================================================
 
 	public static float[] lineRadius(float centerX, float centerY, float endX, float endY, float radius, boolean forceRadius) {  // Returns coords to keep a line within a radius
 		if (forceRadius || PApplet.dist(centerX, centerY, endX, endY) > radius) {  // If the line is outside the radius
@@ -211,6 +222,7 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 		return new float[] {x, y, coord[0], coord[1]};
 	}
 	
+	// WIP
 	public static float[] getLimbNJointCoords(float centerX, float centerY, float[] lengths, float endX, float endY, boolean bendRight) {
 //		if (lengths.length <= 3) {return lengths.length == 3? Engine.getLimbCoords(centerX, centerY, lengths[0] + lengths[1], lengths[2], endX, endY, bendRight) : Engine.getLimbCoords(centerX, centerY, lengths[0], lengths[1], endX, endY, bendRight);}
 //		float totalLength = 0; float dist = PApplet.dist(centerX, centerY, endX, endY);
@@ -458,6 +470,9 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	
 	// Random util functions
 	public static <T> ArrayList<T> removeAll(T val, ArrayList<T> arr) {for (int i = 0; i < arr.size(); i++) {if (arr.get(i).equals(val)) {arr.remove(i); i--;}} return arr;}
+	
+	public static boolean keyIsDown(int key) {return keys[key];}
+	public static void setKey(int key, boolean state) {if (key < 256) {keys[key] = state;}}
 	
 }
 

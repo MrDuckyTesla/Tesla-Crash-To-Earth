@@ -14,7 +14,7 @@ public class Animation {  // Ripped from the Engine class so i could make it sta
 	public Animation() {this.timeIncrease = 1;}
 	public Animation(float timeIncrease) {this.timeIncrease = timeIncrease;}
 	
-	public void animate(PApplet app, PImage image, float x, float y, int width, int height, int scale, int frameStart, int frameEnd, int frame, boolean changeAnimation, boolean resetIndex) {
+	public void animate(PApplet app, PImage image, float x, float y, int width, int height, float scale, int frameStart, int frameEnd, int frame, boolean changeAnimation, boolean resetIndex) {
 		// "I wanted the animations to stay constant and use new animation" - Old Nico
 		int temp = frameEnd - frameStart + 1;
 		if (resetIndex) {  // Reset all variables
@@ -25,8 +25,8 @@ public class Animation {  // Ripped from the Engine class so i could make it sta
 		if (!changeAnimation) {  // If not changing animation
 			this.index = frameStart + (this.index - frameStart) % temp;
 			if (this.index < frameStart) {this.index = frameEnd;}
-		} if (this.indexCount == 0 && !resetIndex) {this.index = frameStart + (this.indexCount - frameStart + 1) % temp;}  // Check if enough frames passed
-		app.image(image, x, y, width * scale, height * scale, this.indexCount * width, 0, width, height);  // Then draw the image
+		} if (this.indexCount == 0 && !resetIndex) {this.index = frameStart + (this.index - frameStart + 1) % temp;}  // Check if enough frames passed
+		app.image(image, x, y, width * scale, height * scale, this.index * width, 0, this.index * width + width, height);  // Then draw the image
 	}
 	
 	public void animate(PApplet app, PImage image, float x, float y, int width, int height, int scale, int frameStart, int frameEnd, int frame, boolean changeAnimation) {
@@ -47,7 +47,7 @@ public class Animation {  // Ripped from the Engine class so i could make it sta
 		this.animateNew(app, image, x, y, width, height, scale, frameStart, frameEnd, frame, changeAnimation, false);
 	}
 	
-	// JAVASCRIPT (original code technically wont run because currFrame doesn't exist in said code, so i wont rewrite it here)
+	// THIS COMMENTED CODE IS IN JAVASCRIPT (original code technically wont run because currFrame doesn't exist in said code, so i didn't feel like rewriting it here)
 
 //	animateOld(img, x, y, wid, hgt, scl, frmSrt, frmEnd, frm, anmChg) {  // Keep this in case the new one goes horribly wrong
 //	    if (!anmChg)  this.currFrame = frameCount % frm;  // Check if its a different animation, if so reset the animation frame count
@@ -114,5 +114,18 @@ public class Animation {  // Ripped from the Engine class so i could make it sta
 //	  img.copy(lineImage(coords1[0], coords1[1], coords1[2], coords1[3], res, thickness, width, color2), 0, 0, res, res, 0, 0, res, res);
 //	  image(img, 0, 0, 400, 400);
 //}
+	
+	// Get
+	public int getIndex() {return this.index;}
+	public int getFrameIndex() {return this.frameIndex;}
+	public int getIndexCount() {return this.indexCount;}
+	public int getTimeRun() {return this.timeRun;}
+	public float getTimeIncrease() {return this.timeIncrease;}
+	// Set
+	public void setIndex(int index) {this.index = index;}
+	public void setFrameIndex(int frameIndex) {this.frameIndex = frameIndex;}
+	public void setIndexCount(int indexCount) {this.indexCount = indexCount;}
+	public void setTimeRun(int timeRun) {this.timeRun = timeRun;}
+	public void setTimeIncrease(float timeIncrease) {this.timeIncrease = timeIncrease;}
 
 }
