@@ -25,12 +25,17 @@ public class Obstacle extends Point {
 	public float getArea() {return this.w * this.h;}
 	public float getPerimeter() {return 2*this.w + 2*this.h;}
 	
+	public boolean isCollide(Obstacle o) {return Engine.rectRectCollide(this.getX(), this.getY(), this.w, this.h, o.getX(), o.getY(), o.getW(), o.getH());}
+	
+	public boolean isParent() {return true;}
+	
 	@Override
 	public void display(PApplet app, float s) {app.rect(getX()*s, getY()*s, w*s, h*s);}
-	
 	@Override
 	public void display(PApplet app) {app.rect(getX(), getY(), w, h);}
 	public void display(PApplet app, int[] color) {app.push(); app.fill(app.color(color[0], color[1], color[2])); app.rect(getX(), getY(), w, h); app.pop();}
+	
+	public void update() {}  // Function for children to inherit, will probably be used for animated obstacle
 	
 	protected void setW(float w) {this.w = w;}
 	protected void setH(float h) {this.h = h;}
@@ -44,5 +49,8 @@ public class Obstacle extends Point {
 	
 	@Override
 	public String toString() {return "("+getX()+", "+getY() + ", "+w+", "+h+")";}
+	
+	@Override
+	public int compareTo(Object o) {return (int) (getY() - ((Obstacle) o).getY());}
 
 }

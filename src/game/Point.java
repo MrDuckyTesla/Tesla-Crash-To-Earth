@@ -2,7 +2,7 @@ package game;
 
 import processing.core.PApplet;
 
-public class Point implements Comparable<Point> {
+public class Point implements Comparable<Object> {
 	
 	private float x, y;
 	
@@ -27,7 +27,7 @@ public class Point implements Comparable<Point> {
 	public float getY() {return this.y;}
 	public float[] getXY() {return new float[] {x, y};}
 	
-	public int compareTo(Point p) {return (int) (getX() - p.getX() + getY() - p.getY());}
+	public int compareTo(Object o) {return (int) (getX() - ((Point) o).getX() + getY() - ((Point) o).getY());}
 	
 	@Override
 	public boolean equals(Object other) {return this.x == ((Point) other).getX() && this.y == ((Point) other).getY();}

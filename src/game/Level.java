@@ -1,6 +1,8 @@
 package game;
 
 import java.util.ArrayList;
+import processing.core.PApplet;
+import processing.core.PImage;
 
 // A level holds many Rooms
 public class Level {
@@ -9,12 +11,13 @@ public class Level {
 	
 	Player p;
 	
+	// Most simple player
+	public Level(PApplet app, PImage img) {Point q = new Point(); int[][] c = {}; this.p = new Player(app, q, q, q, img, img, c, c, new int[0]);}
+	
 	public Level(Player p) {this.p = p;}
 	
-	public void addRoom(Obstacle o) {
-//		Room r = new Room(p, o);
-//		rooms.add(r);
-	}
+	public void addRoom(Obstacle o, PImage i) {rooms.add(new Room(p, o, i));}
+	public void addRoom(Obstacle[] o, PImage i) {rooms.add(new Room(p, o, i));}
 	
 	public void addRooms(Room[] r) {
 		
@@ -24,7 +27,7 @@ public class Level {
 		
 	}
 	
-	//TODO
+	//TODO later
 	public void addRooms(String file) {
 		
 	}

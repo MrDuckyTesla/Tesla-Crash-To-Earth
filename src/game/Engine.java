@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING EXPANDED TO MORE OF A GAME ENGINE" - Old Nico
+public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING EXPANDED TO MORE OF A GAME ENGINE" - Old Nico <= I also took out all the animation functions and made it into its own class - Nico
 	
-	private static boolean[] keys = new boolean[256];
+	private static boolean[] keys = new boolean[128];
 	
 	public static ArrayList<Integer> PreCompile(PApplet app, PImage image, int[][] layerList) {  // PreCompile to avoid lag
 		ArrayList<Integer> colorList = new ArrayList<>();  // List of colors and indexes to return
@@ -449,7 +449,7 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	public static boolean compareColorList(int r, int g, int b, int a, int[] col) {return r == col[0] && g == col[1] && b == col[2] && a == col[3];}  // Checks if two colors are not different
 	public static boolean compareColorColor(int[] col1, int[] col2) {return col1[0] == col2[0] && col1[1] == col2[1] && col1[2] == col2[2] && col1[3] == col2[3];}  // Checks if two colors are the same
 	
-	// Alternate versions of functions
+	// Alternate versions of functions (I really like default parameters, so sad that java removes those)
 	public static void pixelate(PApplet app, int res) {Engine.pixelate(app, res, 0, 0, app.width, app.height);}
 	public static void pixelate(PApplet app, PImage image, int res) {Engine.pixelate(app, image, res, 0, 0, app.width, app.height);}
 	public static float[] lineRadius(float centerX, float centerY, float endX, float endY, float radius) {return Engine.lineRadius(centerX, centerY, endX, endY, radius, true);}
@@ -470,9 +470,13 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	
 	// Random util functions
 	public static <T> ArrayList<T> removeAll(T val, ArrayList<T> arr) {for (int i = 0; i < arr.size(); i++) {if (arr.get(i).equals(val)) {arr.remove(i); i--;}} return arr;}
-	
 	public static boolean keyIsDown(int key) {return keys[key];}
-	public static void setKey(int key, boolean state) {if (key < 256) {keys[key] = state;}}
+	public static void setKey(int key, boolean state) {if (key < Engine.keys.length) {keys[key] = state;}}
+	public static <T> T[] pushBack(T[] a, T b) {for (int i = a.length-1; i > 0; i--) {a[i] = a[i-1];} a[0] = b; return a;}
+	public static int[] pushBack(int[] a, int b) {for (int i = a.length-1; i > 0; i--) {a[i] = a[i-1];} a[0] = b; return a;}
+	public static boolean notInArray(ArrayList<Integer> a, int[] b) {for (int i = 0; i < a.size(); i++) {for (int j = 0; j < b.length; j++) {if (a.get(i) == b[j]) {return false;}}} return true;}
+	public static ArrayList<Integer> addNotInArray(ArrayList<Integer> a, int[] b) {for (int i = 0; i < b.length; i++) {boolean c = false; for (int j = 0; j < a.size(); j++) {if (b[i] == a.get(j)) {c = true; j = a.size();}} if (!c) {a.add(b[i]);}} return a;}
+	public static ArrayList<Integer> add(ArrayList<Integer> a, int[] b) {for (int i = 0; i < b.length; i++) {a.add(b[i]);} return a;}
 	
 }
 
