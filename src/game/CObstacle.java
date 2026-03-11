@@ -77,7 +77,7 @@ public class CObstacle {  // Complex Obstacle (basically multiple rectangles sti
 	
 	public void display(PApplet app) {
 		for (int i = cobstacle.size()-1; i >= 0; i--) {
-			cobstacle.get(i).display(app);
+			cobstacle.get(i).displayRect(app);
 //			cobstacle.get(i).display(app, new int[] {(int)(Math.random()*256), (int)(Math.random()*256), (int)(Math.random()*256)});
 		}
 	}
