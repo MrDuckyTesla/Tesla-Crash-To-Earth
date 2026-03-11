@@ -175,8 +175,6 @@ public abstract class Character extends Obstacle {
 	// Overridden functions
 	@Override
 	public abstract void interact();
-//	@Override
-//	public abstract void display(PApplet app);
 	@Override
 	public float getX() {return this.overPosit.getX();}
 	@Override

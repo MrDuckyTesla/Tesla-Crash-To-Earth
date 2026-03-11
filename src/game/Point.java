@@ -33,10 +33,10 @@ public class Point implements Comparable<Object> {
 	public static boolean rectApp(float x, float y, float w, float h) {if (!Point.hasApp) {return false;} Point.app.rect(x, y, w, h); return true;}
 	public boolean rectApp(float w, float h) {if (!Point.hasApp) {return false;} Point.app.rect(this.x, this.y, w, h); return true;}
 	
-	public boolean display() {if (!Point.hasApp) {return false;} Point.app.point(this.x, this.y); return true;}
-	public boolean display(float r) {if (!Point.hasApp) {return false;} Point.app.circle(this.x, this.y, r); return true;}
-	public boolean display(PApplet app) {app.point(this.x, this.y); return true;}
-	public boolean display(PApplet app, float r) {app.circle(this.x, this.y, r); return true;}
+	public boolean displayPoint() {if (!Point.hasApp) {return false;} Point.app.point(this.x, this.y); return true;}
+	public boolean displayPoint(float r) {if (!Point.hasApp) {return false;} Point.app.circle(this.x, this.y, r); return true;}
+	public boolean displayPoint(PApplet app) {app.point(this.x, this.y); return true;}
+	public boolean displayPoint(PApplet app, float r) {app.circle(this.x, this.y, r); return true;}
 	
 	public void changeX(float x) {this.x += x;}
 	public void changeY(float y) {this.y += y;}

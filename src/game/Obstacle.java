@@ -38,19 +38,15 @@ public class Obstacle extends Point {
 	public boolean isCollide(Obstacle o) {return Engine.rectRectCollide(this.getX(), this.getY(), this.w, this.h, o.getX(), o.getY(), o.getW(), o.getH());}
 	public boolean isTangible() {return this.isTangible;}
 	
-	@Override
-	public boolean display() {if (!Point.getHasApp()) {return false;} Point.getApp().rect(getX(), getY(), w, h); return true;}
-	@Override
-	public boolean display(float s) {if (!Point.getHasApp()) {return false;} Point.getApp().rect(getX()*s, getY()*s, w*s, h*s); return true;}
-	@Override
-	public boolean display(PApplet app, float s) {app.rect(getX()*s, getY()*s, w*s, h*s); return true;}
-	@Override
-	public boolean display(PApplet app) {app.rect(getX(), getY(), w, h); return true;}
-	public boolean display(PApplet app, int[] color) {app.push(); app.fill(app.color(color[0], color[1], color[2])); app.rect(getX(), getY(), w, h); app.pop(); return true;}
+	public boolean displayRect() {if (!Point.getHasApp()) {return false;} Point.getApp().rect(getX(), getY(), w, h); return true;}
+	public boolean displayRect(float s) {if (!Point.getHasApp()) {return false;} Point.getApp().rect(getX()*s, getY()*s, w*s, h*s); return true;}
+	public boolean displayRect(PApplet app, float s) {app.rect(getX()*s, getY()*s, w*s, h*s); return true;}
+	public boolean displayRect(PApplet app) {app.rect(getX(), getY(), w, h); return true;}
+	public boolean displayRect(PApplet app, int[] color) {app.push(); app.fill(app.color(color[0], color[1], color[2])); app.rect(getX(), getY(), w, h); app.pop(); return true;}
 	
 	public boolean appRect(float w, float h) {Point.rectApp(this.getX(), this.getY(), this.w, this.h); return true;}
 	
-	public void update() {this.display();}  // Function for children to inherit, will probably be used for animated obstacles
+	public void update() {this.displayRect();}  // Function for children to inherit, will probably be used for animated obstacles
 	public void interact() {}  // Another function for children to inherit, will probably be used for text box
 	
 	protected void setW(float w) {this.w = w;}
