@@ -42,11 +42,11 @@ public class Room {
 	public void update(PApplet app) {
 		Collections.sort(room);
 		for (Obstacle o : room) {
-			if (o.isTangible()) {p.isCollide(o);}
-			o.display(app);
+			if (o.isTangible()) {
+				p.isCollide(o);
+			}
 			o.update();
 		}
-		System.out.println(this.p.getIllegalDir());
 	}
 	
 //	private void update() {

@@ -38,10 +38,10 @@ public class Main extends PApplet {
 		CObstacle cobstacle = new CObstacle(obstacles);
 		cobstacle.cleanArray();
 		obstacles = cobstacle.getObstacleArray().clone();
-		
+		Point.setApp(this);
 		Point p1 = new Point(400, 400);
 		Point p2 = new Point(400, 500);
-		p = new Player(this, p1, p1, new Point(3, 3), image1, image1, PlayerSpriteLayers[0], PlayerSpriteLayers[1], PlayerColorTints);
+		p = new Player(p1, p1, new Point(3, 3), image1, image1, PlayerSpriteLayers[0], PlayerSpriteLayers[1], PlayerColorTints);
 		test = new Room(p, bck1);
 		test.add(200, 200, 100, 100);
 		test.add(300, 300, 100, 100);
@@ -50,8 +50,8 @@ public class Main extends PApplet {
 //			Point q = new Point((float)Math.random()*800, (float)Math.random()*800);
 //			test.add(new Enemy(this, q, q, new Point(3, 3), image1.copy(), image1.copy(), PlayerSpriteLayers[0], PlayerSpriteLayers[1]));
 //		}
-		test.add(new Enemy(this, p1, p1, new Point(3, 3), image1.copy(), image1.copy(), PlayerSpriteLayers[0], PlayerSpriteLayers[1]));
-		test.add(new Enemy(this, p2, p2, new Point(3, 3), image1.copy(), image1.copy(), PlayerSpriteLayers[0], PlayerSpriteLayers[1]));
+		test.add(new Enemy(p1, p1, new Point(3, 3), image1.copy(), image1.copy(), PlayerSpriteLayers[0], PlayerSpriteLayers[1]));
+		test.add(new Enemy(p2, p2, new Point(3, 3), image1.copy(), image1.copy(), PlayerSpriteLayers[0], PlayerSpriteLayers[1]));
 //		Level l1 = new Level();
 //		Room r1 = new Room();
 //		(PApplet app, Point overPosit, Point battPosit, Point scale, PImage overImage, PImage battImage, int[][] overColorLayer, int[][] battColorLayer, int[] overColorTint, int[] battColorTint)

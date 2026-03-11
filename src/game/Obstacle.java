@@ -7,7 +7,7 @@ public class Obstacle extends Point {
 	private float w, h;
 	private boolean isTangible;
 	
-	public Obstacle() {super(); this.instantiate(w, h);}
+	public Obstacle() {super(); this.instantiate(0, 0);}
 	public Obstacle(boolean t) {super(); this.instantiate(w, h, t);}
 	public Obstacle(Point p) {super(p.getX(), p.getY()); this.instantiate(w, h);}
 	public Obstacle(boolean t, Point p) {super(p.getX(), p.getY()); this.instantiate(w, h, t);}
@@ -39,12 +39,18 @@ public class Obstacle extends Point {
 	public boolean isTangible() {return this.isTangible;}
 	
 	@Override
-	public void display(PApplet app, float s) {app.rect(getX()*s, getY()*s, w*s, h*s);}
+	public boolean display() {if (!Point.getHasApp()) {return false;} Point.getApp().rect(getX(), getY(), w, h); return true;}
 	@Override
-	public void display(PApplet app) {app.rect(getX(), getY(), w, h);}
-	public void display(PApplet app, int[] color) {app.push(); app.fill(app.color(color[0], color[1], color[2])); app.rect(getX(), getY(), w, h); app.pop();}
+	public boolean display(float s) {if (!Point.getHasApp()) {return false;} Point.getApp().rect(getX()*s, getY()*s, w*s, h*s); return true;}
+	@Override
+	public boolean display(PApplet app, float s) {app.rect(getX()*s, getY()*s, w*s, h*s); return true;}
+	@Override
+	public boolean display(PApplet app) {app.rect(getX(), getY(), w, h); return true;}
+	public boolean display(PApplet app, int[] color) {app.push(); app.fill(app.color(color[0], color[1], color[2])); app.rect(getX(), getY(), w, h); app.pop(); return true;}
 	
-	public void update() {}  // Function for children to inherit, will probably be used for animated obstacles
+	public boolean appRect(float w, float h) {Point.rectApp(this.getX(), this.getY(), this.w, this.h); return true;}
+	
+	public void update() {this.display();}  // Function for children to inherit, will probably be used for animated obstacles
 	public void interact() {}  // Another function for children to inherit, will probably be used for text box
 	
 	protected void setW(float w) {this.w = w;}
@@ -54,7 +60,9 @@ public class Obstacle extends Point {
 	public float getH() {return this.h;}
 	public float[] getXYWH() {return new float[] {getX(), getY(), w, h};}
 	
+	@Override
 	public Obstacle get() {return new Obstacle(this.getX(), this.getY(), this.w, this.h);}
+	public Point getPoint() {return super.get();}
 	
 	@Override
 	public boolean equals(Object other) {return this.getX() == ((Obstacle) other).getX() && this.getY() == ((Obstacle) other).getY() && this.w == ((Obstacle) other).getW() && this.h == ((Obstacle) other).getH();}

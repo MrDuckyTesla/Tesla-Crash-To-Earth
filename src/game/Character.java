@@ -11,9 +11,8 @@ public abstract class Character extends Obstacle {
 	private static int id = 0;
 	// Constructor Variables
 	public int charID;
-	private PApplet app;
 	private PImage overImage, battImage;
-	private Point overPosit, overDispPosit, battPosit, scale;
+	private Point overPosit, battPosit, scale;
 	private ArrayList<Integer> overColorList, battColorList;
 	private int[] colorTint;
 	// Animation Variables
@@ -35,26 +34,28 @@ public abstract class Character extends Obstacle {
 	
 	// THIS CLASS WILL BE ABSTRACT AND ONLY CONTAIN NESSESSICARY VARIABLES AND FUNCTIONS THAT APPLY TO ALL CHARACTERS
 	
-	public Character(PApplet app, Point overPosit, Point battPosit, Point scale, PImage overImage, PImage battImage, int[][] overColorLayer, int[][] battColorLayer, int[] colorTint) {
+	public Character(Point overPosit, Point battPosit, Point scale, PImage overImage, PImage battImage, int[][] overColorLayer, int[][] battColorLayer, int[] colorTint) {
+		super(overPosit, Character.OVER_WIDTH * scale.getX(), Character.OVER_HEIGHT * scale.getY());
 		this.colorTint = colorTint;
-		this.instantiate(app, overPosit, battPosit, scale, overImage, battImage, overColorLayer, battColorLayer);
+		this.instantiate(overPosit, battPosit, scale, overImage, battImage, overColorLayer, battColorLayer);
 	}
 	
-	public Character(PApplet app, Point overPosit, Point battPosit, Point scale, PImage overImage, PImage battImage, int[][] overColorLayer, int[][] battColorLayer) {
+	public Character(Point overPosit, Point battPosit, Point scale, PImage overImage, PImage battImage, int[][] overColorLayer, int[][] battColorLayer) {
+		super(overPosit, Character.OVER_WIDTH * scale.getX(), Character.OVER_HEIGHT * scale.getY());
 		this.colorTint = new int[] {(int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256)};
-		this.instantiate(app, overPosit, battPosit, scale, overImage, battImage, overColorLayer, battColorLayer);
+		this.instantiate(overPosit, battPosit, scale, overImage, battImage, overColorLayer, battColorLayer);
 	}
 	
-	public Character(PApplet app, Point scale, PImage overImage, PImage battImage, int[][] overColorLayer, int[][] battColorLayer) {
+	public Character(Point scale, PImage overImage, PImage battImage, int[][] overColorLayer, int[][] battColorLayer) {
+		super(new Point((float)(Math.random() * Point.getAppWidth()), (float)(Math.random() * Point.getAppHeight())), Character.OVER_WIDTH * scale.getX(), Character.OVER_HEIGHT * scale.getY());
 		this.colorTint = new int[] {(int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256), (int) (Math.random()*256)};
-		this.overPosit = new Point((float)(Math.random() * app.width), (float)(Math.random() * app.height)); this.battPosit = new Point((float)(Math.random() * app.width), (float)(Math.random() * app.height));
-		this.instantiate(app, overPosit, battPosit, scale, overImage, battImage, overColorLayer, battColorLayer);
+		this.overPosit = this.getPoint(); this.battPosit = new Point((float)(Math.random() * Point.getAppWidth()), (float)(Math.random() * Point.getAppHeight()));
+		this.instantiate(overPosit, battPosit, scale, overImage, battImage, overColorLayer, battColorLayer);
 	}
 	
-	private void instantiate(PApplet app, Point overPosit, Point battPosit, Point scale, PImage overImage, PImage battImage, int[][] overColorLayer, int[][] battColorLayer) {
-		this.charID = Character.id; Character.id++;
-		this.overPosit = overPosit.get(); this.overImage = overImage.get(); overDispPosit = overPosit.get();
-		this.battPosit = battPosit.get(); this.battImage = battImage.get(); this.scale = scale.get(); this.app = app;
+	private void instantiate(Point overPosit, Point battPosit, Point scale, PImage overImage, PImage battImage, int[][] overColorLayer, int[][] battColorLayer) {
+		this.charID = Character.id; Character.id++; PApplet app = Point.getApp(); this.scale = scale.get();
+		this.overPosit = overPosit.get(); this.overImage = overImage.get(); this.battPosit = battPosit.get(); this.battImage = battImage.get();
 		this.overColorList = Engine.PreCompile(app, this.overImage, overColorLayer); this.battColorList = Engine.PreCompile(app,  this.battImage, battColorLayer);
 		Engine.changeColor(app,  this.overImage, overColorList, colorTint); Engine.changeColor(app, this.battImage, battColorList,colorTint);
 		overScaledWidth = Character.OVER_WIDTH * this.scale.getX(); overScaledHeight = Character.OVER_HEIGHT * this.scale.getX();
@@ -86,13 +87,13 @@ public abstract class Character extends Obstacle {
 	    this.overLastDir = this.overCurrDir;
 	    this.overWorldLast = this.overWorldCurr;
 	    this.overLastState = this.overCurrState;
-	    this.overDispPosit = this.overPosit;
 	    this.battLastDir = this.battCurrDir;
 	    this.battPositLast = this.battPosit;
+	    this.set(this.overPosit);
 		
 	}
 	
-	public void showHitBox() {app.push(); app.fill(app.color(255, 0, 0)); app.rect(this.getX(), this.getY(), overScaledWidth, overScaledHeight); app.pop();}
+	public void showHitBox() {Point.pushApp(); Point.fillApp(255, 0, 0); Point.rectApp(this.getX(), this.getY(), overScaledWidth, overScaledHeight); Point.popApp();}
 	
 	private int basicCollisionOver(int state, float x1, float y1, float x2, float y2) {
 	    this.overCurrState = 1;
@@ -120,12 +121,12 @@ public abstract class Character extends Obstacle {
 	}
 	
 	private void animateMoveOver(float speed, int start, int frames, boolean ignore, boolean fullAnim) {
-		int startReal = start + this.overCurrDir * frames;
+		int startReal = start + this.overCurrDir * frames; PApplet app = Point.getApp();
 		this.overMove.resetPoint();
-		if (fullAnim && this.animateState[3] != this.app.frameCount) {this.unskipAnim = true; this.animateState = new int[] {this.overCurrState, this.overCurrDir, startReal+frames-1, frames};}
+		if (fullAnim && this.animateState[3] != app.frameCount) {this.unskipAnim = true; this.animateState = new int[] {this.overCurrState, this.overCurrDir, startReal+frames-1, frames};}
 		if (this.basicCollisionOver(this.overCurrState, 0, 0, app.width, app.height) != this.overCurrDir || ignore) {
 			this.calculateOverMove(speed);
-			this.animManager.animate(this.app, this.overImage, this.overDispPosit.getX(), this.overDispPosit.getY(), Character.OVER_WIDTH, Character.OVER_HEIGHT, this.scale.getX(), startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnim, this.overLastState != this.overCurrState);
+			this.animManager.animate(app, this.overImage, super.getX(), super.getY(), Character.OVER_WIDTH, Character.OVER_HEIGHT, this.scale.getX(), startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnim, this.overLastState != this.overCurrState);
 		} else {this.unskipAnim = false;}
 	}
 	
@@ -186,10 +187,10 @@ public abstract class Character extends Obstacle {
 	public float getH() {return this.overScaledHeight;}
 	@Override
 	public float[] getXYWH() {return new float[] {this.getX(), this.getY(), this.getW(), this.getH()};}
-	@Override
-	public void setX(float x) {this.overDispPosit.setX(x);}
-	@Override
-	public void setY(float y) {this.overDispPosit.setY(y);}
+//	@Override
+//	public void setX(float x) {super.setX(x);}
+//	@Override
+//	public void setY(float y) {super.setY(y);}
 	@Override
 	public String toString() {return "("+this.getX()+", "+this.getY() + ", "+this.getW()+", "+this.getH()+")";}
 	@Override
@@ -215,7 +216,6 @@ public abstract class Character extends Obstacle {
 	public float getHeight() {return this.overScaledHeight;}
 	public boolean getOverworld() {return this.overWorldCurr;}
 	public boolean getSprint() {return this.overSprint;}
-	public PApplet getApp() {return this.app;}
 	// Set
 	protected void setOverState(int state) {this.overCurrState = state;}
 	protected void setOverDir(int dir) {this.overCurrDir = dir;}

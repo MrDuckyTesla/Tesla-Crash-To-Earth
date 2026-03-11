@@ -5,10 +5,7 @@ import processing.core.PImage;
 
 public class Player extends Character {
 
-	public Player(PApplet app, Point overPosit, Point battPosit, Point scale, PImage overImage, PImage battImage, int[][] overColorLayer, int[][] battColorLayer, int[] colorTint) {
-		super(app, overPosit, battPosit, scale, overImage, battImage, overColorLayer, battColorLayer, colorTint);
-		// TODO Auto-generated constructor stub
-	}
+	public Player(Point overPosit, Point battPosit, Point scale, PImage overImage, PImage battImage, int[][] overColorLayer, int[][] battColorLayer, int[] colorTint) {super(overPosit, battPosit, scale, overImage, battImage, overColorLayer, battColorLayer, colorTint);}
 	
 	@Override
 	public void update() {

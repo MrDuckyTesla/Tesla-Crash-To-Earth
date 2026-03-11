@@ -12,7 +12,7 @@ public class Level {
 	Player p;
 	
 	// Most simple player
-	public Level(PApplet app, PImage img) {Point q = new Point(); int[][] c = {}; this.p = new Player(app, q, q, q, img, img, c, c, new int[0]);}
+	public Level(PImage img) {Point q = new Point(); int[][] c = {}; this.p = new Player(q, q, q, img, img, c, c, new int[0]);}
 	
 	public Level(Player p) {this.p = p;}
 	
