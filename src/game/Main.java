@@ -5,7 +5,7 @@ import processing.core.PImage;
 
 public class Main extends PApplet {
 	
-	Obstacle[] obstacles = {new Obstacle(150, 200, 500, 100), new Obstacle(0, 380, 120, 100), new Obstacle(600, 600, 120, 160), new Obstacle(260, 500, 180, 80), new Obstacle(600, 175, 100, 300)};
+	Obstacle[] obstacles;
 	private final int[][][] PlayerSpriteLayers = {{{180, 157, 130, 31}, {187, 171}, {190, 163, 140}}, {{105, 85, 34}, {104}}};
 	private int[] PlayerColorTints = {111, 111, 255, 255, 111, 111, 255, 200, 0};
 	PImage image1, bck1;
@@ -34,6 +34,7 @@ public class Main extends PApplet {
 		bck1 = loadImage("game/Assets/Sprites/Background/background1.png");
 //		colorList = Engine.PreCompile(this, image1, new int[][] {{180, 157, 130, 31}, {187, 171}, {190, 163, 140}});
 //		Engine.changeColor(this, image1, colorList, new int[] {111, 111, 255, 255, 111, 111, 255, 200, 0});
+		obstacles = new Obstacle[] {new Obstacle(150, 200, 500, 100), new Obstacle(0, 380, 120, 100), new Obstacle(600, 600, 120, 160), new Obstacle(260, 500, 180, 80), new Obstacle(600, 175, 100, 300)};
 		CObstacle cobstacle = new CObstacle(obstacles);
 		cobstacle.cleanArray();
 		obstacles = cobstacle.getObstacleArray().clone();
@@ -44,6 +45,11 @@ public class Main extends PApplet {
 		test = new Room(p, bck1);
 		test.add(200, 200, 100, 100);
 		test.add(300, 300, 100, 100);
+		// five hundred teslas
+//		for (int i = 0; i < 500; i++) {
+//			Point q = new Point((float)Math.random()*800, (float)Math.random()*800);
+//			test.add(new Enemy(this, q, q, new Point(3, 3), image1.copy(), image1.copy(), PlayerSpriteLayers[0], PlayerSpriteLayers[1]));
+//		}
 		test.add(new Enemy(this, p1, p1, new Point(3, 3), image1.copy(), image1.copy(), PlayerSpriteLayers[0], PlayerSpriteLayers[1]));
 		test.add(new Enemy(this, p2, p2, new Point(3, 3), image1.copy(), image1.copy(), PlayerSpriteLayers[0], PlayerSpriteLayers[1]));
 //		Level l1 = new Level();
@@ -72,7 +78,7 @@ public class Main extends PApplet {
 //		rect(min(mouseX, width-100), min(mouseY, height-100), 100, 100);
 //		circle(50, 700, 50);
 
-		test.display(this);
+		test.update(this);
 //		p.update();
 		
 		textSize(36); text(Math.round(this.frameRate)+"fps", 10, 30);

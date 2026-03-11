@@ -6,7 +6,11 @@ import processing.core.PImage;
 
 public abstract class Character extends Obstacle {
 	
+	// Static variables
+	final private static int OVER_WIDTH = 28, OVER_HEIGHT = 28, BATT_WIDTH = 9, BATT_HEIGHT = 13;
+	private static int id = 0;
 	// Constructor Variables
+	public int charID;
 	private PApplet app;
 	private PImage overImage, battImage;
 	private Point overPosit, overDispPosit, battPosit, scale;
@@ -23,12 +27,9 @@ public abstract class Character extends Obstacle {
 	private Point battPositLast, battVeloc = new Point(), battAccel = new Point(0, 1), overMove = new Point();
 	private float overSpeed = 3, battSpeed = 2.5f;
 	private boolean overSprint = false;
-	// Character Dimensions
-	final private int OVER_WIDTH = 28, OVER_HEIGHT = 28, BATT_WIDTH = 9, BATT_HEIGHT = 13;
-	private float overScaledWidth, overScaledHeight, battScaledWidth, battScaledHeight;
 	// World Variables
 	private ArrayList<Integer> illegalOverDir = new ArrayList<Integer>();
-	private float frameMultiplier = 1;
+	private float overScaledWidth, overScaledHeight, battScaledWidth, battScaledHeight;
 	private int overCurrDir = 0, overLastDir = 0, overCurrState = 1, overLastState = 0, battCurrDir = 0, battLastDir = 0, battCurrState = 0;
 	private boolean overWorldCurr = true, overWorldLast = true;
 	
@@ -51,33 +52,22 @@ public abstract class Character extends Obstacle {
 	}
 	
 	private void instantiate(PApplet app, Point overPosit, Point battPosit, Point scale, PImage overImage, PImage battImage, int[][] overColorLayer, int[][] battColorLayer) {
-		this.overPosit = overPosit; this.overImage = overImage.get(); overDispPosit = overPosit;
-		this.battPosit = battPosit; this.battImage = battImage.get(); this.scale = scale; this.app = app;
+		this.charID = Character.id; Character.id++;
+		this.overPosit = overPosit.get(); this.overImage = overImage.get(); overDispPosit = overPosit.get();
+		this.battPosit = battPosit.get(); this.battImage = battImage.get(); this.scale = scale.get(); this.app = app;
 		this.overColorList = Engine.PreCompile(app, this.overImage, overColorLayer); this.battColorList = Engine.PreCompile(app,  this.battImage, battColorLayer);
 		Engine.changeColor(app,  this.overImage, overColorList, colorTint); Engine.changeColor(app, this.battImage, battColorList,colorTint);
-		overScaledWidth = this.OVER_WIDTH * this.scale.getX(); overScaledHeight = this.OVER_HEIGHT * this.scale.getX();
-		battScaledWidth = this.BATT_WIDTH * this.scale.getY(); battScaledHeight = this.BATT_HEIGHT * this.scale.getY();
+		overScaledWidth = Character.OVER_WIDTH * this.scale.getX(); overScaledHeight = Character.OVER_HEIGHT * this.scale.getX();
+		battScaledWidth = Character.BATT_WIDTH * this.scale.getY(); battScaledHeight = Character.BATT_HEIGHT * this.scale.getY();
 	}
 	
-	public abstract void interact();
-	
 	public void update() {		
-		this.frameMultiplier = app.frameRate < 1? 1: PApplet.round(60 / app.frameRate);  // If lower framerate, keep gameplay consistent
 		// Check if we need to change the animation due to direction
 		if (this.overWorldLast != this.overWorldCurr) {this.changeAnim = false;}
 		else {this.changeAnim = this.overWorldCurr? this.overLastDir == this.overCurrDir : this.battLastDir == this.battCurrDir;}
 		if (this.overWorldCurr) {  // If in overworld
-			if (this.overSprint) {  // If sprinting, double all speeds
-				this.overSpeed *= 2;
-		        this.overAnimSpeed /= 2;
-			}  // Keep code consistent at lower frameRates
-		    this.overSpeed *= this.frameMultiplier;
-		    this.overAnimSpeed /= this.frameMultiplier;
-			if (this.unskipAnim) {  // If we are staying in an animation
-				// If the animation has ended, end the animation
-				if ((this.animManager.getIndexCount() + 1) % this.overAnimSpeed == 0 && this.animManager.getIndex() == this.animateState[2]) {this.unskipAnim = false;}
-				else {this.overCurrState = this.animateState[0]; this.overCurrDir = this.overLastDir;}  //Else, keep the character state and direction the same
-			} if (this.illegalOverDir.size() != 0) {  // Make sure if collides with obstacle, no weird animation shenanigans
+			this.overStateCheck1(); // Check if sprinting or if doing sword animation
+			if (this.illegalOverDir.size() != 0) {  // Make sure if collides with obstacle, no weird animation shenanigans
 				if (!this.illegalOverDir.contains(this.overCurrDir)) {if (framesEmpty > 1) {this.illegalOverDir = new ArrayList<Integer>();framesEmpty = 0;} framesEmpty++;}
 				else {this.overCurrState = 1; this.unskipAnim = false;}
 			} else {this.changeOverX(); this.changeOverY();}
@@ -85,11 +75,7 @@ public abstract class Character extends Obstacle {
 			if (this.overCurrState == 3) {this.animateMoveOver(this.overSpeed, 16, 4, false, false);}  // Overworld Walk
 			if (this.overCurrState == 2) {this.animateMoveOver(this.overSpeed/2, 48, 4, false, true);}  // Sword Swing (walking)
 			if (this.overCurrState == 1) {this.animateMoveOver(0, 0, 2, true, false);}  // Overworld Idle
-			// Reset speed of character
-			this.overSpeed /= this.frameMultiplier;
-		    this.overAnimSpeed *= this.frameMultiplier;
-		    // Reset speeds if not sprinting
-		    if (this.overSprint || (this.overSpeed >= this.OVER_MOVE_SPEED_CAP && this.overAnimSpeed <= this.OVER_ANIM_SPEED_CAP)) {this.overSpeed /= 2; this.overAnimSpeed *= 2;}
+			this.overStateCheck2();  // Reset Sprinting speed if sprinting
 		} 
 		
 		else {  // Battle state
@@ -126,31 +112,52 @@ public abstract class Character extends Obstacle {
 	    return -1;
 	  }
 	
+	private float stateSpeed() {
+		float speed = 0; this.overStateCheck1();  // Create temporary variable and check if sprinting or if doing sword animation
+		if (this.overCurrState == 3) {speed = this.overSpeed;}  // Overworld Walk
+		if (this.overCurrState == 2) {speed = this.overSpeed/2;}  // Sword Swing (walking)
+		this.overStateCheck2(); return speed; // Reset Sprinting speed if sprinting and return temporary variable
+	}
+	
 	private void animateMoveOver(float speed, int start, int frames, boolean ignore, boolean fullAnim) {
 		int startReal = start + this.overCurrDir * frames;
 		this.overMove.resetPoint();
 		if (fullAnim && this.animateState[3] != this.app.frameCount) {this.unskipAnim = true; this.animateState = new int[] {this.overCurrState, this.overCurrDir, startReal+frames-1, frames};}
 		if (this.basicCollisionOver(this.overCurrState, 0, 0, app.width, app.height) != this.overCurrDir || ignore) {
-			if (this.overCurrDir % 2 == 1) {speed *= 0.7071068f;}  // sin 45
-			if (this.overCurrDir % 4 != 2) {this.overMove.setX(this.overCurrDir % 7 < 2? speed : -speed);}
-			if (this.overCurrDir % 4 - 1 != -1) {this.overMove.setY(this.overCurrDir < 4? speed : -speed);}
-			this.animManager.animate(this.app, this.overImage, this.overDispPosit.getX(), this.overDispPosit.getY(), this.OVER_WIDTH, this.OVER_HEIGHT, this.scale.getX(), startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnim, this.overLastState != this.overCurrState);
+			this.calculateOverMove(speed);
+			this.animManager.animate(this.app, this.overImage, this.overDispPosit.getX(), this.overDispPosit.getY(), Character.OVER_WIDTH, Character.OVER_HEIGHT, this.scale.getX(), startReal, startReal + frames - 1, this.overAnimSpeed, this.changeAnim, this.overLastState != this.overCurrState);
 		} else {this.unskipAnim = false;}
 	}
+	
+	private void calculateOverMove(float speed) {
+		if (this.overCurrDir % 2 == 1) {speed *= 0.7071068f;}  // sin 45
+		if (this.overCurrDir % 4 != 2) {this.overMove.setX(this.overCurrDir % 7 < 2? speed : -speed);}
+		if (this.overCurrDir % 4 - 1 != -1) {this.overMove.setY(this.overCurrDir < 4? speed : -speed);}
+	}
+	
+	private void overStateCheck1() {
+		if (this.overSprint) {this.overSpeed *= 2; this.overAnimSpeed /= 2;}  // If sprinting, double all speeds
+		if (this.unskipAnim) {  // If we are staying in an animation
+			if ((this.animManager.getIndexCount() + 1) % this.overAnimSpeed == 0 && this.animManager.getIndex() == this.animateState[2]) {this.unskipAnim = false;}  // If the animation has ended, end the animation
+			else {this.overCurrState = this.animateState[0]; this.overCurrDir = this.overLastDir;}  //Else, keep the character state and direction the same
+		}
+	}
+	
+	private void overStateCheck2() {if (this.overSprint || (this.overSpeed >= this.OVER_MOVE_SPEED_CAP && this.overAnimSpeed <= this.OVER_ANIM_SPEED_CAP)) {this.overSpeed /= 2; this.overAnimSpeed *= 2;}}  // Reset speeds if not sprinting
 	
 	private Point unstick(float[] c) {
 		switch ((int) c[2]) {
 			case 0:  // Down
-				this.illegalOverDir = Engine.add(this.illegalOverDir,  new int[] {1, 2, 3});
+				this.illegalOverDir = Engine.addNotInArray(this.illegalOverDir,  new int[] {1, 2, 3});
 				return new Point(c[0], c[1]-0.0001f);
 			case 1:  // Left
-				this.illegalOverDir = Engine.add(this.illegalOverDir,  new int[] {3, 4, 5});
+				this.illegalOverDir = Engine.addNotInArray(this.illegalOverDir,  new int[] {3, 4, 5});
 				return new Point(c[0]+0.0001f, c[1]);
 			case 2:  // Up
-				this.illegalOverDir = Engine.add(this.illegalOverDir,  new int[] {5, 6, 7});
+				this.illegalOverDir = Engine.addNotInArray(this.illegalOverDir,  new int[] {5, 6, 7});
 				return new Point(c[0], c[1]+0.0001f);
 			case 3:  // Right
-				this.illegalOverDir = Engine.add(this.illegalOverDir,  new int[] {0, 1, 7});
+				this.illegalOverDir = Engine.addNotInArray(this.illegalOverDir,  new int[] {0, 1, 7});
 				return new Point(c[0]-0.0001f, c[1]);
 			default:
 				return new Point(c);
@@ -160,14 +167,15 @@ public abstract class Character extends Obstacle {
 	// Private set
 	private void setOverX(float x) {this.overPosit.setX(x);}
 	private void setOverY(float y) {this.overPosit.setY(y);}
-	
 	// Private change
-	private void changeOverX(float x) {this.overPosit.changeX(x);}
-	private void changeOverY(float y) {this.overPosit.changeY(y);}
 	private void changeOverX() {this.overPosit.changeX(this.getMoveX());}
 	private void changeOverY() {this.overPosit.changeY(this.getMoveY());}
 	
 	// Overridden functions
+	@Override
+	public abstract void interact();
+//	@Override
+//	public abstract void display(PApplet app);
 	@Override
 	public float getX() {return this.overPosit.getX();}
 	@Override
@@ -185,9 +193,12 @@ public abstract class Character extends Obstacle {
 	@Override
 	public String toString() {return "("+this.getX()+", "+this.getY() + ", "+this.getW()+", "+this.getH()+")";}
 	@Override
-	public boolean isParent() {return false;}
+	public boolean equals(Object other) {return this.charID == ((Character) other).charID;}
+	@Override
+	public boolean isTangible() {return false;}
 	@Override
 	public boolean isCollide(Obstacle o) {
+		this.calculateOverMove(this.stateSpeed());
 		float[] c = Engine.rectRectCollideCoords(this.getX(), this.getY(), this.getNewX(), this.getNewY(), this.getW(), this.getH(), o.getX(), o.getY(), o.getW(), o.getH());
 		if (c.length != 0) {this.overPosit = this.unstick(c); return true;} return false;
 	}

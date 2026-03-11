@@ -2,7 +2,6 @@ package game;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -32,7 +31,7 @@ public class Room {
 	public void add(ArrayList<Obstacle> o) {for (int i = 0; i < o.size(); i ++) {room.add(o.get(i));}}
 	
 	private void instantiate(Player p, PImage background) {
-		this.p = p; this.background = background; room.add(p);
+		this.p = p; this.background = background; room.add(this.p);
 	}
 	
 	//TODO
@@ -40,16 +39,14 @@ public class Room {
 			
 	}
 	
-	public void display(PApplet app) {
+	public void update(PApplet app) {
 		Collections.sort(room);
-//		System.out.println(room);
-		
 		for (Obstacle o : room) {
-			if (o.isParent()) {p.isCollide(o); o.display(app);} 
-			else {((Character) o).update();}
+			if (o.isTangible()) {p.isCollide(o);}
+			o.display(app);
+			o.update();
 		}
-//		if(this.p.getIllegalDir() == 0) {}
-//		this.p.update();
+		System.out.println(this.p.getIllegalDir());
 	}
 	
 //	private void update() {

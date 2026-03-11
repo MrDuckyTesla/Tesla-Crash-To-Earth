@@ -475,7 +475,7 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	public static <T> T[] pushBack(T[] a, T b) {for (int i = a.length-1; i > 0; i--) {a[i] = a[i-1];} a[0] = b; return a;}
 	public static int[] pushBack(int[] a, int b) {for (int i = a.length-1; i > 0; i--) {a[i] = a[i-1];} a[0] = b; return a;}
 	public static boolean notInArray(ArrayList<Integer> a, int[] b) {for (int i = 0; i < a.size(); i++) {for (int j = 0; j < b.length; j++) {if (a.get(i) == b[j]) {return false;}}} return true;}
-	public static ArrayList<Integer> addNotInArray(ArrayList<Integer> a, int[] b) {for (int i = 0; i < b.length; i++) {boolean c = false; for (int j = 0; j < a.size(); j++) {if (b[i] == a.get(j)) {c = true; j = a.size();}} if (!c) {a.add(b[i]);}} return a;}
+	public static ArrayList<Integer> addNotInArray(ArrayList<Integer> a, int[] b) {for (int i = 0; i < b.length; i++) {if (!a.contains(b[i])) {a.add(b[i]);}} return a;}
 	public static ArrayList<Integer> add(ArrayList<Integer> a, int[] b) {for (int i = 0; i < b.length; i++) {a.add(b[i]);} return a;}
 	
 }
