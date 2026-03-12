@@ -29,11 +29,8 @@ public class Obstacle extends Point {
 	private void instantiate(float w, float h, boolean t) {this.w = w; this.h = h; this.isTangible = t;}
 	private void instantiate(float w, float h) {this.instantiate(w, h, true);}
 	
-	public Point getCorner(boolean topSide, boolean rightSide) {return new Point(rightSide? getX()+w : getX(), topSide? getY() : getY()+h);}
-	public Point[] getCorners() {return new Point[] {getCorner(true, false), getCorner(true, true), getCorner(false, true), getCorner(false, false)};}
-	
-	public float getArea() {return this.w * this.h;}
-	public float getPerimeter() {return 2*this.w + 2*this.h;}
+	public void update() {this.displayRect();}  // Function for children to inherit, will probably be used for animated obstacles
+	public void interact() {}  // Another function for children to inherit, will probably be used for text box
 	
 	public boolean isCollide(Obstacle o) {return Engine.rectRectCollide(this.getX(), this.getY(), this.w, this.h, o.getX(), o.getY(), o.getW(), o.getH());}
 	public boolean isTangible() {return this.isTangible;}
@@ -46,26 +43,23 @@ public class Obstacle extends Point {
 	
 	public boolean appRect(float w, float h) {Point.rectApp(this.getX(), this.getY(), this.w, this.h); return true;}
 	
-	public void update() {this.displayRect();}  // Function for children to inherit, will probably be used for animated obstacles
-	public void interact() {}  // Another function for children to inherit, will probably be used for text box
-	
-	protected void setW(float w) {this.w = w;}
-	protected void setH(float h) {this.h = h;}
-	
+	// Get
 	public float getW() {return this.w;}
 	public float getH() {return this.h;}
 	public float[] getXYWH() {return new float[] {getX(), getY(), w, h};}
+	public float getArea() {return this.w * this.h;}
+	public float getPerimeter() {return 2*this.w + 2*this.h;}
+	public Point getPoint() {return super.get();}
+	public Point getCorner(boolean topSide, boolean rightSide) {return new Point(rightSide? getX()+w : getX(), topSide? getY() : getY()+h);}
+	public Point[] getCorners() {return new Point[] {getCorner(true, false), getCorner(true, true), getCorner(false, true), getCorner(false, false)};}
 	
+	// Overridden functions
 	@Override
 	public Obstacle get() {return new Obstacle(this.getX(), this.getY(), this.w, this.h);}
-	public Point getPoint() {return super.get();}
-	
 	@Override
 	public boolean equals(Object other) {return this.getX() == ((Obstacle) other).getX() && this.getY() == ((Obstacle) other).getY() && this.w == ((Obstacle) other).getW() && this.h == ((Obstacle) other).getH();}
-	
 	@Override
 	public String toString() {return "("+getX()+", "+getY() + ", "+w+", "+h+")";}
-	
 	@Override
 	public int compareTo(Object o) {return (int) (getY() + getH() - ((Obstacle) o).getY() - ((Obstacle) o).getH());}
 

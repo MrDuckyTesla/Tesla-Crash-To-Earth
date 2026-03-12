@@ -48,7 +48,7 @@ public class Main extends PApplet {
 		// five hundred teslas
 //		for (int i = 0; i < 500; i++) {
 //			Point q = new Point((float)Math.random()*800, (float)Math.random()*800);
-//			test.add(new Enemy(this, q, q, new Point(3, 3), image1.copy(), image1.copy(), PlayerSpriteLayers[0], PlayerSpriteLayers[1]));
+//			test.add(new Enemy( q, q, new Point(3, 3), image1.copy(), image1.copy(), PlayerSpriteLayers[0], PlayerSpriteLayers[1]));
 //		}
 		test.add(new Enemy(p1, p1, new Point(3, 3), image1.copy(), image1.copy(), PlayerSpriteLayers[0], PlayerSpriteLayers[1]));
 		test.add(new Enemy(p2, p2, new Point(3, 3), image1.copy(), image1.copy(), PlayerSpriteLayers[0], PlayerSpriteLayers[1]));

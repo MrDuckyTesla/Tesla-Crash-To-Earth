@@ -20,7 +20,6 @@ public class CObstacle {  // Complex Obstacle (basically multiple rectangles sti
 	public void addObstacle(Obstacle obstacle) {cobstacle.add(obstacle);}
 	public void addObstacle(float x, float y) {cobstacle.add(new Obstacle(x, y));}
 	public void addObstacle(float x, float y, float w, float h) {cobstacle.add(new Obstacle(x, y, w, h));}
-	
 	public void addObstacles(ArrayList<Obstacle> list) {for (int i = 0; i < list.size(); i++) {cobstacle.add(list.get(i));}}
 	public void addObstacles(Obstacle[] list) {for (int i = 0; i < list.length; i++) {cobstacle.add(list[i]);}}
 	public void addObstacles(CObstacle cobstacle) {addObstacles(cobstacle.getArrayList());}
