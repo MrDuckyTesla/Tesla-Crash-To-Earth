@@ -1,3 +1,0 @@
-*.js linguist-vendored
-dist/* linguist-vendored
-lib/* linguist-vendored
