@@ -1,5 +1,6 @@
 package game;
 
+import entity.*;
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -27,11 +28,11 @@ public class Main extends PApplet {
 	@Override
 	public void setup() {
 		surface.setTitle("Tesla: Crash to Earth");
-		surface.setIcon(loadImage("game/Assets/Sprites/icon64.png"));
-		textFont(createFont("game/Assets/Fonts/TeslaCrashToFont.ttf", 36, false));
+		surface.setIcon(loadImage("src/Assets/Sprites/icon64.png"));
+		textFont(createFont("src/Assets/Fonts/TeslaCrashToFont.ttf", 36, false));
 		noCursor(); noStroke(); textSize(20);
-		image1 = loadImage("game/Assets/Sprites/Tesla/Tesla_Overworld.png");
-		bck1 = loadImage("game/Assets/Sprites/Background/background1.png");
+		image1 = loadImage("src/Assets/Sprites/Tesla/Tesla_Overworld.png");
+		bck1 = loadImage("src/Assets/Sprites/Background/background1.png");
 //		colorList = Engine.PreCompile(this, image1, new int[][] {{180, 157, 130, 31}, {187, 171}, {190, 163, 140}});
 //		Engine.changeColor(this, image1, colorList, new int[] {111, 111, 255, 255, 111, 111, 255, 200, 0});
 		obstacles = new Obstacle[] {new Obstacle(150, 200, 500, 100), new Obstacle(0, 380, 120, 100), new Obstacle(600, 600, 120, 160), new Obstacle(260, 500, 180, 80), new Obstacle(600, 175, 100, 300)};
@@ -87,11 +88,11 @@ public class Main extends PApplet {
 	
 	@Override
 	public void keyPressed() {
-		Engine.setKey(this.keyCode, true);
+		ToolKit.setKey(this.keyCode, true);
 	}
 	
 	@Override
 	public void keyReleased() {
-		Engine.setKey(this.keyCode, false);
+		ToolKit.setKey(this.keyCode, false);
 	}
 }

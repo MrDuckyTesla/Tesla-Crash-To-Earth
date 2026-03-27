@@ -1,6 +1,8 @@
 package game;
 
 import java.util.ArrayList;
+
+import entity.Point;
 import processing.core.PApplet;
 
 public class Path {

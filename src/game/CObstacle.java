@@ -1,6 +1,9 @@
 package game;
 
 import java.util.ArrayList;
+
+import entity.Obstacle;
+import entity.Point;
 import processing.core.PApplet;
 
 public class CObstacle {  // Complex Obstacle (basically multiple rectangles stitched together)
@@ -49,7 +52,7 @@ public class CObstacle {  // Complex Obstacle (basically multiple rectangles sti
 							cobstacle.set(i, new Obstacle(ob1.getX(), ob1.getY(), ob1.getW(), ob2.getY() + ob2.getH() - ob1.getY()));  // NEW Specified Object that we must move
 							cobstacle.add(i+1, new Obstacle(ob1.getX(), ob2.getY()+ob2.getH(), ob1.getW(), ob1.getY()+ob1.getH()-ob2.getY()-ob2.getH())); // the second half of the object
 						} ob1 = cobstacle.get(i); ob2 = cobstacle.get(j);  // get new/changed versions of obstacle
-						isTouchingInside = Engine.rectRectCollideNotExact(ob1.getX(), ob1.getY(), ob1.getW(), ob1.getH(), ob2.getX(), ob2.getY(), ob2.getW(), ob2.getH());
+						isTouchingInside = ToolKit.rectRectCollideNotExact(ob1.getX(), ob1.getY(), ob1.getW(), ob1.getH(), ob2.getX(), ob2.getY(), ob2.getW(), ob2.getH());
 						if (ob1.isInside(ob2) || ob1.getW() <= 0 || ob1.getH() <= 0) {cobstacle.remove(i); i--; j=-1;  isTouchingInside = false;}
 					}
 				}
@@ -60,7 +63,7 @@ public class CObstacle {  // Complex Obstacle (basically multiple rectangles sti
 			for (int i = 0; i < cobstacle.size(); i++) {
 				for (int j = 0; j < cobstacle.size(); j++) {
 					Obstacle ob1 = cobstacle.get(i), ob2 = cobstacle.get(j);
-					if (Engine.rectRectCollide(ob1.getX(), ob1.getY(), ob1.getW(), ob1.getH(), ob2.getX(), ob2.getY(), ob2.getW(), ob2.getH()) && i != j) {
+					if (ToolKit.rectRectCollide(ob1.getX(), ob1.getY(), ob1.getW(), ob1.getH(), ob2.getX(), ob2.getY(), ob2.getW(), ob2.getH()) && i != j) {
 						if (ob1.getW() == ob2.getW() && ob1.getX() == ob2.getX()) {
 							cobstacle.set(i, new Obstacle(ob1.getX(), ob1.getY()<ob2.getY()? ob1.getY() : ob2.getY(), ob1.getW(), ob1.getH()+ob2.getH()));
 							cobstacle.remove(j); i = 0; j = -1; isSillSimplify = true;
@@ -97,7 +100,7 @@ public class CObstacle {  // Complex Obstacle (basically multiple rectangles sti
 		for (int i = 0; i < p.getPath().size(); i++) {
 			for (int j = 0; j < p.getPath().size(); j++) {
 				if (i != j && p.getPath().get(i).equals(p.getPath().get(j))) {
-					p = new Path(Engine.removeAll(p.getPath().get(i), p.getPath()));
+					p = new Path(ToolKit.removeAll(p.getPath().get(i), p.getPath()));
 				}
 			}
 		}

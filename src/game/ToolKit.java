@@ -1,10 +1,12 @@
 package game;
 
 import java.util.ArrayList;
+import entity.Obstacle;
+import entity.Point;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING EXPANDED TO MORE OF A GAME ENGINE" - Old Nico <= I also took out all the animation functions and made it into its own class - Nico
+public final class ToolKit {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING EXPANDED TO MORE OF A GAME ENGINE" - Old Nico <= I also took out all the animation functions and made it into its own class - Nico. yeah so its more of a toolkit, renamed
 	
 	private static boolean[] keys = new boolean[128];
 	
@@ -77,7 +79,7 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	// =======================================================================================================================================================================================================
 	
 	public static ArrayList<Point> pathfind(float tx, float ty, float cx, float cy, float cw, float ch, Obstacle[] objects, float bx, float by, float bw, float bh) {
-		ArrayList<Point> criticalPoints = Engine.findCritPoints(tx, ty, cx, cy, cw, ch, objects, bx, by, bw, bh);
+		ArrayList<Point> criticalPoints = ToolKit.findCritPoints(tx, ty, cx, cy, cw, ch, objects, bx, by, bw, bh);
 		if (criticalPoints.size() == 0) {return criticalPoints;}
 		
 //		float[] coordsC = criticalPoints.remove(0).getXY();
@@ -111,11 +113,11 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	
 	private static ArrayList<Point> findCritPoints(float tx, float ty, float cx, float cy, float cw, float ch, Obstacle[] objects, float bx, float by, float bw, float bh) {
 		ArrayList<Point> criticalPoints = new ArrayList<Point>();
-		if (!Engine.pointRectCollide(tx, ty, bx+cw/2, by+ch/2, bw-cw, bh-ch)) {return criticalPoints;} // Return if target is in invalid spot
+		if (!ToolKit.pointRectCollide(tx, ty, bx+cw/2, by+ch/2, bw-cw, bh-ch)) {return criticalPoints;} // Return if target is in invalid spot
 		float[] farList, nearList = new float[] {Float.NEGATIVE_INFINITY};
 		for (int i = 0; i < objects.length; i++) {  // Iterate through each object
 			farList = new float[] {Float.POSITIVE_INFINITY};  // Reset distance farList is checking
-			float[][] collide = Engine.lineRectCollide(tx, ty, cx+cw/2, cy+ch/2, objects[i].getX()-cw/2, objects[i].getY()-ch/2, objects[i].getW()+cw, objects[i].getH()+ch);  // Cast line
+			float[][] collide = ToolKit.lineRectCollide(tx, ty, cx+cw/2, cy+ch/2, objects[i].getX()-cw/2, objects[i].getY()-ch/2, objects[i].getW()+cw, objects[i].getH()+ch);  // Cast line
 			for (int j = 0; j < collide.length; j++) {  // Iterate through each side of the object
 				if (collide[j].length != 0) {
 					float dist = PApplet.dist(tx, ty, collide[j][0], collide[j][1]);
@@ -156,11 +158,11 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 		for (int j = 0; j < criticalPoints.size(); j++) {  // Iterate through all crit points
 			ignorePoint = false;  // variable to keep track of if we should skip current point
 			for (int k = 0; k < objects.length; k++) {  // Iterate through the object list
-				if (Engine.pointRectCollideNotExact(criticalPoints.get(j).getX(), criticalPoints.get(j).getY(), objects[k].getX()-cw/2, objects[k].getY()-ch/2, objects[k].getW()+cw, objects[k].getH()+ch)) {  
+				if (ToolKit.pointRectCollideNotExact(criticalPoints.get(j).getX(), criticalPoints.get(j).getY(), objects[k].getX()-cw/2, objects[k].getY()-ch/2, objects[k].getW()+cw, objects[k].getH()+ch)) {  
 					ignorePoint = true;  // If yes then we set the ignore variable to true...
 					k = objects.length;  // ..and end the loop
 				}  // Check if the coords are inside 2 objects
-			} if (ignorePoint || !Engine.pointRectCollide(criticalPoints.get(j).getX(), criticalPoints.get(j).getY(),  bx+cw/2, by+ch/2, bw-cw, bh-ch)) {criticalPoints.remove(j); j--;}
+			} if (ignorePoint || !ToolKit.pointRectCollide(criticalPoints.get(j).getX(), criticalPoints.get(j).getY(),  bx+cw/2, by+ch/2, bw-cw, bh-ch)) {criticalPoints.remove(j); j--;}
 		} 
 //		criticalPoints.add(0, new Point(nearList[3], nearList[4]));  // Add the indexes to the front
 //		criticalPoints.add(0, new Point(nearList[1], nearList[2]));  // Add the closest point to the front
@@ -203,14 +205,14 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	
 	public static float[] getLimbCoords(float centerX, float centerY, float length1, float length2, float endX, float endY, boolean bendRight) {
 		float dist = PApplet.dist(centerX, centerY, endX, endY);
-		float[] coord = Engine.lineRadius(centerX, centerY, endX, endY, length1 + length2, true);
+		float[] coord = ToolKit.lineRadius(centerX, centerY, endX, endY, length1 + length2, true);
 		if (dist > length1 + length2) {return new float[] {centerX, centerY, coord[0], coord[1]};} 
 		else if (dist < length1 - length2) {
-			coord = Engine.lineRadius(centerX, centerY, endX, endY, length1, true);
+			coord = ToolKit.lineRadius(centerX, centerY, endX, endY, length1, true);
 			return new float[] {coord[0], coord[1], coord[0], coord[1]};
 		} else if (dist < length2 - length1) {
-			coord = Engine.lineRadius(centerX, centerY, endX, endY, -length1, true);
-			float[] coord2 = Engine.lineRadius(coord[0], coord[1], endX, endY, length2, true);
+			coord = ToolKit.lineRadius(centerX, centerY, endX, endY, -length1, true);
+			float[] coord2 = ToolKit.lineRadius(coord[0], coord[1], endX, endY, length2, true);
 			return new float[] {coord[0], coord[1], coord2[0], coord2[1]};
 		}  endX -= centerX; endY -= centerY;  // Make sure the x and y can never be 0
 		float theta = PApplet.acos((float) ((Math.pow(dist, 2) + Math.pow(length1, 2) - Math.pow(length2, 2)) / (2 * dist * length1)));
@@ -218,7 +220,7 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 		if (bendRight) {theta *= -1;}  // Make theta bend right if true
 		float x = flip * length1 * PApplet.cos(theta + PApplet.atan(endY / endX)) + centerX;
 		float y = flip * length1 * PApplet.sin(theta + PApplet.atan(endY / endX)) + centerY;
-		coord = Engine.lineRadius(x, y, endX + centerX, endY + centerY, length2, true);
+		coord = ToolKit.lineRadius(x, y, endX + centerX, endY + centerY, length2, true);
 		return new float[] {x, y, coord[0], coord[1]};
 	}
 	
@@ -311,8 +313,8 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 		    c1 = i % res * scaleWidth + halfScaleWidth;  // calculate center X and Y coordinate of each Pixel
 		    c2 = row * scaleWidth + halfScaleWidth;
 		    minX = PApplet.min(x1, x2) - thickWidth; minY = PApplet.min(y1, y2) - thickWidth;  // Check if within bounding box
-		    if (Engine.pointRectCollide(c1, c2, minX, minY, PApplet.max(x1, x2) + thickWidth - minX, PApplet.max(y1, y2) + thickWidth - minY)) {
-		    	cline = Engine.closestPointLine(c1, c2, x1, y1, x2, y2);  // Check for closest point on line
+		    if (ToolKit.pointRectCollide(c1, c2, minX, minY, PApplet.max(x1, x2) + thickWidth - minX, PApplet.max(y1, y2) + thickWidth - minY)) {
+		    	cline = ToolKit.closestPointLine(c1, c2, x1, y1, x2, y2);  // Check for closest point on line
 		        if (PApplet.dist(cline[0], cline[1], c1, c2) <= thickness) {  // Check if pixel is within the thickness of the line
 		        	image.pixels[i] = app.color(color[0], color[1], color[2], color[3]);  // Change colors
 		        }
@@ -322,7 +324,7 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	}
 	
 	public static void lineDraw(PApplet app, float x1, float y1, float x2, float y2) {
-		app.image(Engine.lineImage(app, x1, y1, x2, y2), 0, 0, app.width, app.height);
+		app.image(ToolKit.lineImage(app, x1, y1, x2, y2), 0, 0, app.width, app.height);
 	}
 	
 	public static PImage circleImage(PApplet app, float x, float y, int res, float thickness, float sizeDisplay, int[] color1, boolean gradient, int[] color2) {
@@ -370,12 +372,12 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	public static PImage outline(PApplet app, PImage image, int[] color1, int[] color2) {
 		image.loadPixels();  // Load pixels
 		for (int i = 1; i < image.pixels.length - 1; i++) {
-			if (app.alpha(image.pixels[i]) != 0 && !Engine.compareProcessingColorList(app, image.pixels[i], color2)) {  // Dont check if transparent pixel
+			if (app.alpha(image.pixels[i]) != 0 && !ToolKit.compareProcessingColorList(app, image.pixels[i], color2)) {  // Dont check if transparent pixel
 				// Check if there is a blank pixel to the left, right, above or below the normal pixel
-				if (Engine.compareProcessingColorList(app,  image.pixels[i - 1],  color1) && i % image.width != 0) {image.pixels[i - 1] = app.color(color2[0], color2[1], color2[2], color2[3]);}
-				else if (Engine.compareProcessingColorList(app,  image.pixels[i + 1],  color1) && (i + 1) % image.width != 0) {image.pixels[i + 1] = app.color(color2[0], color2[1], color2[2], color2[3]);}
-				if (i - image.width >= 0 && Engine.compareProcessingColorList(app, image.pixels[i - image.width], color1)) {image.pixels[i - image.width] = app.color(color2[0], color2[1], color2[2], color2[3]);}
-				else if (i + image.width < image.pixels.length && Engine.compareProcessingColorList(app, image.pixels[i + image.width], color1)) {image.pixels[i + image.width] = app.color(color2[0], color2[1], color2[2], color2[3]);}
+				if (ToolKit.compareProcessingColorList(app,  image.pixels[i - 1],  color1) && i % image.width != 0) {image.pixels[i - 1] = app.color(color2[0], color2[1], color2[2], color2[3]);}
+				else if (ToolKit.compareProcessingColorList(app,  image.pixels[i + 1],  color1) && (i + 1) % image.width != 0) {image.pixels[i + 1] = app.color(color2[0], color2[1], color2[2], color2[3]);}
+				if (i - image.width >= 0 && ToolKit.compareProcessingColorList(app, image.pixels[i - image.width], color1)) {image.pixels[i - image.width] = app.color(color2[0], color2[1], color2[2], color2[3]);}
+				else if (i + image.width < image.pixels.length && ToolKit.compareProcessingColorList(app, image.pixels[i + image.width], color1)) {image.pixels[i + image.width] = app.color(color2[0], color2[1], color2[2], color2[3]);}
 			}
 		} image.updatePixels();  // Update image
 		return image;
@@ -384,12 +386,12 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	public static PImage outlineThin(PApplet app, PImage image, int[] color1, int[] color2) {
 		image.loadPixels();  // Load pixels
 		for (int i = 1; i < image.pixels.length - 1; i++) {
-			if (app.alpha(image.pixels[i]) != 0 && !Engine.compareProcessingColorList(app, image.pixels[i], color2)) {  // Dont check if transparent pixel
+			if (app.alpha(image.pixels[i]) != 0 && !ToolKit.compareProcessingColorList(app, image.pixels[i], color2)) {  // Dont check if transparent pixel
 				// Check if there is a blank pixel to the left, right, above or below the normal pixel
-				if (Engine.compareProcessingColorList(app,  image.pixels[i - 1],  color1) && i % image.width != 0) {image.pixels[i - 1] = app.color(color2[0], color2[1], color2[2], color2[3]);}
-				if (Engine.compareProcessingColorList(app,  image.pixels[i + 1],  color1) && (i + 1) % image.width != 0) {image.pixels[i + 1] = app.color(color2[0], color2[1], color2[2], color2[3]);}
-				if (i - image.width >= 0 && Engine.compareProcessingColorList(app, image.pixels[i - image.width], color1)) {image.pixels[i - image.width] = app.color(color2[0], color2[1], color2[2], color2[3]);}
-				if (i + image.width < image.pixels.length && Engine.compareProcessingColorList(app, image.pixels[i + image.width], color1)) {image.pixels[i + image.width] = app.color(color2[0], color2[1], color2[2], color2[3]);}
+				if (ToolKit.compareProcessingColorList(app,  image.pixels[i - 1],  color1) && i % image.width != 0) {image.pixels[i - 1] = app.color(color2[0], color2[1], color2[2], color2[3]);}
+				if (ToolKit.compareProcessingColorList(app,  image.pixels[i + 1],  color1) && (i + 1) % image.width != 0) {image.pixels[i + 1] = app.color(color2[0], color2[1], color2[2], color2[3]);}
+				if (i - image.width >= 0 && ToolKit.compareProcessingColorList(app, image.pixels[i - image.width], color1)) {image.pixels[i - image.width] = app.color(color2[0], color2[1], color2[2], color2[3]);}
+				if (i + image.width < image.pixels.length && ToolKit.compareProcessingColorList(app, image.pixels[i + image.width], color1)) {image.pixels[i + image.width] = app.color(color2[0], color2[1], color2[2], color2[3]);}
 			}
 		} image.updatePixels();  // Update image
 		return image;
@@ -402,14 +404,14 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	}
 	
 	public static float[] rectRectCollideCoords(float px, float py, float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2) {
-	    float[][] coordCollide = Engine.lineRectCollide(px+w1/2, py+h1/2, x1+w1/2, y1+h1/2, x2-w1/2, y2-h1/2, w2+w1, h2+h1);  // Find coordinates where moving rectangle touches the base rectangle
+	    float[][] coordCollide = ToolKit.lineRectCollide(px+w1/2, py+h1/2, x1+w1/2, y1+h1/2, x2-w1/2, y2-h1/2, w2+w1, h2+h1);  // Find coordinates where moving rectangle touches the base rectangle
 	    for (int i = 0; i < coordCollide.length; i++) {  // Iterate to find the closest coordinate
 	    	if (coordCollide[i].length > 0) {return new float[] {coordCollide[i][0]-w1/2, coordCollide[i][1]-h1/2, i};}
 	    } return new float[] {};
 	}
 	
 	public static float[] nRectRectCollideCoords(float px, float py, float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2) {
-		float[][] coordCollide = Engine.lineRectCollide(px+w1/2, py+h1/2, x1+w1/2, y1+h1/2, x2+w1/2, y2+h1/2, w2-w1, h2-h1);  // Find coordinates where moving rectangle touches the base rectangle
+		float[][] coordCollide = ToolKit.lineRectCollide(px+w1/2, py+h1/2, x1+w1/2, y1+h1/2, x2+w1/2, y2+h1/2, w2-w1, h2-h1);  // Find coordinates where moving rectangle touches the base rectangle
 	    for (int i = 0; i < coordCollide.length; i++) {  // Iterate to find the closest coordinate
 	    	if (coordCollide[i].length > 0) {return new float[] {coordCollide[i][0]-w1/2, coordCollide[i][1]-h1/2, i};}
 	    } return new float[] {};
@@ -434,9 +436,24 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	    } return true;
 	}
 	
+	public static Point unstick(float[] c) {  // Takes rectRectCollideCoords() list as input
+		switch ((int) c[2]) {
+			case 0:  // Down
+				return new Point(c[0], c[1]-0.0001f);
+			case 1:  // Left
+				return new Point(c[0]+0.0001f, c[1]);
+			case 2:  // Up
+				return new Point(c[0], c[1]+0.0001f);
+			case 3:  // Right
+				return new Point(c[0]-0.0001f, c[1]);
+			default:
+				return new Point(c);
+		}
+	}
+	
 	// Basic collision utilizing other collision methods
-	public static float[][] lineRectCollide(float x1, float y1, float x2, float y2, float rx, float ry, float rw, float rh) {return new float[][] {Engine.lineLineCollide(x1, y1, x2, y2, rx, ry, rx+rw, ry), Engine.lineLineCollide(x1, y1, x2, y2, rx+rw, ry, rx+rw, ry+rh), Engine.lineLineCollide(x1, y1, x2, y2, rx+rw, ry+rh, rx, ry+rh), Engine.lineLineCollide(x1, y1, x2, y2, rx, ry+rh, rx, ry)};}  // Rectangle is just four lines, so we return a list of line vs line collisions
-	public static boolean[] lRectRectCollide(float rx1, float ry1, float rw1, float rh1, float rx2, float ry2, float rw2, float rh2) {return new boolean[] {Engine.pLineCollide(rx1+rw1, ry1, rx1+rw1, ry1+rh1, rx2+rw2, ry2, rx2+rw2, ry2+rh2), Engine.pLineCollide(rx1+rw1, ry1+rh1, rx1, ry1+rh1, rx2+rw2, ry2+rh2, rx2, ry2+rh2), Engine.pLineCollide(rx1, ry1+rh1, rx1, ry1, rx2, ry2+rh2, rx2, ry2), Engine.pLineCollide(rx1, ry1, rx1+rw1, ry1, rx2, ry2, rx2+rw2, ry2)};}  // Used to find which sides two rectangles are touching.. A rectangle is just four lines, so we return a list of line vs line collisions
+	public static float[][] lineRectCollide(float x1, float y1, float x2, float y2, float rx, float ry, float rw, float rh) {return new float[][] {ToolKit.lineLineCollide(x1, y1, x2, y2, rx, ry, rx+rw, ry), ToolKit.lineLineCollide(x1, y1, x2, y2, rx+rw, ry, rx+rw, ry+rh), ToolKit.lineLineCollide(x1, y1, x2, y2, rx+rw, ry+rh, rx, ry+rh), ToolKit.lineLineCollide(x1, y1, x2, y2, rx, ry+rh, rx, ry)};}  // Rectangle is just four lines, so we return a list of line vs line collisions
+	public static boolean[] lRectRectCollide(float rx1, float ry1, float rw1, float rh1, float rx2, float ry2, float rw2, float rh2) {return new boolean[] {ToolKit.pLineCollide(rx1+rw1, ry1, rx1+rw1, ry1+rh1, rx2+rw2, ry2, rx2+rw2, ry2+rh2), ToolKit.pLineCollide(rx1+rw1, ry1+rh1, rx1, ry1+rh1, rx2+rw2, ry2+rh2, rx2, ry2+rh2), ToolKit.pLineCollide(rx1, ry1+rh1, rx1, ry1, rx2, ry2+rh2, rx2, ry2), ToolKit.pLineCollide(rx1, ry1, rx1+rw1, ry1, rx2, ry2, rx2+rw2, ry2)};}  // Used to find which sides two rectangles are touching.. A rectangle is just four lines, so we return a list of line vs line collisions
 	public static boolean rectRectCollide(float r1x, float r1y, float r1w, float r1h, float r2x, float r2y, float r2w, float r2h) {return r1x + r1w >= r2x && r1x <= r2x+r2w && r1y + r1h >= r2y && r1y <= r2y+r2h;}
 	public static boolean rectRectCollideNotExact(float r1x, float r1y, float r1w, float r1h, float r2x, float r2y, float r2w, float r2h) {return r1x + r1w > r2x && r1x < r2x+r2w && r1y + r1h > r2y && r1y < r2y+r2h;}
 	public static boolean circRectCollide(float cx, float cy, float cr, float rx, float ry, float rw, float rh) {return cx + cr/2 >= rx && rx + rw >= cx - cr/2 && cy + cr/2 >= ry && ry + rh >= cy - cr/2;}
@@ -450,28 +467,28 @@ public class Engine {  // "USED TO BE THE MEDIA CLASS, CHANGED DUE TO IT BEING E
 	public static boolean compareColorColor(int[] col1, int[] col2) {return col1[0] == col2[0] && col1[1] == col2[1] && col1[2] == col2[2] && col1[3] == col2[3];}  // Checks if two colors are the same
 	
 	// Alternate versions of functions (I really like default parameters, so sad that java removes those)
-	public static void pixelate(PApplet app, int res) {Engine.pixelate(app, res, 0, 0, app.width, app.height);}
-	public static void pixelate(PApplet app, PImage image, int res) {Engine.pixelate(app, image, res, 0, 0, app.width, app.height);}
-	public static float[] lineRadius(float centerX, float centerY, float endX, float endY, float radius) {return Engine.lineRadius(centerX, centerY, endX, endY, radius, true);}
-	public static float[] getLimbCoords(float centerX, float centerY, float length1, float length2, float endX, float endY) {return Engine.getLimbCoords(centerX, centerY, length1, length2, endX, endY, false);}
-	public static float[] closestPointLine(float px, float py, float x1, float y1, float x2, float y2) {return Engine.closestPointLine(px, py, x1, y1, x2, y2, true);}
-	public static PImage lineImage(PApplet app, float x1, float y1, float x2, float y2, int res, float thickness, float sizeDisplay) {return Engine.lineImage(app, x1, y1, x2, y2, res, thickness, sizeDisplay, new int[] {0, 0, 0, 255});}
-	public static PImage lineImage(PApplet app, float x1, float y1, float x2, float y2) {return Engine.lineImage(app, x1, y1, x2, y2, app.width/4, 4, app.width, new int[] {0, 0, 0, 255});}
-	public static PImage circleImage(PApplet app, float x, float y, int res, float thickness, float sizeDisplay, int[] color1, boolean gradient) {return Engine.circleImage(app, x, y, res, thickness, sizeDisplay, new int[] {255, 111, 111, 255}, gradient, color1);}
-	public static PImage circleImage(PApplet app, float x, float y, int res, float thickness, float sizeDisplay, int[] color1) {return Engine.circleImage(app, x, y, res, thickness, sizeDisplay, new int[] {255, 111, 111, 255}, false, color1);}
-	public static PImage circleImage(PApplet app, float x, float y, int res, float thickness, float sizeDisplay) {return Engine.circleImage(app, x, y, res, thickness, sizeDisplay, new int[] {255, 111, 111, 255}, false, new int[] {111, 111, 255, 255});}
-	public static PImage squareImage(PApplet app, float x, float y, int res, float thickness, float sizeDisplay, int[] color1, boolean gradient) {return Engine.squareImage(app, x, y, res, thickness, sizeDisplay, new int[] {255, 111, 111, 255}, gradient, color1);}
-	public static PImage squareImage(PApplet app, float x, float y, int res, float thickness, float sizeDisplay, int[] color1) {return Engine.squareImage(app, x, y, res, thickness, sizeDisplay, new int[] {255, 111, 111, 255}, false, color1);}
-	public static PImage squareImage(PApplet app, float x, float y, int res, float thickness, float sizeDisplay) {return Engine.squareImage(app, x, y, res, thickness, sizeDisplay, new int[] {255, 111, 111, 255}, false, new int[] {111, 111, 255, 255});}
-	public static PImage outline(PApplet app, PImage image, int[] color1) {return Engine.outline(app, image, color1, new int[] {255, 255, 255, 255});}
-	public static PImage outline(PApplet app, PImage image) {return Engine.outline(app, image, new int[] {0, 0, 0, 0}, new int[] {255, 255, 255, 255});}
-	public static PImage outlineThin(PApplet app, PImage image, int[] color1) {return Engine.outline(app, image, color1, new int[] {255, 255, 255, 255});}
-	public static PImage outlineThin(PApplet app, PImage image) {return Engine.outline(app, image, new int[] {0, 0, 0, 0}, new int[] {255, 255, 255, 255});}
+	public static void pixelate(PApplet app, int res) {ToolKit.pixelate(app, res, 0, 0, app.width, app.height);}
+	public static void pixelate(PApplet app, PImage image, int res) {ToolKit.pixelate(app, image, res, 0, 0, app.width, app.height);}
+	public static float[] lineRadius(float centerX, float centerY, float endX, float endY, float radius) {return ToolKit.lineRadius(centerX, centerY, endX, endY, radius, true);}
+	public static float[] getLimbCoords(float centerX, float centerY, float length1, float length2, float endX, float endY) {return ToolKit.getLimbCoords(centerX, centerY, length1, length2, endX, endY, false);}
+	public static float[] closestPointLine(float px, float py, float x1, float y1, float x2, float y2) {return ToolKit.closestPointLine(px, py, x1, y1, x2, y2, true);}
+	public static PImage lineImage(PApplet app, float x1, float y1, float x2, float y2, int res, float thickness, float sizeDisplay) {return ToolKit.lineImage(app, x1, y1, x2, y2, res, thickness, sizeDisplay, new int[] {0, 0, 0, 255});}
+	public static PImage lineImage(PApplet app, float x1, float y1, float x2, float y2) {return ToolKit.lineImage(app, x1, y1, x2, y2, app.width/4, 4, app.width, new int[] {0, 0, 0, 255});}
+	public static PImage circleImage(PApplet app, float x, float y, int res, float thickness, float sizeDisplay, int[] color1, boolean gradient) {return ToolKit.circleImage(app, x, y, res, thickness, sizeDisplay, new int[] {255, 111, 111, 255}, gradient, color1);}
+	public static PImage circleImage(PApplet app, float x, float y, int res, float thickness, float sizeDisplay, int[] color1) {return ToolKit.circleImage(app, x, y, res, thickness, sizeDisplay, new int[] {255, 111, 111, 255}, false, color1);}
+	public static PImage circleImage(PApplet app, float x, float y, int res, float thickness, float sizeDisplay) {return ToolKit.circleImage(app, x, y, res, thickness, sizeDisplay, new int[] {255, 111, 111, 255}, false, new int[] {111, 111, 255, 255});}
+	public static PImage squareImage(PApplet app, float x, float y, int res, float thickness, float sizeDisplay, int[] color1, boolean gradient) {return ToolKit.squareImage(app, x, y, res, thickness, sizeDisplay, new int[] {255, 111, 111, 255}, gradient, color1);}
+	public static PImage squareImage(PApplet app, float x, float y, int res, float thickness, float sizeDisplay, int[] color1) {return ToolKit.squareImage(app, x, y, res, thickness, sizeDisplay, new int[] {255, 111, 111, 255}, false, color1);}
+	public static PImage squareImage(PApplet app, float x, float y, int res, float thickness, float sizeDisplay) {return ToolKit.squareImage(app, x, y, res, thickness, sizeDisplay, new int[] {255, 111, 111, 255}, false, new int[] {111, 111, 255, 255});}
+	public static PImage outline(PApplet app, PImage image, int[] color1) {return ToolKit.outline(app, image, color1, new int[] {255, 255, 255, 255});}
+	public static PImage outline(PApplet app, PImage image) {return ToolKit.outline(app, image, new int[] {0, 0, 0, 0}, new int[] {255, 255, 255, 255});}
+	public static PImage outlineThin(PApplet app, PImage image, int[] color1) {return ToolKit.outline(app, image, color1, new int[] {255, 255, 255, 255});}
+	public static PImage outlineThin(PApplet app, PImage image) {return ToolKit.outline(app, image, new int[] {0, 0, 0, 0}, new int[] {255, 255, 255, 255});}
 	
 	// Random util functions
 	public static <T> ArrayList<T> removeAll(T val, ArrayList<T> arr) {for (int i = 0; i < arr.size(); i++) {if (arr.get(i).equals(val)) {arr.remove(i); i--;}} return arr;}
 	public static boolean keyIsDown(int key) {return keys[key];}
-	public static void setKey(int key, boolean state) {if (key < Engine.keys.length) {keys[key] = state;}}
+	public static void setKey(int key, boolean state) {if (key < ToolKit.keys.length) {keys[key] = state;}}
 	public static <T> T[] pushBack(T[] a, T b) {for (int i = a.length-1; i > 0; i--) {a[i] = a[i-1];} a[0] = b; return a;}
 	public static int[] pushBack(int[] a, int b) {for (int i = a.length-1; i > 0; i--) {a[i] = a[i-1];} a[0] = b; return a;}
 	public static boolean notInArray(ArrayList<Integer> a, int[] b) {for (int i = 0; i < a.size(); i++) {for (int j = 0; j < b.length; j++) {if (a.get(i) == b[j]) {return false;}}} return true;}

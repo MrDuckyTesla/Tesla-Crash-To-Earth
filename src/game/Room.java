@@ -2,6 +2,7 @@ package game;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import entity.*;
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -34,17 +35,28 @@ public class Room {
 		this.p = p; this.background = background; room.add(this.p);
 	}
 	
-	//TODO
+	//TODO implement reading from file
 	public void add(String file) {
 			
+	}
+	//TODO implement loading assets dynamically
+	public void load() {
+		
+	}
+	//TODO implement unloading assets
+	public void unLoad() {
+		
 	}
 	
 	public void update(PApplet app) {
 		Collections.sort(room);
+		
 		for (Obstacle o : room) {
 			if (o.isTangible()) {
 				p.isCollide(o);
 			}
+		}
+		for (Obstacle o : room) {
 			o.update();
 		}
 	}

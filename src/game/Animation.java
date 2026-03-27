@@ -70,17 +70,17 @@ public class Animation {  // Ripped from the Engine class so i could make it sta
 		float x1 = num * radiusX * PApplet.cos(this.timeRun / speed + PApplet.PI) + centerX, x2 = num * radiusX * PApplet.cos(this.timeRun / speed) + centerX;
 		centerY += jump * PApplet.cos(this.timeRun / (speed / 2) + PApplet.PI);
 		float y1New = y1 + offsetY > floorY? floorY : y1 + offsetY, y2New = y2 + offsetY > floorY? floorY : y2 + offsetY;
-		float[] coords1 = Engine.getLimbCoords(centerX, centerY, length, length, x1+offsetX, y1New, faceRight), coords2 = Engine.getLimbCoords(centerX, centerY, length, length, x2+offsetX, y2New, faceRight);
+		float[] coords1 = ToolKit.getLimbCoords(centerX, centerY, length, length, x1+offsetX, y1New, faceRight), coords2 = ToolKit.getLimbCoords(centerX, centerY, length, length, x2+offsetX, y2New, faceRight);
 		if (showShadow || showHitbox) {
 			app.fill(255, 0, 0);
 			if (showShadow)  {app.ellipse(centerX+offsetX, centerY+length*lengthQuotent+offsetY, 2*radiusX, 2*radiusY);}
 		    if (showHitbox)  {app.rect(centerX - radiusX - thickness/2, centerY - thickness/2, 2*radiusX + thickness/2, 2*length + thickness);}
 		} 
 //		PImage image = Engine.lineImage(app, centerX, centerY, coords2[0], coords2[1], res, thickness, app.width, color1);
-		app.image(Engine.lineImage(app, centerX, centerY, coords2[0], coords2[1], res, thickness, app.width, color1), 0, 0, app.width, app.height);
-		app.image(Engine.lineImage(app, coords2[0], coords2[1], coords2[2], coords2[3], res, thickness, app.width, color1), 0, 0, app.width, app.height);
-		app.image(Engine.lineImage(app, centerX, centerY, coords1[0], coords1[1], res, thickness, app.width, color2), 0, 0, app.width, app.height);
-		app.image(Engine.lineImage(app, coords1[0], coords1[1], coords1[2], coords1[3], res, thickness, app.width, color2), 0, 0, app.width, app.height);
+		app.image(ToolKit.lineImage(app, centerX, centerY, coords2[0], coords2[1], res, thickness, app.width, color1), 0, 0, app.width, app.height);
+		app.image(ToolKit.lineImage(app, coords2[0], coords2[1], coords2[2], coords2[3], res, thickness, app.width, color1), 0, 0, app.width, app.height);
+		app.image(ToolKit.lineImage(app, centerX, centerY, coords1[0], coords1[1], res, thickness, app.width, color2), 0, 0, app.width, app.height);
+		app.image(ToolKit.lineImage(app, coords1[0], coords1[1], coords1[2], coords1[3], res, thickness, app.width, color2), 0, 0, app.width, app.height);
 //		image.copy(Engine.lineImage(app, coords2[0], coords2[1], coords2[2], coords2[3], res, thickness, app.width, color1), 0, 0, res, res, 0, 0, res, res);
 //		image.copy(Engine.lineImage(app, centerX, centerY, coords1[0], coords1[1], res, thickness, app.width, color2), 0, 0, res, res, 0, 0, res, res);
 //		image.copy(Engine.lineImage(app, coords1[0], coords1[1], coords1[2], coords1[3], res, thickness, app.width, color2), 0, 0, res, res, 0, 0, res, res);
